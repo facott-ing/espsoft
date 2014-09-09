@@ -632,12 +632,16 @@ app.get('/pensum/shownext/:id', isLoggedIn, function(req, res){
 });
 
 app.get('/pensum/:id', isLoggedIn, function(req, res){
-    var pos;
-    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, doc){
-        pos=doc;
-        Programa.findOne({_id:pos.programa_id}, function(err, pro){
-            Asignatura.find({pensum_id:req.pensum.id}, function(err, asi){
-                res.render('pensum/show', {asignaturas:asi, pensum:req.pensum, postgrado:pos, programa:pro});
+    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, postgrado){
+        Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
+            Asignatura.find({pensum_id:req.pensum.id}, function(err, materias){
+                Asignatura.count({pensum_id:req.pensum.id}, function(err, materiasnum){
+                    Asignatura.findOne({pensum_id:req.pensum.id}, {nivel:1}, {sort:{nivel: -1}}, function(err, maxnivel){
+                        res.render('pensum/show', {programa:programa, postgrado:postgrado, pensum:req.pensum, asignaturas:materias, num:materiasnum, maxnivel:maxnivel});
+                    });
+
+                });
+
             });
 
         });
@@ -884,33 +888,42 @@ app.get('/cohorte/:id', isLoggedIn, function(req, res){
 app.get('/cohorte/:id/edit', isLoggedIn, function(req, res){
     Postgrado.findOne({_id:req.cohorte.postgrado_id}, function(err, p){
         Programa.findOne({_id:p.programa_id}, function(err, pr){
-            res.render('cohorte/edit', {cohorte:req.cohorte, postgrado:p, programa:pr})
+            Pensum.findOne({_id:req.cohorte.pensum_id}, function(err, pensum){
+                res.render('cohorte/edit', {cohorte:req.cohorte, postgrado:p, programa:pr, pensum:pensum})
+            });
+
         })
     })
 
 });
 app.put('/cohorte/:id', isLoggedIn, function(req, res){
-    var b=req.body;
+    var b=req.body
+
     Cohorte.update(
-        {_id:req.params.id},
+        {_id: b.id},
         {
+            resolucion: b.resolucion,
+            nombre: b.nombre,
             fecha_inicio_insc: b.finscrip,
             fecha_limite_insc: b.flinscrip,
             fecha_entrevista: b.fentrevista,
             fecha_resultados: b.fresultados,
             fecha_matricula: b.fmatricula,
             fecha_introduccion: b.fintro,
-            fecha_receso: b.freceso,
             fecha_termina_clase: b.ftermina,
             valor: b.valor,
             otros: b.otro,
             link: b.link
         },
         function(err){
-            res.redirect('/cohorte/'+b.id)
+            if(err) res.json(err)
+            res.redirect('/cohorte/' + b.id +'/edit')
         }
-
     );
+
+
+
+
 });
 
 //delete
