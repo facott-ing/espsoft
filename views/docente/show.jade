@@ -1,23 +1,130 @@
-//
-   Created by fabiancote on 7/29/14.
-h1 Visor de docentes
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/asignatura/#{asignatura.id}") Materia
+            li.active Informacion del docente
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Informacion del docente
+                    span.text-primary &nbsp; #{datos.nombres} #{datos.apellidos} -
+                    strong.text-primary &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion general del docente
+                h5.text-center.margin-botton
+                    a(href="/asignatura/#{asignatura.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver a la materia
 
-h4 #{datos.nombres} #{datos.apellidos}
-h5 email: #{datos.email}
-h5 telefono: #{datos.telefono}
+            .col-lg-6
+                .panel.panel-default
+                    .panel-heading
+                        h5
+                            i.fa.fa-user
+                            |&nbsp; Datos personales del docente
+                    .panel-body
+                        form(method="POST", action="/docente/edit").form-horizontal
+                            input(type="hidden", name="_method", value="PUT")
+                            input(type="hidden", name="asignatura", value="#{asignatura.id}")
+                            input(type="hidden", name="docente", value="#{docente.id}")
+                            input(type="hidden", name="persona", value="#{datos.id}")
+                            input(type="hidden", name="case", value="1")
 
-h3 Titulos academicos del docente
+                            fieldset
+                                .form-group
+                                    label(for="inputNombre", class="col-lg-2 control-label") Nombres
+                                    .col-lg-10
 
-- if (titulos.lenght==0){
-    h4 no hay titulos registrados
-- }else{
-    ul
-        each titulo in titulos
-            li: | #{titulo.titulo} - #{titulo.universidad}
-                br
-                a(href="/titulo/#{titulo.id}/delete") Eliminar
--}
-a(href="/titulo/#{docente.id}/new") Agregar titulo academico
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-user
+                                            input(type="text", name="nombres", value="#{datos.nombres}", required).form-control
+                                        p.lead.text-muted Nombre del estudiante
+                                .form-group
+                                    label(for="inputApellido", class="col-lg-2 control-label") Apellidos
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-user
+                                            input(type="text", name="apellidos", value="#{datos.apellidos}", required).form-control
+                                        p.lead.text-muted Apellidos del estudiante
+                                .form-group
+                                    label(for="inputidentidad", class="col-lg-2 control-label") Documento
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-bookmark
+                                            input(type="text", name="documento", value="#{datos.documento}", required).form-control
+                                        p.lead.text-muted Numero de identificacion del estudiante
+                                .form-group
+                                    label(for="inputidentidad", class="col-lg-2 control-label") Tipo documento
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-bookmark
+                                            select(name="tipodoc").form-control
+                                                case datos.tipo_documento
+                                                    when 'Cedula de ciudadania'
+                                                        option(value="Cedula de ciudadania", selected="true") Cedula de ciudadania
+                                                        option(value="Pasaporte") Pasaporte
+                                                        option(value="Cedula de Extranjeria") Cedula de Extranjeria
+                                                    when 'Pasaporte'
+                                                        option(value="Cedula de ciudadania") Cedula de ciudadania
+                                                        option(value="Pasaporte", selected="true") Pasaporte
+                                                        option(value="Cedula de Extranjeria") Cedula de Extranjeria
+                                                    when 'Cedula de Extranjeria'
+                                                        option(value="Cedula de ciudadania") Cedula de ciudadania
+                                                        option(value="Pasaporte") Pasaporte
+                                                        option(value="Cedula de Extranjeria", selected="true") Cedula de Extranjeria
+
+                                        p.lead.text-muted tipo de documento
+                                .form-group
+                                    label(for="inputidentidad", class="col-lg-2 control-label") Email
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-send-o
+                                            input(type="email", name="email", value="#{datos.email}", required).form-control
+                                        p.lead.text-muted Correo electronico de contacto del estudiante
+                                .form-group
+                                    label(for="inputidentidad", class="col-lg-2 control-label") Telefono
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-phone
+                                            input(type="number", name="telefono", value="#{datos.telefono}", required).form-control
+                                        p.lead.text-muted Numero telefonico de contacto
 
 
-br
+
+                                .form-group
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary
+                                            i.fa.fa-save
+                                            | &nbsp; Guardar Cambios

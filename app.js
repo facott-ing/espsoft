@@ -634,20 +634,51 @@ app.get('/pensum/shownext/:id', isLoggedIn, function(req, res){
 app.get('/pensum/:id', isLoggedIn, function(req, res){
     Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, postgrado){
         Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
-            Asignatura.find({pensum_id:req.pensum.id}, function(err, materias){
-                Asignatura.count({pensum_id:req.pensum.id}, function(err, materiasnum){
-                    Asignatura.findOne({pensum_id:req.pensum.id}, {nivel:1}, {sort:{nivel: -1}}, function(err, maxnivel){
-                        res.render('pensum/show', {programa:programa, postgrado:postgrado, pensum:req.pensum, asignaturas:materias, num:materiasnum, maxnivel:maxnivel});
-                    });
+            var query=Asignatura.find({pensum_id:req.pensum.id});
+            query.sort({nivel:1});
+            query.exec(
+                function(err, materias) {
+                    console.log(materias)
+                    Asignatura.count({pensum_id: req.pensum.id}, function (err, materiasnum) {
+                        Asignatura.findOne({pensum_id: req.pensum.id}, {nivel: 1}, {sort: {nivel: -1}}, function (err, maxnivel) {
+                            res.render('pensum/show', {programa: programa, postgrado: postgrado, pensum: req.pensum, asignaturas: materias, num: materiasnum, maxnivel: maxnivel});
+                        });
 
-                });
-
-            });
+                    })
+                }
+            );
 
         });
     });
 
 });
+
+// edit
+
+app.get('/pensum/edit/:id', isLoggedIn, function(req, res){
+    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, postgrado) {
+        Programa.findOne({_id: postgrado.programa_id}, function (err, programa) {
+            res.render('pensum/edit', {programa:programa, postgrado:postgrado, pensum:req.pensum})
+        });
+    });
+});
+
+app.put('/pensum/edit', isLoggedIn, function(req, res){
+    var b=req.body;
+
+    Pensum.update(
+        {_id: b.id},
+        {
+            nombre: b.nombre,
+            resolucion: b.resolucion
+        },
+        function(err){
+            if(err) res.json(err)
+            res.redirect('/pensum/edit/'+ b.id);
+        }
+    );
+});
+
 // -- end pensum --
 
 // -- asignaturas --
@@ -707,7 +738,7 @@ app.get('/asignatura/:id', isLoggedIn, function(req, res){
                         Profesor.findOne({_id:req.asignatura.profesor_id}, function(err, docente){
 
                             DatosPersonales.findOne({_id:docente.datos_personales}, function(err, dp){
-                                console.log(dp.nombres)
+                                console.log(req.asignatura)
                                 res.render('asignatura/show', {asignatura:req.asignatura, horarios:docs, pensum:pensum, postgrado:post, programa:pro, docente:docente, datos:dp})
                             });
                         });
@@ -731,13 +762,14 @@ app.get('/asignatura/:id/edit', isLoggedIn, function(req, res){
         });
     });
 });
-app.put('/asignatura/:id', function(req, res){
+app.put('/asignatura/edit', function(req, res){
     var b=req.body;
     Asignatura.update(
-        {_id:req.params.id},
-        {nombre: b.nombre, nivel: b.nivel, cradito: b.credito},
+        {_id: b.id},
+        {nombre: b.nombre, nivel: b.nivel, cradito: b.credito, material_url: b.material},
         function(err){
-            res.redirect('/asignatura/'+ req.params.id);
+            if(err) res.json(err)
+            res.redirect('/asignatura/'+ b.id);
         }
     );
 });
@@ -1322,17 +1354,53 @@ app.param('id', function(req, res, next, id){
         next();
     });
 });
+app.param('asig', function(req, res, next, id){
+    Asignatura.findOne({_id:id}, function(err, asignatura){
+        req.asig=asignatura;
+        next();
+    });
+});
 
 // show
-app.get('/docente/:id', isLoggedIn, function(req, res){
+app.get('/docente/:id/:asig', isLoggedIn, function(req, res){
+
     DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, dt){
         DatoAcademico.find({Profesor_id:req.profesor.id}, function(err, docs){
+            Programa.findOne({_id:req.profesor.programa_id}, function(err, programa){
+                res.render('docente/show', {docente:req.profesor, datos:dt, titulos:docs, programa:programa, asignatura:req.asig});
+            })
 
-            res.render('docente/show', {docente:req.profesor, datos:dt, titulos:docs});
 
         });
     });
 
+});
+
+app.put('/docente/edit', isLoggedIn, function(req, res){
+    var b=req.body;
+    console.log(b.case)
+    switch(b.case){
+        case '1':
+            DatosPersonales.update(
+                {_id: b.persona},
+                {
+                    tipo_documento: b.tipodoc,
+                    documento: b.documento,
+                    nombres: b.nombres,
+                    apellidos: b.apellidos,
+                    email: b.email,
+                    telefono: b.telefono
+                },
+                function(err){
+                    if(err) res.json(err)
+                    res.redirect('/docente/'+ b.docente+'/'+ b.asignatura)
+                }
+            );
+            break;
+
+        case '2':
+            break;
+    }
 });
 
 // END DOCENTE

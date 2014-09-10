@@ -1,38 +1,157 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
-h1 Programa: #{programa.nombre}
-h1 Postgrado: #{postgrado.nombre}
-h1 pensum: #{pensum.nombre}
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/Pensum/#{pensum.id}") Pensum
+            li.active Informacion de la materia
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Informacion de materia
+                    span.text-primary &nbsp; #{asignatura.nombre} -
+                    span.text-primary &nbsp; #{pensum.nombre} -
+                    span.text-primary &nbsp; #{postgrado.nombre} -
+                    strong.text-primary &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion general de la materia
+                h5.text-center.margin-botton
+                    a(href="/pensum/#{pensum.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver al pensum
 
-h1 Datos Principales
-h2 materia: #{asignatura.nombre}
-p semestre/trimestre: #{asignatura.nivel}
-p creditos: #{asignatura.cradito}
-a(href="/asignatura/#{asignatura.id}/edit") Editar informacion
-
-p profesor:
-    - if (docente){
-        | #{datos.nombres} #{datos.apellidos}
-        br
-        a(href="/docente/#{docente.id}") ver docente
-        br
-        a(href="/docente/#{asignatura.id}/new") cambiar docente
-    -}else{
-        a(href="/docente/#{asignatura.id}/new") Asignar docente
-    -}
 
 
-h1 Horario
-p horario de la asignatura
-ul
-    each horario in horarios
-        li: span #{horario.dia} - de #{horario.hora_inicia} a #{horario.duracion} - lugar: #{horario.Lugar}
-            br
-            a(href="/horario/#{horario.id}/edit") Editar
-            br
-            a(href="/horario/#{horario.id}/delete") Eliminar
-a(href="/horario/#{asignatura.id}/new") Agregar un horario
-br
-br
-a(href="/pensum/#{pensum.id}") &#9166;Regresar
-br
+            .col-lg-6
+                .panel.panel-default
+                    .panel-heading
+                        h5
+                            i.fa.fa-paste
+                            |&nbsp; Datos principales de la materia
+                    .panel-body
+                        form(method="POST", action="/asignatura/edit").form-horizontal
+                            input(type="hidden", name="_method", value="PUT")
+                            input(type="hidden", name="id", value="#{asignatura.id}")
+                            fieldset
+                                .form-group
+                                    label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-user
+                                            input(type="text", name="nombre",value="#{asignatura.nombre}", required).form-control
+                                        p.lead.text-muted Nombre identificador de la materia en el pensum
+
+                                .form-group
+                                    label(for="inputNivel", class="col-lg-2 control-label") Nivel
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-user
+                                            input(type="number", name="nivel", value="#{asignatura.nivel}", required).form-control
+                                        p.lead.text-muted Nivel del postgrado donde se encuentra la materia
+
+                                .form-group
+                                    label(for="inputNivel", class="col-lg-2 control-label") Creditos
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-user
+                                            input(type="number", name="credito", value="#{asignatura.cradito}", required).form-control
+                                        p.text-muted Nivel del postgrado donde se encuentra la materia
+
+                                .form-group
+                                    label(for="inputMaterial", class="col-lg-2 control-label") Material URL
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-user
+                                            input(type="url", name="material", value="#{asignatura.material_url}").form-control
+                                        p.text-muted Direccion url, donde se encuentran alojados los recorsos academicos de la materia.
+
+                                legend
+                                .form-group
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary
+                                            i.fa.fa-save
+                                            | &nbsp; Guardar Cambios
+
+            .col-lg-6
+                .panel.panel-default
+                    .panel-heading
+                        h5
+                            i.fa.fa-paste
+                            |&nbsp; Datos especificos de la materia
+                    .panel-body
+                        .form-horizontal
+                            faildset
+                                legend Docente de la materia
+
+                                -if (docente){
+                                    .form-group
+                                        label(for="docente", class="col-lg-2 control-label") Docente
+                                        .col-lg-10
+                                            .input-group
+                                                a(href="/docente/#{docente.id}/#{asignatura.id}").btn.btn-warning.btn-sm
+                                                        i.fa.fa-user
+                                                        | &nbsp; #{datos.nombres} #{datos.apellidos}
+                                            p.text-muted Da click sobre el nombre del docente para ver su informacion
+                                            .input-group
+                                                a(href="/docente/#{asignatura.id}/new").btn.btn-default.btn-xs
+                                                    i.fa.fa-refresh
+                                                    | &nbsp; Cambiar el Docente
+                                -}else{
+                                    .form-group
+                                        label(for="docente", class="col-lg-2 control-label") Docente
+                                        .col-lg-10
+                                            .input-group
+                                                p.text-warning No se ha asignado un docente para esta materia
+                                            p.text-muted Da click sobre el siguiente boton para agregar un docente
+                                            .input-group
+                                                a(href="/docente/#{asignatura.id}/new").btn.btn-default.btn-xs
+                                                    i.fa.fa-plus
+                                                    | &nbsp; Asignar Docente
+                                -}
+                                br
+                                br
+
+                                legend Horario asignado a la materia
+                                .list-group
+                                    each horario in horarios
+                                        .list-group-item
+                                            .list-group-item-heading
+                                                h4 #{horario.dia}
+                                                    span.text-primary &nbsp; #{horario.hora_inicia} - #{horario.duracion}
+                                            .list-group-item-text
+                                                h4 #{horario.Lugar}
+                                            .list-group-item-text.text-right
+                                                a(href="/horario/#{horario.id}/edit").btn.btn-default.btn-xs
+                                                    i.fa.fa-edit
+                                                    | &nbsp; Editar
+                                                a(href="/horario/#{horario.id}/delete").btn.btn-danger.btn-xs.margin-left-1
+                                                    i.fa.fa-times
+                                                    | &nbsp; Eliminar

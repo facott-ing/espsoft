@@ -58,7 +58,7 @@ block content
                                 p.text-center
                                     a(href="/asignatura/new/#{pensum.id}").btn.btn-info.btn-sm
                                         i.fa.fa-plus-square
-                                        | &nbsp; Crear nueva
+                                        | &nbsp; Crear Materia
             .col-lg-3
                 h2.text-center
                     span.lead
@@ -74,7 +74,7 @@ block content
                         br
                         span.text-muted #{pensum.fecha.toISOString().slice(0, 10)}
                     p.text-center
-                        a(href="#").btn.btn-info.btn-xs
+                        a(href="/pensum/edit/#{pensum.id}").btn.btn-info.btn-xs
                             i.fa.fa-eye
                             | &nbsp; Ver Informacion
 
@@ -116,7 +116,7 @@ block content
                                                     td(width="10%").text-center
                                                         h4 #{materia.nivel}
                                                     td(width="30%").text-center
-                                                        a(href="#").btn.btn-default.btn-group-sm
+                                                        a(href="/asignatura/#{materia.id}").btn.btn-default.btn-group-sm
                                                             i.fa.fa-search
                                                             | &nbsp; Ver
                                     -s = materia.nivel
@@ -135,7 +135,7 @@ block content
                                                     td(width="10%").text-center
                                                         h4 #{materia.nivel}
                                                     td(width="30%").text-center
-                                                        a(href="#").btn.btn-default.btn-group-sm
+                                                        a(href="/asignatura/#{materia.id}").btn.btn-default.btn-group-sm
                                                             i.fa.fa-search
                                                             | &nbsp; Ver
                                 -count++

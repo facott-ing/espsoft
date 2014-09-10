@@ -1,0 +1,75 @@
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/pensum/#{pensum.id}") Pensum
+            li.active Informacion del pensum
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Informacion del pensum
+                    span.text-primary &nbsp; #{pensum.nombre} - &nbsp; #{postgrado.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion general del pensum
+                    h5.text-center
+                        a(href="/pensum/#{pensum.id}").btn.btn-default.btn-xs
+                            i.fa.fa-chevron-circle-left
+                            | &nbsp; Volver al Pensum
+                .well.bs-component
+                    form(method="POST", action="/pensum/edit").form-horizontal
+                        input(type="hidden", name="_method", value="PUT")
+                        input(type="hidden", name="id", value="#{pensum.id}")
+                        faildset
+                            legend Datos Principales
+                            .form-group
+                                label(for="inputResolucion", class="col-lg-2 control-label") Se creo
+                                .col-lg-10
+                                    h4.text-primary
+                                        i.fa.fa-calendar
+                                        | &nbsp; #{pensum.fecha.toISOString().slice(0, 10)}
+                                    p.lead.text-muted Fecha de creacion del pensum
+
+                            .form-group
+                                label(for="inputResolucion", class="col-lg-2 control-label") Resolucion
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-gavel
+                                        input(type="text", name="resolucion", value="#{pensum.resolucion}", required).form-control
+                                    p.lead.text-muted Referencia de identificacion otorgada en la aprobacion del pensum.
+
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-gavel
+                                        input(type="text", name="nombre", value="#{pensum.nombre}", required).form-control
+                                    p.lead.text-muted Nombre identificador del pensum en el sistema.
+                            legend
+                            .form-group
+                                h5.text-center
+                                    button(type="submit").btn.btn-primary
+                                        i.fa.fa-save
+                                        | &nbsp; Guardar Cambios
