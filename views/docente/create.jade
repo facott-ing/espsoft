@@ -1,37 +1,102 @@
-//
-   Created by fabiancote on 7/29/14.
-h1 Crear docente
-h2 #{programa.nombre}
-h3 #{postgrado.nombre}
-h4 #{pensum.nombre}
-
-h5 Asignatura:
-    strong #{asignatura.nombre}
-
-form(method="POST", action="/docente/add")
-    input(type="hidden", name="asignatura", value="#{asignatura.id}")
-    input(type="hidden", name="programa", value="#{programa.id}")
-    legend
-        | nombres
-        input(type="text", name="nombres", autocomplete="off", required)
-    legend
-        | apellidos
-        input(type="text", name="apellidos", autocomplete="off", required)
-    legend
-        | tipo de documento
-        select(name="tipodoc")
-            option(value="Cedula de ciudadania") Cedula de ciudadania
-            option(value="Pasaporte") Pasaporte
-            option(value="Cedula de Extranjeria") Cedula de Extranjeria
-    legend
-        | numero de documento
-        input(type="text", name="numdoc", autocomplete="off", required)
-    legend
-        | Email
-        input(type="email", name="email", autocomplete="off", required)
-    legend
-        | telefono
-        input(type="number", name="telefono", autocomplete="off", required)
-    input(type="submit", value="crear")
-
-br
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/asignatura/#{asignatura.id}") Asignatura
+            li.active Registrar docente
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Registro de docente
+                    span.text-primary &nbsp; #{asignatura.nombre} -
+                    span.text-primary &nbsp; #{postgrado.nombre} -
+                    span.text-primary: strong &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    h5.text-center
+                        a(href="/asignatura/#{asignatura.id}").btn.btn-default.btn-xs
+                            i.fa.fa-chevron-circle-left
+                            | &nbsp; Volver a la asignatura
+                .margin-botton
+                .well.bs-component
+                    form(method="POST", action="/docente/add").form-horizontal
+                        input(type="hidden", name="asignatura", value="#{asignatura.id}")
+                        input(type="hidden", name="programa", value="#{programa.id}")
+                        faildset
+                            legend Formulario de registro de Docentes
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombres
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-user
+                                        input(type="text", name="nombres", autocomplete="off", required).form-control
+                                    p.text-muted primer y segundo nombre del docente.
+                            .form-group
+                                label(for="inputApellidos", class="col-lg-2 control-label") Apellidos
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-user
+                                        input(type="text", name="apellidos", autocomplete="off", required).form-control
+                                    p.text-muted Apellidos del docente.
+                            .form-group
+                                label(for="inputtipo", class="col-lg-2 control-label") Tipo documento
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        select(name="tipodoc").form-control
+                                            option(value="Cedula de ciudadania") Cedula de ciudadania
+                                            option(value="Pasaporte") Pasaporte
+                                            option(value="Cedula de Extranjeria") Cedula de Extranjeria
+                                    p.text-muted Tipo de documento identificador del docente.
+                            .form-group
+                                label(for="inputdocumento", class="col-lg-2 control-label") Documento
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="numdoc", autocomplete="off", required).form-control
+                                    p.text-muted numero de documento identificador del docente.
+                            .form-group
+                                label(for="inputdocumento", class="col-lg-2 control-label") Email
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-send-o
+                                        input(type="email", name="email", autocomplete="off", required).form-control
+                                    p.text-muted direccion de correo electronico de contacto del docente
+                            .form-group
+                                label(for="inputdocumento", class="col-lg-2 control-label") Telefono
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-phone
+                                        input(type="number", name="telefono", autocomplete="off", required).form-control
+                                    p.text-muted direccion de correo electronico de contacto del docente
+                            legend
+                            .form-group
+                                h5.text-center
+                                    button(type="submit").btn.btn-primary
+                                        i.fa.fa-plus
+                                        | &nbsp; Agregar Docente

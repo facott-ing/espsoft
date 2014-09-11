@@ -1,16 +1,69 @@
-//
-   Created by fabiancote on 7/29/14.
-h1 asignacion de titulos a docentes
-h3 #{datos.nombres} #{datos.apellidos}
-form(method="POST", action="/titulo/create")
-    input(type="hidden", name="docente", value="#{docente.id}")
-    legend
-        | Titulo Academico
-        input(type="text", name="titulo", autocomplete="off", required, placeholder="ejemplo:'Doctorado en administracion de proyectos'")
-    legend
-        | Universidad que otorgo el titulo
-        input(type="text", name="universidad", autocomplete="off", required, placeholder="ejemplo: 'Universodad Francisco de Paula Santander'")
-    input(type="submit", value="Crear")
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/asignatura/#{asignatura.id}") Materia
+            li: a(href="/docente/#{docente.id}/#{asignatura.id}") Docente
 
-br
+            li.active Asignacion de titulos academicos
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Asignacion de titulos academicos al docente
+                    span.text-primary &nbsp; #{datos.nombres} #{datos.apellidos}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion del titulo academico
+                h5.text-center.margin-botton
+                    a(href="/docente/#{docente.id}/#{asignatura.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver al docente
 
+                .well.bs-component
+                    form(method="POST", action="/titulo/create").form-horizontal
+                        input(type="hidden", name="docente", value="#{docente.id}")
+                        input(type="hidden", name="asignatura", value="#{asignatura.id}")
+                        legend Titulacion academica del docente
+                        fieldset
+                            .form-group
+                                label(for="inputTitulo", class="col-lg-2 control-label") Titulo
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="titulo", autocomplete="off", required).form-control
+                                    p.text-muted Nombre de la titulacion obtenida por el docente al culminar los estudios
+                            .form-group
+                                label(for="inputTitulo", class="col-lg-2 control-label") Institucion
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-institution
+                                        input(type="text", name="universidad", autocomplete="off", required).form-control
+                                    p.text-muted Institucion Academica que le otorgo el titulo al docente
+                            .form-group
+                                h5.text-center
+                                    button(type="submit").btn.btn-primary
+                                        i.fa.fa-plus
+                                        | &nbsp; Agregar Titulo

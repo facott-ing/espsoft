@@ -128,3 +128,50 @@ block content
                                         button(type="submit").btn.btn-primary
                                             i.fa.fa-save
                                             | &nbsp; Guardar Cambios
+
+
+            .col-lg-6
+                .panel.panel-default
+                    .panel-heading
+                        h5
+                            i.fa.fa-user
+                            |&nbsp; Datos Academicos del docente
+                    .panel-body
+                        .form-horizontal
+
+                            fieldset
+                                .form-group
+                                    label(for="inputCodigo", class="col-lg-2 control-label") Codigo
+                                    .col-lg-10
+
+                                        .input-group
+                                            h4.text-primary #{docente.codigo}
+                                        p.text-muted Codigo identificador en el sistema del docente
+                                        .input-group
+                                            a(href="/docente/changepass/#{docente.id}/#{asignatura.id}").btn.btn-default.btn-xs
+                                                i.fa.fa-refresh
+                                                | &nbsp; Cambiar Contraseña
+                            .margin-botton
+                            legend Titulos academicos del docente
+                                a(href="/titulo/new/#{docente.id}/#{asignatura.id}").btn.btn-primary.btn-xs.pull-right
+                                    i.fa.fa-plus
+                                    |&nbsp; Agregar Titulacion
+
+
+                            fieldset
+
+                                .list-group
+                                    -if (!titulos[0]){
+                                        p.text-center.text-info El docente no tiene registrado estudios
+                                    -}else{
+                                        each titulo in titulos
+                                            .list-group-item
+                                                .list-group-item-heading
+                                                    h4 #{titulo.titulo}
+                                                .list-group-item-text
+                                                    h5.text-muted #{titulo.universidad}
+                                                .list-group-item-text.text-right
+                                                    a(href="/titulo/delete/#{titulo.id}/#{asignatura.id}").btn.btn-danger.btn-xs
+                                                        i.fa.fa-times
+                                                        |&nbsp; Eliminar
+                                    -}

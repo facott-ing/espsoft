@@ -121,7 +121,7 @@ block content
                                                         | &nbsp; #{datos.nombres} #{datos.apellidos}
                                             p.text-muted Da click sobre el nombre del docente para ver su informacion
                                             .input-group
-                                                a(href="/docente/#{asignatura.id}/new").btn.btn-default.btn-xs
+                                                a(href="/docente/change/#{asignatura.id}").btn.btn-default.btn-xs
                                                     i.fa.fa-refresh
                                                     | &nbsp; Cambiar el Docente
                                 -}else{

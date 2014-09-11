@@ -1,12 +1,54 @@
-//
-   Created by fabiancote on 7/21/14.
-
-h1 Registro de docentes
-
-h2 Asignatura:
-    strong #{asignatura.nombre}
-
-a(href="/docente/#{asignatura.id}/create") Agregar un nuevo docente
-br
-a(href="/docente/#{asignatura.id}/select") Seleccionar de una lista de docentes
-br
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/asignatura/#{asignatura.id}") Asignatura
+            li.active Asignar docente
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Asignar un docente a la materia
+                    span.text-primary &nbsp; #{asignatura.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Seleccione una de las siguientes opciones
+                h5.text-center.margin-botton
+                    a(href="/asignatura/#{asignatura.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver a la materia
+                .well.bs-comment
+                    legend Asignacion de docentes a materias
+                    .margin-botton
+                    fieldset
+                        .form-group
+                            p.text-center
+                                a(href="/docente/create/#{asignatura.id}").btn.btn-primary.btn-sm
+                                    i.fa.fa-plus
+                                    | &nbsp; Agregar un nuevo docente
+                            p.text-muted.text-center Se ingresa un docente nuevo al sistema y se registra a la asignatura
+                        .margin-botton
+                        .form-group
+                            p.text-center
+                                a(href="/docente/select/#{asignatura.id}").btn.btn-default.btn-sm
+                                    i.fa.fa-bars
+                                    | &nbsp; Seleccionar de una lista de docentes
+                            p.text-muted.text-center Se escoje de una lista de docentes ya registrados al que va ser registrado en la materia como profesor

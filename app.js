@@ -1237,12 +1237,11 @@ app.post('/preinscripcion/report', isLoggedIn, function(req, res){
 // DOCENTE
 
 // create
-app.get('/docente/:id/new', isLoggedIn, function(req, res){
-
+app.get('/docente/change/:id', isLoggedIn, function(req, res){
     res.render('docente/index', {asignatura:req.asignatura});
 });
 
-app.get('/docente/:id/select', isLoggedIn, function(req, res){
+app.get('/docente/select/:id', isLoggedIn, function(req, res){
     Pensum.findOne({_id:req.asignatura.pensum_id}, function(err, pensum){
         Postgrado.findOne({_id:pensum.postgrado_id}, function(err, postgrado){
             Profesor.find({programa_id:postgrado.programa_id}, function(err, docs){
@@ -1266,7 +1265,7 @@ app.get('/docente/:id/select', isLoggedIn, function(req, res){
                             }
                         }
                     }
-                    res.render('docente/select', {docentes:all, asignatura:req.asignatura});
+                    res.render('docente/select', {docentes:all, asignatura:req.asignatura, postgrado:postgrado});
                 });
 
             });
@@ -1290,7 +1289,7 @@ app.post('/docente/select', isLoggedIn, function(req, res){
 
 });
 
-app.get('/docente/:id/create', isLoggedIn, function(req, res){
+app.get('/docente/create/:id', isLoggedIn, function(req, res){
     Pensum.findOne({_id:req.asignatura.pensum_id}, function(err, pensum){
         Postgrado.findOne({_id:pensum.postgrado_id}, function(err, postgrado){
             Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
@@ -1399,8 +1398,24 @@ app.put('/docente/edit', isLoggedIn, function(req, res){
             break;
 
         case '2':
+            Profesor.update(
+                {_id: b.docente},
+                {
+                    contrasena: b.pass
+                },
+                function(err){
+                    if(err) res.json(err)
+                    res.redirect('/docente/'+ b.docente+'/'+ b.asignatura)
+                }
+            );
             break;
     }
+});
+
+app.get('/docente/changepass/:id/:asig', isLoggedIn, function(req, res){
+    DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, datos){
+        res.render('docente/changepass', {docente:req.profesor, datos:datos, asignatura:req.asig})
+    });
 });
 
 // END DOCENTE
@@ -1408,26 +1423,32 @@ app.put('/docente/edit', isLoggedIn, function(req, res){
 // TITULOS
 
 // create
-app.get('/titulo/:id/new', isLoggedIn, function(req, res){
+app.get('/titulo/new/:id/:asig', isLoggedIn, function(req, res){
     DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, datos){
-        res.render('titulo/create', {docente:req.profesor, datos:datos})
+        res.render('titulo/create', {docente:req.profesor, datos:datos, asignatura:req.asig})
     });
-
-
 });
+
 app.post('/titulo/create', isLoggedIn, function(req, res){
     var b=req.body;
-    DatoAcademico.create(
-        {
-            titulo: b.titulo,
-            universidad: b.universidad,
-            Profesor_id: b.docente
-        },
-        function(err){
-            if(err) req.json(err)
-            res.redirect('/docente/'+ b.docente);
+    DatoAcademico.findOne({titulo: b.titulo}, function(err, dato){
+        if(dato){
+            res.render('titulo/error', {asignatura: b.asignatura, docente: b.docente, message:'ADVERTENCIA: en el sistema ya se encuentra registrado un titulo academico del docente con el nombre', tnombre: b.titulo})
+        }else{
+            DatoAcademico.create(
+                {
+                    titulo: b.titulo,
+                    universidad: b.universidad,
+                    Profesor_id: b.docente
+                },
+                function(err){
+                    if(err) req.json(err)
+                    res.redirect('/docente/'+ b.docente +'/'+ b.asignatura);
+                }
+            );
         }
-    );
+    });
+
 });
 app.param('id', function(req, res, next, id){
     DatoAcademico.findOne({_id:id}, function(err, datoAcademico){
@@ -1436,10 +1457,10 @@ app.param('id', function(req, res, next, id){
     });
 });
 // delete
-app.get('/titulo/:id/delete', isLoggedIn, function(req, res){
+app.get('/titulo/delete/:id/:asig', isLoggedIn, function(req, res){
     DatoAcademico.remove({_id:req.datoAcademico.id}, function(err){
         if(err) req.json(err)
-        res.redirect('/docente/'+req.datoAcademico.Profesor_id)
+        res.redirect('/docente/'+req.datoAcademico.Profesor_id+'/'+req.asig.id)
     });
 });
 
