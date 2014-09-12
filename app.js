@@ -274,19 +274,14 @@ app.get('/logOut', function(req, res){
 app.get('/director/profile', isLoggedIn, function(req, res){
     if(req.user.primeravez!==1){
         DatosPersonales.findOne({_id:req.user.datos_personales}, function(err, datos){
-            Programa.find({_id:req.user.programa_id}, function(err, programas){
-                //busco la informacion del primer objeo que tenga el resultado de la busqueda anterior
-                Postgrado.find({programa_id:programas[0].id}, function(err, postgrados){
-                    Postgrado.count({programa_id:programas[0].id}, function(err, num){
-                        res.render('director/profile', {user:req.user, datos:datos, programas:programas, postgrados:postgrados, programa:programas[0], numpostgrados:num})
-                    })
-
+            Programa.findOne({_id:req.user.programa_id}, function(err, programa){
+                Postgrado.find({programa_id:programa.id}, function(err, postgrados){
+                    Postgrado.count({programa_id:programa.id}, function(err, num){
+                        res.render('director/profile', {user:req.user, datos:datos, programa:programa, postgrados:postgrados, numpostgrados:num})
+                    });
                 });
-
-
             });
-
-        })
+        });
     }else{
         res.redirect('/director/changePass');
     }
@@ -312,18 +307,13 @@ app.get('/director/changePass', isLoggedIn, function(req, res){
 
 
 // create
-app.get('/director/:id/create', isLoggedIn, function(req, res){
-    Director.findOne({programa_id:req.programa.id}, function(err, d){
-        var bite=false;
-        if(d){
-            if(d.privilegio == 1){
-                res.render('director/error', {message:'Usted no puede cambiar este director, este es el administrador. osea es ustede mismo.'});
-            }else{
-                bite=true
-                res.render('director/create', {programa:req.programa, bite:bite});
-            }
+app.get('/director/:id/create', function(req, res){
+    Director.count({programa_id:req.programa.id}, function(err, d){
+        if(d!=0){
+            res.render('director/create', {programa:req.programa, director:true});
+        }else{
+            res.render('director/create', {programa:req.programa, director:false});
         }
-
 
     });
 
@@ -339,7 +329,7 @@ function ifDirector(p){
         }
     });
 }
-app.post('/director/create', isLoggedIn, function(req, res){
+app.post('/director/create', function(req, res){
     var b=req.body;
     ifDirector(b.programa);
     DatosPersonales.findOne({documento: b.numdoc}, function(err, persona){
@@ -395,7 +385,7 @@ app.param('id', function(req, res, next, id){
 
 // -- Programas --
 // index
-app.get('/programa', isLoggedIn, function(req, res){
+app.get('/programa', function(req, res){
     var query=Programa.find({});
     query.sort('nombre');
     query.exec(function(err, docs){
@@ -405,10 +395,10 @@ app.get('/programa', isLoggedIn, function(req, res){
 });
 
 // new and create
-app.get('/programa/new', isLoggedIn, function(req, res){
+app.get('/programa/new', function(req, res){
     res.render('programa/new')
 });
-app.post('/programa', isLoggedIn, function(req, res){
+app.post('/programa', function(req, res){
     var b=req.body;
 
     //experiment code
@@ -434,7 +424,7 @@ app.param('id', function(req, res, next, id){
 });
 
 // show
-app.get('/programa/:id', isLoggedIn, function(req, res){
+app.get('/programa/:id', function(req, res){
 
     Postgrado.find({programa_id:req.programa.id}, function(err, docs){
         Director.findOne({programa_id:req.programa.id}, function(err, director){
@@ -447,7 +437,7 @@ app.get('/programa/:id', isLoggedIn, function(req, res){
     });
 });
 
-app.get('/programa/:id/view', isLoggedIn, function(req, res){
+app.get('/programa/:id/view', function(req, res){
     Director.findOne({programa_id:req.programa.id}, function(err, director){
         if(director!=null) {
             DatosPersonales.findOne({_id: director.datos_personales}, function (err, datos) {
@@ -460,7 +450,7 @@ app.get('/programa/:id/view', isLoggedIn, function(req, res){
 })
 
 // edit
-app.get('/programa/:id/edit', isLoggedIn, function(req, res){
+app.get('/programa/:id/edit', function(req, res){
     res.render('programa/edit', {programa:req.programa})
 });
 //update
