@@ -1,24 +1,82 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
-h1 Programa: #{programa.nombre}
-h2 postgrado: #{postgrado.nombre}
-br
-h3 Creador de cohortes: paso #1 Datos principales
-form(method="POST", action="/cohorte/selectdates")
-    input(type="hidden", name="programa", value="#{programa.nombre}")
-    input(type="hidden", name="postgradoid", value="#{postgrado.id}")
-    input(type="hidden", name="postgradon", value="#{postgrado.nombre}")
-    p Digite el codigo de resolucion de la cohorte a crear
-        input(type="text", name="resolucion", placeholder="# resolucion", required)
-    p asignacion de un nombre del cual se va a diferenciar la cohorte
-        input(type="text", name="nombre", placeholder="palabras clave", required)
-    legend
-        | Selecciona el pensum que regira esta cohorte
-        select(name="pensum", required)
-            each pensum in pensums
-                option(value="#{pensum.id}") #{pensum.nombre}
-    p: button(type="submit") Siguiente paso 2 &#x2794;
-br
-a(href="/postgrado/#{postgrado.id}") &#9166;Regresar
-br
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li.active Registro de cohorte
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Creacion de cohortes
+                    span.text-primary &nbsp; #{postgrado.nombre}
+                    span.text-primary: strong &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-info Paso #1:
+                    span.text-muted &nbsp; Informacion general de la cohorte
 
+                .well.bs-component
+                    form(method="POST", action="/cohorte/selectdates").form-horizontal
+                        input(type="hidden", name="programa", value="#{programa.nombre}")
+                        input(type="hidden", name="postgradoid", value="#{postgrado.id}")
+                        input(type="hidden", name="postgradon", value="#{postgrado.nombre}")
+                        faildset
+                            legend
+                            .form-group
+                                label(for="inputResolucion", class="col-lg-2 control-label") Resolucion
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-key
+                                        input(type="text", name="resolucion", autocomplete="off", autofocus, required).form-control
+                                    p.text-muted Codigo de la resolucion de la cohorte
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="nombre", autocomplete="off", required).form-control
+                                    p.text-muted Nombre identificador de la cohorte
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Pensum
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-book
+                                        select(name="pensum", required).form-control
+                                            each pensum in pensums
+                                                option(value="#{pensum.id}") #{pensum.nombre}
+                                    p.text-muted Seleccione el pensum del que se regira la cohorte
+                            legend
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    a(href="/postgrado/#{postgrado.id}").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; Cancelar
+                                    button(type="submit", class="btn btn-default")
+                                        | Siguiente, paso #2 &nbsp;
+                                        i.fa.fa-arrow-right
+                            br

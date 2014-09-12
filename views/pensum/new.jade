@@ -1,19 +1,80 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
-h1 Programa: #{programa.nombre}
-h1 Postgrado: #{postgrado.nombre}
-h2 paso 1: Asignacion de nombre y datos del pensum.
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li.active Registro de pensum
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Creacion de pensums
+                    span.text-primary &nbsp; #{postgrado.nombre}
+                    span.text-primary: strong &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-info Paso #1:
+                    span.text-muted &nbsp; Informacion general del pensum
+                .well.bs-component
+                    form(method="POST", action="/pensum/create").form-horizontal
+                        input(type="hidden", name="programanom", value="#{programa.nombre}")
+                        input(type="hidden", name="postgradoid", value="#{postgrado.id}")
+                        input(type="hidden", name="postgradonom", value="#{postgrado.nombre}")
+                        faildset
+                            legend Registro de pensum
+                            .form-group
+                                label(for="inputResolucion", class="col-lg-2 control-label") Resolucion
+                                .col-lg-10
 
-form(method="POST", action="/pensum/create")
-    input(type="hidden", name="programanom", value="#{programa.nombre}")
-    input(type="hidden", name="postgradoid", value="#{postgrado.id}")
-    input(type="hidden", name="postgradonom", value="#{postgrado.nombre}")
-    p Nombre del Pensum
-        input(type="text", name="nombre", placeholder="nombre del pensum", required)
-    p fecha de creacion
-        input(type="date", name="fecha", placeholder="fecha de creacion", required)
-    p Resolucion
-        input(type="text", name="resolucion", placeholder="numero de folio de la recolucion", required)
-    p: button(type="submit") Siguiente paso 2 &#x2794;
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-key
+                                        input(type="text", name="resolucion", autofocus, autocomplete="off", required).form-control
+                                    p.text-muted Codigo de la resolucion del pensum
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                .col-lg-10
 
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="nombre", autocomplete="off", required).form-control
+                                    p.text-muted Nombre identificador del pensum
+                            .form-group
+                                label(for="inputfecha", class="col-lg-2 control-label") Fecha
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fecha", required).form-control
+                                    p.text-muted Fecha de la creacion del pensum
+                            legend
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    a(href="/postgrado/#{postgrado.id}").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; Cancelar
+                                    button(type="submit", class="btn btn-primary")
+                                        i.fa.fa-save
+                                        | &nbsp; Guardar pensum
+                            br
 

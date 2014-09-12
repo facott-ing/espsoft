@@ -55,10 +55,12 @@ block content
                                 h2.text-center
                                     span.label.label-primary.text-size #{num}
                                 br
-                                p.text-center
-                                    a(href="/asignatura/new/#{pensum.id}").btn.btn-info.btn-sm
-                                        i.fa.fa-plus-square
-                                        | &nbsp; Crear Materia
+                                -if (nota == null){
+                                    p.text-center
+                                        a(href="/asignatura/new/#{pensum.id}").btn.btn-info.btn-sm
+                                            i.fa.fa-plus-square
+                                            | &nbsp; Crear Materia
+                                -}
             .col-lg-3
                 h2.text-center
                     span.lead
@@ -88,7 +90,11 @@ block content
                             i.fa.fa-paste
                             |&nbsp; Materias del Pensum
                     .panel-body
-                        -s=0
+                        -if (nota == null){
+                            p.text-center.text-info No se encuentran registradas materias en este pensum.
+                        -}else{
+
+                            -s=0
                             -count=1
                             table.table
                                 thead
@@ -139,3 +145,5 @@ block content
                                                             i.fa.fa-search
                                                             | &nbsp; Ver
                                 -count++
+
+                        -}

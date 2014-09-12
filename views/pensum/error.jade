@@ -1,9 +1,36 @@
-//
-   Created by fabiancote on 7/17/14.
-
-h1 Pensums Academicos
-p ERROR, al crear el pensum, en el sistema ya se encuentra registrado un pensum con el mismo nombre.
-a(href="/postgrado/#{postgrado}") &#9166;regresar.
-
-br
-
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar-fixed-top
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Registro de pensums
+                p.error.text-center # Error
+                p.lead.text-center
+                    | #{message}
+                    strong.text-danger  #{tnombre}
+                    | , verifique en el sistema o intente de nuevo.
+                p.text-center
+                    a(href="/postgrado/#{postgrado}").btn.btn-default Intentar de nuevo
+    br

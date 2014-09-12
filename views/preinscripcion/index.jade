@@ -1,36 +1,108 @@
-//
-   Created by fabiancote on 7/21/14.
-h1 #{programa.nombre}
-h2 #{postgrado.nombre}
-h3 pre-inscripcion de solicitantes a postgrado
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/programa/#{programa.id}") Programa
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li.active Registro de Inscripcion
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Registro de inscripciones
+                    span.text-primary &nbsp; #{postgrado.nombre} -
+                    span.text-primary: strong &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion general del inscrito
+                    h5.text-center
+                        a(href="/postgrado/#{postgrado.id}").btn.btn-default.btn-xs
+                            i.fa.fa-chevron-circle-left
+                            | &nbsp; Volver al postgrado
+                .margin-botton
+                .well.bs-component
+                    form(method="POST", action="/preinscripcion/create").form-horizontal
+                        input(type="hidden", name="postgrado", value="#{postgrado.id}")
+                        faildset
+                            legend Registrar preinscripcion de persona en postgrado
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombres
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-user
+                                        input(type="text", name="nombres", autocomplete="off", required).form-control
 
-form(method="POST", action="/preinscripcion/create")
-    input(type="hidden", name="postgrado", value="#{postgrado.id}")
-    legend
-        | nombres
-        input(type="text", name="nombres", autocomplete="off", required)
-    legend
-        | apellidos
-        input(type="text", name="apellidos", autocomplete="off", required)
-    legend
-        | tipo de documento
-        select(name="tipodoc")
-            option(value="Cedula de ciudadania") Cedula de ciudadania
-            option(value="Pasaporte") Pasaporte
-            option(value="Cedula de Extranjeria") Cedula de Extranjeria
-    legend
-        | numero de documento
-        input(type="text", name="numdoc", autocomplete="off", required)
-    legend
-        | Email
-        input(type="email", name="email", autocomplete="off", required)
-    legend
-        | telefono
-        input(type="number", name="telefono", autocomplete="off", required)
-    legend
-        | Comentario que quieras agregar
-        textarea(name="comentario", required)
-    input(type="submit", value="Inscribirme")
+                                    p.text-muted primer y segundo nombre de la persona.
 
-
-br
+                            .form-group
+                                label(for="inputApellidos", class="col-lg-2 control-label") Apellidos
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-user
+                                        input(type="text", name="apellidos", autocomplete="off", required).form-control
+                                    p.text-muted Apellidos de la persona.
+                            .form-group
+                                label(for="inputtipo", class="col-lg-2 control-label") Tipo documento
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        select(name="tipodoc").form-control
+                                            option(value="Cedula de ciudadania") Cedula de ciudadania
+                                            option(value="Pasaporte") Pasaporte
+                                            option(value="Cedula de Extranjeria") Cedula de Extranjeria
+                                    p.text-muted Tipo de documento identificador de la persona.
+                            .form-group
+                                label(for="inputdocumento", class="col-lg-2 control-label") Documento
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="numdoc", autocomplete="off", required).form-control
+                                    p.text-muted numero de documento identificador de la persona.
+                            .form-group
+                                label(for="inputdocumento", class="col-lg-2 control-label") Email
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-send-o
+                                        input(type="email", name="email", autocomplete="off", required).form-control
+                                    p.text-muted direccion de correo electronico de contacto de la persona
+                            .form-group
+                                label(for="inputdocumento", class="col-lg-2 control-label") Telefono
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-phone
+                                        input(type="number", name="telefono", autocomplete="off", required).form-control
+                                    p.text-muted direccion de correo electronico de contacto de la persona
+                            legend
+                            textarea(name="comentario", reqired, id="comentario", class="comentario").form-control
+                            script(type="text/javascript")
+                                $('.comentario').jqte();
+                            legend
+                            .form-group
+                                h5.text-center
+                                    button(type="submit").btn.btn-primary
+                                        i.fa.fa-plus
+                                        | &nbsp; Agregar Preinscripcion

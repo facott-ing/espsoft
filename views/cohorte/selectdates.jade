@@ -1,37 +1,141 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
-h1 Programa: #{programa}
-h2 postgrado: #{postgradon}
-br
-h3 Creador de cohortes: paso #2 seleccionar fechas
-form(method="POST", action="/cohorte/create")
-    input(type="hidden", name="programa", value="#{programa}")
-    input(type="hidden", name="postgradoid", value="#{postgradoi}")
-    input(type="hidden", name="postgradon", value="#{postgradon}")
-    input(type="hidden", name="resolco", value="#{resolucion}")
-    input(type="hidden", name="nombreco", value="#{nombre}")
-    input(type="hidden", name="pensum", value="#{pensum}")
-    p Seleccione fecha de inicio de inscripciones
-        input(type="date", name="finscripciones", required)
-    p Seleccione fecha limite de inscriciones
-        input(type="date", name="flinscripciones", required)
-    p Fecha de entrevistas
-        input(type="date", name="fentrevista", required)
-    p Fecha publicacion de resultados
-        input(type="date", name="fresultados", required)
-    p Fecha de matricula
-        input(type="date", name="fmatricula", required)
-    p fecha de introduccion
-        input(type="date", name="fintroduccion", required)
-    p fecha de receso de clases
-        input(type="date", name="freceso")
-    p fecha de culminacion de clases
-        input(type="date", name="fcclases", required)
-    p Valor del postgrado
-        input(type="number", name="valor", required)
-    p otro valor
-        input(type="number", name="otro", required)
-    p: button(type="submit") Siguiente paso 3 &#x2794;
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgradoi}") Postgrado
+            li.active Registro de cohorte
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Creacion de cohortes
+                    span.text-primary &nbsp; #{postgradon} -
+                    span.text-primary: strong &nbsp; #{programa}
+                p.lead.text-center
+                    span.text-info Paso #2:
+                    span.text-muted &nbsp; Espesificacion de fechas
+                .well.bs-component
+                    form(method="POST", action="/cohorte/create").form-horizontal
+                        input(type="hidden", name="programa", value="#{programa}")
+                        input(type="hidden", name="postgradoid", value="#{postgradoi}")
+                        input(type="hidden", name="postgradon", value="#{postgradon}")
+                        input(type="hidden", name="resolco", value="#{resolucion}")
+                        input(type="hidden", name="nombreco", value="#{nombre}")
+                        input(type="hidden", name="pensum", value="#{pensum}")
+                        input(type="hidden", name="freceso", value="01/01/2014")
+                        faildset
+                            legend Calendarizacion del postgrado
+                            .form-group
+                                label(for="inputIns", class="col-lg-2 control-label") Inicia Inscripciones
+                                .col-lg-10
 
-br
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="finscripciones", required).form-control
+                                    p.text-muted Seleccione la fecha en que se iniciara la recepcion solicitudes de inscripciones al postgrado
+                            .form-group
+                                label(for="inputLim", class="col-lg-2 control-label") Limite Inscripciones
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="flinscripciones", required).form-control
+                                    p.text-muted Seleccione la fecha limite en que se recibiran solicitudes de inscripciones al postgrado
+                            .form-group
+                                label(for="inputInterview", class="col-lg-2 control-label") Entrevistas
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fentrevista", required).form-control
+                                    p.text-muted Seleccione la fecha estipulada en la que se realizaran las entrevistas a las personas que hicieron el pre-registro del postgrado
+                            .form-group
+                                label(for="inputResul", class="col-lg-2 control-label") Resultados
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fresultados", required).form-control
+                                    p.text-muted Seleccione la fecha en la que se daran a conocer los resultados de las personas admitidas al postgrado
+                            .form-group
+                                label(for="inputResul", class="col-lg-2 control-label") Matricula
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fmatricula", required).form-control
+                                    p.text-muted Seleccione la fecha estimada en la que los admitidos realicen el pago por concepto del valor total del curso de postgrado
+                            .form-group
+                                label(for="inputResul", class="col-lg-2 control-label") Introduccion
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fintroduccion", required).form-control
+                                    p.text-muted Fecha estimada en la que se realizara la reunion de instroduccion al postgrado a los alumnos matriculados
+
+                            .form-group
+                                label(for="inputResul", class="col-lg-2 control-label") Culmina
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fcclases", required).form-control
+                                    p.text-muted Fecha de culminacion del postgrado
+                            .margin-botton
+                            legend Costos del postgrado
+                            .form-group
+                                label(for="inputResul", class="col-lg-2 control-label") Valor
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-money
+                                        input(type="number", name="valor", required).form-control
+                                    p.text-muted Valor monetario del postgrado
+                            .form-group
+                                label(for="inputResul", class="col-lg-2 control-label") Valor otros
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-money
+                                        input(type="number", name="otro", required).form-control
+                                    p.text-muted valor de gastos distintos al del valor total del postgrado
+                            legend
+                            .form-group
+                                .col-lg-10
+                                    a(href="/postgrado/#{postgradoi}").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; Cancelar
+                                    button(type="submit", class="btn btn-primary")
+                                        i.fa.fa-save
+                                        | &nbsp; Guardar cohorte
+                            br
 

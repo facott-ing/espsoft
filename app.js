@@ -600,7 +600,7 @@ app.post('/pensum/create', isLoggedIn, function(req, res){
     var b=req.body;
     Pensum.findOne({nombre: b.nombre, postgrado_id: b.postgradoid}, function(err, doc){
         if(doc){
-            res.render('pensum/error', {postgrado: b.postgradoid})
+            res.render('pensum/error', {postgrado: b.postgradoid, message:'ADVERTENCIA: En el sistema ya se encuentra registrado un pensum con el nombre:', tnombre: b.nombre})
         }else{
             new Pensum({
                 postgrado_id: b.postgradoid,
@@ -608,7 +608,7 @@ app.post('/pensum/create', isLoggedIn, function(req, res){
                 fecha: b.fecha,
                 resolucion: b.resolucion
             }).save(function(err, pensum){
-                    res.redirect('/pensum/shownext/'+pensum.id);
+                    res.redirect('/pensum/'+pensum.id);
                 });
         }
     })
@@ -638,10 +638,18 @@ app.get('/pensum/:id', isLoggedIn, function(req, res){
             query.sort({nivel:1});
             query.exec(
                 function(err, materias) {
-                    console.log(materias)
                     Asignatura.count({pensum_id: req.pensum.id}, function (err, materiasnum) {
                         Asignatura.findOne({pensum_id: req.pensum.id}, {nivel: 1}, {sort: {nivel: -1}}, function (err, maxnivel) {
-                            res.render('pensum/show', {programa: programa, postgrado: postgrado, pensum: req.pensum, asignaturas: materias, num: materiasnum, maxnivel: maxnivel});
+                            if(materias.length > 0){
+                                Nota.findOne({asignatura_id:materias[0].id}, function(err, nota){
+                                    res.render('pensum/show', {programa: programa, postgrado: postgrado, pensum: req.pensum, asignaturas: materias, num: materiasnum, maxnivel: maxnivel, nota:nota});
+                                });
+                            }else{
+                                res.render('pensum/show', {programa: programa, postgrado: postgrado, pensum: req.pensum, asignaturas: materias, num: materiasnum, maxnivel: maxnivel, nota:null});
+                            }
+
+
+
                         });
 
                     })
@@ -780,8 +788,8 @@ app.put('/asignatura/edit', function(req, res){
 var diasa=new Array('Lunes','Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo');
 var horasa=new Array('00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00');
 // edit
-app.get('/horario/:id/edit', isLoggedIn, function(req, res){
-    res.render('horario/edit', {dias:diasa, horas:horasa, horario:req.horario});
+app.get('/horario/edit/:id/:asig', isLoggedIn, function(req, res){
+    res.render('horario/edit', {dias:diasa, horas:horasa, horario:req.horario, asignatura:req.asig});
 });
 app.param('id', function(req, res, next, id){
     Horario.findOne({_id:id}, function(err, horario){
@@ -789,20 +797,18 @@ app.param('id', function(req, res, next, id){
         next();
     });
 });
-app.put('/horario/:id', function(req, res){
+app.put('/horario/edit', function(req, res){
     var b=req.body;
     Horario.update(
-        {_id:req.params.id},
+        {_id: b.horario},
         {dia: b.dia, hora_inicia: b.hora, duracion: b.duracion, Lugar: b.lugar},
         function(err){
-            Horario.findOne({_id:req.params.id}, function(err, hora){
-                res.redirect('/asignatura/'+ hora.asignatura_id)
-            });
+            res.redirect('/asignatura/'+ b.asignatura)
         });
 });
 
 // new
-app.get('/horario/:id/new', isLoggedIn, function(req, res){
+app.get('/horario/new/:id', isLoggedIn, function(req, res){
     res.render('horario/new', {asignatura:req.asignatura, dias:diasa, horas:horasa});
 });
 app.post('/horario/create', isLoggedIn, function(req, res){

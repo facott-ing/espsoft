@@ -34,10 +34,14 @@ block content
                 p.lead.text-center
                     span.text-info Paso #1:
                     span.text-muted &nbsp; Informacion de la solicitud de preinscripcion
+                    h5.text-center
+                        a(href="/postgrado/#{postgrado.id}").btn.btn-default.btn-xs
+                            i.fa.fa-chevron-circle-left
+                            | &nbsp; Volver al postgrado
+                .margin-botton
                 .well.bs-component
                     .form-horizontal
                         faildset
-                            legend
 
                             .form-group
                                 label(for="nombre", class="col-lg-2 control-label") Fecha de Inscripcion
@@ -104,15 +108,17 @@ block content
 
                             -}
 
-
                             legend
-                            a(href="/postgrado/#{postgrado.id}").btn.btn-default.margin-right-1
-                                i.fa.fa-chevron-circle-left
-                                | &nbsp; Regresar
+                            .form-group
+                                label(for="documento", class="col-lg-2 control-label") Comentario
+                                .col-lg-10
+                                    p(align="justify"): em #{inscrito.comentario}
+                            legend
 
                             -if (inscrito.estado == 0){
-                                a(href="/preinscripcion/#{inscrito.id}/report").btn.btn-primary
-                                    | &nbsp; Reportar Pago &nbsp;
-                                    i.fa.fa-arrow-right
+                                p.text-center
+                                    a(href="/preinscripcion/#{inscrito.id}/report").btn.btn-primary
+                                        | &nbsp; Reportar Pago &nbsp;
+                                        i.fa.fa-arrow-right
                             -}
 

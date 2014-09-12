@@ -1,20 +1,91 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
-h1 Crear nuevo horario
-h1 Asignatura: #{asignatura.nombre}
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/asignatura/#{asignatura.id}") Materia
+            li.active Creacion de horario
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Creacion de Horario de clases
+                    span.text-primary &nbsp; #{asignatura.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion del horario de clase
+                h5.text-center.margin-botton
+                    a(href="/asignatura/#{asignatura.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver a la asignatura
+                .well.bs-component
+                    form(method="POST", action="/horario/create").form-horizontal
+                        input(type="hidden", name="asignatura", value="#{asignatura.id}")
+                        legend Crear horario de clases
+                        fieldset
+                            .form-group
+                                label(for="inputDia", class="col-lg-2 control-label") Dia
+                                .col-lg-10
 
-form(method="POST", action="/horario/create")
-    input(type="hidden", name="asignatura", value="#{asignatura.id}")
-    p selecciona el dia y la hora de la clase
-        select(name="dia", required)
-            each dia in dias
-                option(value="#{dia}") #{dia}
-        select(name="hora", required)
-            each hora in horas
-                option(value="#{hora}") #{hora}h
-        select(name="duracion", required)
-            each hora in horas
-                option(value="#{hora}") #{hora}h
-        input(type="text", name="lugar", placeholder="LUgar y edificio de la clase")
-        p: button(type="submit") + Crear
-br
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar-o
+                                        select(name="dia", required).form-control
+                                            each dia in dias
+                                                option(value="#{dia}") #{dia}
+                                    p.text-muted Dia de la semana que se realizara la clase
+                            .form-group
+                                label(for="inputHorai", class="col-lg-2 control-label") Hora inicia
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-clock-o
+                                        select(name="hora", required).form-control
+                                            each hora in horas
+                                                option(value="#{hora}") #{hora}h
+                                    p.text-muted Hora del dia que inicia la clase
+                            .form-group
+                                label(for="inputHorat", class="col-lg-2 control-label") Hora Termina
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-clock-o
+                                        select(name="duracion", required).form-control
+                                            each hora in horas
+                                                option(value="#{hora}") #{hora}h
+                                    p.text-muted Hora del dia en que termina la clase
+
+                            .form-group
+                                label(for="inputHorat", class="col-lg-2 control-label") Lugar
+                                .col-lg-10
+
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-institution
+                                        input(type="text", name="lugar", required, autocomplete="off").form-control
+                                    p.text-muted Lugar de la institucion donde se realizara la clase
+
+                            .form-group
+                                h5.text-center
+                                    button(type="submit").btn.btn-primary
+                                        i.fa.fa-plus
+                                        | &nbsp; Agregar Horario de clase
