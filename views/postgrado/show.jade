@@ -84,123 +84,182 @@ block content
 
     .row
         .container
-            .col-lg-6
-
+            .col-sm-7
                 .panel.panel-default
                     .panel-heading
-                        span.badge.pull-right.badge-fix #{numpre}
+                        h4.pull-right
+                            a(href="/preinscripcion/#{postgrado.id}/add").btn.btn-primary.btn-xs
+                                i.fa.fa-plus
+                                | &nbsp; Registrar Interesado
                         h5
                             i.fa.fa-pencil-square
-                            |&nbsp; Solicitudes de Inscripcion
-
-
+                            | &nbsp; Solicitudes de Inscripcion
+                            span.badge.margin-left-1 #{numpre}
                     .panel-body
-                        p.lead Lista de Interezados que desean realizar el postgrado y obtener informacion a cerca del mismo
+                        -if (numpre > 0){
+                            p(align="justify")
+                                em Lista de las solicitudes de inscripcion que han realizado personas interesadas en realizar los estudios del postgrado
+                            table.table.margin-botton-none
+                                tr
+                                    th(width="5%").text-center #
+                                    th(width="20%").text-center Fecha
+                                    th(width="55%") Nombre del solicitante
+                                    th(width="20%").text-center Accion
+                            .list-group.scroll-list-x
+                                -countp = 1
+                                each inscrito in inscritos
+                                    .list-group-item
+                                        table.table.margin-botton-none
+                                            tr
+                                                td(width="5%")
+                                                    h4.text-center
+                                                        span.badge #{countp}
+                                                td(width="15%")
+                                                    h4.text-center
+                                                        span.label.label-default #{inscrito.fecha.toISOString().slice(0, 10)}
+                                                td(width="60%")
+                                                    h4.text-primary #{inscrito.nombre}
+                                                    h5
+                                                        -if(inscrito.estado == 1){
+                                                            span.label.label-success
+                                                                i.fa.fa-bank
+                                                                | &nbsp; Pago confirmado
+                                                        -}else{
+                                                            span.label.label-danger
+                                                                i.fa.fa-bank
+                                                                | &nbsp; Sin Pago confirmado
+                                                        -}
+                                                td(width="20%")
+                                                    blockquote
+                                                        a(href="/preinscripcion/#{inscrito.id}").btn.btn-default.btn-group-sm
+                                                            i.fa.fa-search
+                                                            | &nbsp; Ver
+                                    -countp++
+                        -}else{
+                            p.text-info.text-center
+                                | no hay solicitudes de inscripcion para el postgrado
+                        -}
 
-                        .scroll-list-x
-                            -if(inscritos[0]){
-                                table.table.table-hover.table-striped
-                                    - count=1
-                                    each inscrito in inscritos
+            .col-sm-5
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Pensums academicos
+                            p.text-center
+                                a(href="/pensum/#{postgrado.id}/new").btn.btn-primary.btn-sm
+                                    i.fa.fa-plus-square
+                                    | &nbsp; Crear nuevo Pensum
+                            p.text-center
+                                em Listado de pensums que se encuntran registrados en el postgrado
+                            .listaxx
+                                -if (numpen > 0){
+                                    table.table.margin-botton-none
                                         tr
-                                            td(width="3%") #{count}
-                                            td(width="20%")
-                                                p.text-center
-                                                    -if (inscrito.estado == 1){
-                                                        span.label.label-success
-                                                            i.fa.fa-calendar
-                                                            | &nbsp; #{inscrito.fecha.toISOString().slice(0, 10)}
-                                                    -}else{
-                                                        span.label.label-danger
-                                                            i.fa.fa-calendar
-                                                            | &nbsp; #{inscrito.fecha.toISOString().slice(0, 10)}
-                                                    -}
-                                            td(width="70%")
-                                                | #{inscrito.nombre}
-                                            td(width="7%")
-                                                a(href="/preinscripcion/#{inscrito.id}").btn.btn-default
-                                                    i.fa.fa-search
-                                        -count++
+                                            th(width="5%").text-center #
+                                            th(width="80%") Nombre
+                                            th(width="15%").text-center Accion
+                                    .list-group.scroll-list
+                                        - count=1
+                                        each pensum in pensums
+                                            .list-group-item
+                                                table.table.margin-botton-none
+                                                    tr
+                                                        td(width="5%")
+                                                            h4.text-center
+                                                                span.badge #{count}
+
+                                                        td(width="85%")
+                                                            h4
+                                                                | #{pensum.nombre}
+                                                            -if (pensum.status == 0){
+                                                                h5
+                                                                    span.label.label-warning
+                                                                        i.fa.fa-unlock
+                                                                        | &nbsp; Sin confirmar
+                                                            -}else{
+                                                                h5
+                                                                    span.label.label-success
+                                                                        i.fa.fa-lock
+                                                                        | &nbsp; Confirmado
+                                                            -}
+                                                        td(width="10%")
+                                                            blockquote
+                                                                a(href="/pensum/#{pensum.id}").btn.btn-default.btn-xs
+                                                                    i.fa.fa-search
+                                                                    | &nbsp; Ver
+
+                                            -count++
+                                -}else{
+                                    p.text-center.text-info No hay Pensums en el sistema
+                                -}
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Cohortes academicas
+                            -if (validpensum == null){
+                                h2.text-center
+                                    span.label.label-warning
+                                        i.fa.fa-warning
+                                        | &nbsp; Advertencia
+                                p.text-center
+                                    em El sistema no ha encuntrado asociado al postgrado un pensum que se encuentre en el estado 'CONFIRMADO', para poder activar el modulo de registro de cohortes.
+                                p.text-center.text-muted
+                                    em Se le sugiere al 'Director', que realice el registro de un pensum con sus debidas asignaturas y cambiar su estado a confirmado para poder realizar el registro de cohortes.
                             -}else{
-                                p.text-center.text-info no hay solicitudes de inscripcion para el postgrado
-                            -}
-                        legend
-                        p.text-center
-                            a(href="/preinscripcion/#{postgrado.id}/add").btn.btn-default
-                                i.fa.fa-plus-square
-                                | &nbsp; Agregar Solicitud
+                                p.text-center
+                                    a(href="/cohorte/#{postgrado.id}/new").btn.btn-primary.btn-sm
+                                        i.fa.fa-plus-square
+                                        | &nbsp; Crear Cohorte
 
-
-            .col-lg-3
-                .panel.panel-default
-                    .panel-heading
-                        span.badge.pull-right.badge-fix #{numcoh}
-                        h5
-                            i.fa.fa-gavel
-                            |&nbsp; Cohortes
-
-                    .panel-body
-                        p.lead Cohortes del postgrado que se encuntran registradas
-
-                        .scroll-list
-                            -if (cohortes[0]){
-                                table.table.table-hover.table-striped
-                                    - count=1
-                                    each cohorte in cohortes
+                                p.text-center
+                                    em Listado de Cohortes asociadas al postgrado
+                                -if (numcoh > 0){
+                                    table.table.margin-botton-none
                                         tr
-                                            td(width="5%")
-                                                span.label.label-danger #{count}
+                                            th(width="5%").text-center #
+                                            th(width="80%") Nombre
+                                            th(width="15%").text-center Accion
+                                    .list-group.scroll-list
+                                        - countco=1
+                                        each cohorte in cohortes
+                                            .list-group-item
+                                                table.table.margin-botton-none
+                                                    tr
+                                                        td(width="5%")
+                                                            h4.text-center
+                                                                span.badge #{countco}
 
-                                            td(width="80%") #{cohorte.nombre}
-                                            td(width="15%")
-                                                a(href="/cohorte/#{cohorte.id}").label.label-default
-                                                    i.fa.fa-search
-                                        -count++
-                            -}else{
-                                p.text-center.text-info No hay cohortes en el sistema
+                                                        td(width="85%")
+                                                            h4
+                                                                | #{cohorte.nombre}
+                                                            h5
+                                                                span.label.label-info
+                                                                    i.fa.fa-calendar
+                                                                    | &nbsp;  #{cohorte.fecha_inicio_insc.toISOString().slice(0, 10)}
+                                                        td(width="10%")
+                                                            blockquote
+                                                                a(href="/cohorte/#{cohorte.id}").btn.btn-default.btn-xs
+                                                                    i.fa.fa-search
+                                                                    | &nbsp; Ver
+                                             -countco++
+                                -}else{
+                                    p.text-center
+                                        span.text-info En el sistema no se encuentran cohortes asociadas a este postgrado
+                                -}
+
                             -}
-                        legend
-                        p.text-center
-                            a(href="/cohorte/#{postgrado.id}/new").btn.btn-default
-                                i.fa.fa-plus-square
-                                | &nbsp; Crear Cohorte
 
-
-
-            .col-lg-3
-                .panel.panel-default
-                    .panel-heading
-                        span.badge.pull-right.badge-fix #{numpen}
-                        h5
-                            i.fa.fa-book
-                            |&nbsp; Pensums
-
-                    .panel-body
-                        p.lead Pensums que rigen el Postgrado
-
-                        .scroll-list
-                            -if (pensums[0]){
-                                table.table.table-hover.table-striped
-                                    - count=1
-                                    each pensum in pensums
-                                        tr
-                                            td(width="5%")
-                                                span.label.label-danger #{count}
-
-                                            td(width="80%") #{pensum.nombre}
-                                            td(width="15%")
-                                                a(href="/pensum/#{pensum.id}").label.label-default
-                                                    i.fa.fa-search
-                                        -count++
-                            -}else{
-                                p.text-center.text-info No hay Pensums en el sistema
-                            -}
-                        legend
-                        p.text-center
-                            a(href="/pensum/#{postgrado.id}/new").btn.btn-default
-                                i.fa.fa-plus-square
-                                | &nbsp; Nuevo Pensum
-
-
-
-        br
+                -if (validpensum == null){
+                    .col-lg-12
+                        .panel.panel-default
+                            .panel-body
+                                h3.text-center
+                                    span.text-danger Anulacion de Postgrado
+                                p.text-center
+                                    em Modulo que permite la anulacion y eliminacion de postgrados en los que no se encuntran pensums en estado 'CONFIRMADO'.
+                                        span.text-danger &nbsp; Recuerde que al eliminar el postgrado, todo su contenido de pensums en estado 'NO CONFIRMADO', sus asignaturas, sus preinscripciones seran eliminadas de igual manera.
+                                h3.text-center
+                                    a(href="/postgrado/delete/#{postgrado.id}").btn.btn-danger
+                                        i.fa.fa-times
+                                        | &nbsp; Anular Postgrado
+                -}

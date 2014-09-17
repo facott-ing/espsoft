@@ -87,25 +87,33 @@ block content
                             -if (inscrito.estado == 1){
                                 legend
                                 p.lead.text-success Matricular al inscrito en cohorte
+                                -if(numcoh > 0){
+                                    form(method="POST", action="/cohorte/register").form-group
+                                        input(type="hidden", name="inscrito", value="#{inscrito.id}")
+                                        label(for="cohorte", class="col-lg-2 control-label") Cohorte
+                                        .col-lg-10
+                                            .input-group
+                                                span.input-group-addon
+                                                    i.fa.fa-gavel
+                                                select#tipo(name="cohorte").form-control
+                                                    each  cohorte in cohortes
+                                                        option(value="#{cohorte.id}") #{cohorte.nombre}
 
-                                form(method="POST", action="/cohorte/register").form-group
-                                    input(type="hidden", name="inscrito", value="#{inscrito.id}")
-                                    label(for="cohorte", class="col-lg-2 control-label") Cohorte
-                                    .col-lg-10
-                                        .input-group
-                                            span.input-group-addon
-                                                i.fa.fa-gavel
-                                            select#tipo(name="cohorte").form-control
-                                                each  cohorte in cohortes
-                                                    option(value="#{cohorte.id}") #{cohorte.nombre}
+                                            br
 
-                                        br
-
-                                        button(type="submit").btn.btn-success
-                                            i.fa.fa-pencil-square-o
-                                            | &nbsp; Matricular Inscrito
-
-
+                                            button(type="submit").btn.btn-success
+                                                i.fa.fa-pencil-square-o
+                                                | &nbsp; Matricular Inscrito
+                                -}else{
+                                    h2.text-center
+                                        span.label.label-warning
+                                            i.fa.fa-warning
+                                            | &nbsp; Advertencia
+                                    p.text-center
+                                        em El sistema no identifica una cohorte existente en el postgrado.
+                                    p.text-center.text-muted
+                                        em Esto significa que no se puede realizar la inclusion del estudiante en el postgrado, asi este ya haya realizado el pago.
+                                -}
                             -}
 
                             legend
@@ -122,3 +130,15 @@ block content
                                         i.fa.fa-arrow-right
                             -}
 
+                -if (inscrito.estado == 0){
+                    .panel.panel-default
+                        .panel-body
+                            h3.lead.text-center
+                                span.text-danger Anulacion de Preinscripciones
+                            p.text-center
+                                em Este modulo le permitira la anulacion de preinscripciones al postgrado realizadas por las personas interezadas en el mismo.
+                            h3.text-center
+                                a(href="/preinscripcion/delete/#{inscrito.id}").btn.btn-danger.btn-lg
+                                    i.fa.fa-times
+                                    | &nbsp; Eliminar solicitud
+                -}

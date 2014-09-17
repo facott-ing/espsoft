@@ -1,24 +1,81 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
-h1 Programa: #{programa.nombre}
-h2 Postgrado: #{postgrado.nombre}
-h3 Pensum: #{pensum.nombre}
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li.active Registro de asignaturas
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Creacion de asignaturas
+                    br
+                    span.text-primary &nbsp; #{postgrado.nombre}
+                    br
+                    span.text-primary: strong &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-info Paso #1:
+                    span.text-muted &nbsp; Informacion general de la asignatura
+                .well.bs-component
+                    form(method="POST", action="/asignatura/create").form-horizontal
+                        input(type="hidden", name="programa", value="#{programa.nombre}")
+                        input(type="hidden", name="postgrado", value="#{postgrado.nombre}")
+                        input(type="hidden", name="pensumid", value="#{pensum.id}")
+                        input(type="hidden", name="pensumnom", value="#{pensum.nombre}")
+                        faildset
+                            legend Crear asignatura
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                .col-lg-10
 
-h3 Agregar Asignatura al Pensum del postgrado.
-h3 paso #1: Datos princicales
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="nombre", autocomplete="off", required).form-control
+                                    p.text-muted Nombre identificador de la asignatura
+                            .form-group
+                                label(for="inputNivel", class="col-lg-2 control-label") Nivel
+                                .col-lg-10
 
-form(method="POST", action="/asignatura/timetable")
-    input(type="hidden", name="programa", value="#{programa.nombre}")
-    input(type="hidden", name="postgrado", value="#{postgrado.nombre}")
-    input(type="hidden", name="pensumid", value="#{pensum.id}")
-    input(type="hidden", name="pensumnom", value="#{pensum.nombre}")
-    p nombre de la asignatura
-        input(type="text", name="nombre", placeholder="Como se llamara la asignatura", required)
-    p Nivel de la asignatura
-        input(type="number", name="nivel", placeholder="Bimestre o semestre al que pertenece", required)
-    p Creditos de la asignatura
-        input(type="number", name="credito", placeholder="numero de creditos de la asignatura", required)
-    p: button(type="submit") Siguiente paso 2 &#x2794;
-br
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-thumb-tack
+                                        input(type="number", name="nivel", required).form-control
+                                    p.text-muted Posicion academica semestral a la que pertenece la asignatura
+                            .form-group
+                                label(for="inputCreditos", class="col-lg-2 control-label") Creditos
+                                .col-lg-10
 
-
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-puzzle-piece
+                                        input(type="number", name="creditos", required).form-control
+                                    p.text-muted Creditos academicos de la asignatura
+                            legend
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    a(href="/pensum/#{pensum.id}").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; Cancelar
+                                    button(type="submit", class="btn btn-primary")
+                                        i.fa.fa-plus
+                                        | &nbsp; Registrar asignatura

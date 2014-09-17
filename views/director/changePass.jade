@@ -1,13 +1,53 @@
-//
-   Created by fabiancote on 7/24/14.
-h1 Cambio de clave
-p este cambio automatico de clave solo se realizara una vez, y es para ofrecerle una mejor seguridad de su cuenta
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logout")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
 
-h2 usuario: #{user.usuario}
-form(method="POST", action="/director/#{user.id}")
-    input(type="hidden", name="_method", value="PUT")
-    legend
-        | Ingrese nueva contraseña
-        input(type="password", name="pass", required)
-    input(type="submit", value="Guardar")
-br
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Cambio de contraseña del director
+                    span.text-primary &nbsp; #{datos.nombres} #{datos.apellidos}
+
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-heading
+                            h5
+                                i.fa.fa-unlock
+                                | &nbsp; Cambio de contraseña del director
+                        .panel-body
+                            p.lead.text-muted Por Favor digite la nueva contraseña para el director
+                            form(method="POST", action="/director/#{user.id}").form-horizontal
+                                input(type="hidden", name="_method", value="PUT")
+                                fieldset
+                                    .form-group
+                                        label(for="inputpass", class="col-lg-2 control-label") Contraseña nueva
+                                        .col-lg-10
+                                            .input-group
+                                                span.input-group-addon
+                                                    i.fa.fa-unlock-alt
+                                                input(type="password", name="pass", required).form-control
+                                            p.text-muted Digite la nueva contraseña
+                                    .form-group
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary
+                                            i.fa.fa-save
+                                            | &nbsp; Guardar Cambios

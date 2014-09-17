@@ -101,60 +101,78 @@ block content
                                             | &nbsp; Guardar Cambios
 
             .col-lg-6
-                .panel.panel-default
-                    .panel-heading
-                        h5
-                            i.fa.fa-paste
-                            |&nbsp; Datos especificos de la materia
-                    .panel-body
-                        .form-horizontal
-                            faildset
-                                legend Docente de la materia
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-heading
+                            h5
+                                i.fa.fa-paste
+                                |&nbsp; Datos especificos de la materia
+                        .panel-body
+                            .form-horizontal
+                                faildset
+                                    legend Docente de la materia
 
-                                -if (docente){
-                                    .form-group
-                                        label(for="docente", class="col-lg-2 control-label") Docente
-                                        .col-lg-10
-                                            .input-group
-                                                a(href="/docente/#{docente.id}/#{asignatura.id}").btn.btn-warning.btn-sm
+                                    -if (docente){
+                                        .form-group
+                                            label(for="docente", class="col-lg-2 control-label") Docente
+                                            .col-lg-10
+                                                .input-group
+                                                    a(href="/docente/#{docente.id}/#{asignatura.id}").btn.btn-warning.btn-sm
                                                         i.fa.fa-user
                                                         | &nbsp; #{datos.nombres} #{datos.apellidos}
-                                            p.text-muted Da click sobre el nombre del docente para ver su informacion
-                                            .input-group
-                                                a(href="/docente/change/#{asignatura.id}").btn.btn-default.btn-xs
-                                                    i.fa.fa-refresh
-                                                    | &nbsp; Cambiar el Docente
-                                -}else{
-                                    .form-group
-                                        label(for="docente", class="col-lg-2 control-label") Docente
-                                        .col-lg-10
-                                            .input-group
-                                                p.text-warning No se ha asignado un docente para esta materia
-                                            p.text-muted Da click sobre el siguiente boton para agregar un docente
-                                            .input-group
-                                                a(href="/docente/#{asignatura.id}/new").btn.btn-default.btn-xs
-                                                    i.fa.fa-plus
-                                                    | &nbsp; Asignar Docente
-                                -}
-                                br
-                                br
+                                                p.text-muted Da click sobre el nombre del docente para ver su informacion
+                                                .input-group
+                                                    a(href="/docente/change/#{asignatura.id}").btn.btn-default.btn-xs
+                                                        i.fa.fa-refresh
+                                                        | &nbsp; Cambiar el Docente
+                                    -}else{
+                                        .form-group
+                                            label(for="docente", class="col-lg-2 control-label") Docente
+                                            .col-lg-10
+                                                .input-group
+                                                    p.text-warning No se ha asignado un docente para esta materia
+                                                p.text-muted Da click sobre el siguiente boton para agregar un docente
+                                                .input-group
+                                                    a(href="/docente/change/#{asignatura.id}").btn.btn-default.btn-xs
+                                                        i.fa.fa-plus
+                                                        | &nbsp; Asignar Docente
+                                    -}
+                                    br
+                                    br
 
-                                legend Horario asignado a la materia
-                                    a(href="/horario/new/#{asignatura.id}").btn.btn-primary.btn-xs.pull-right
-                                        i.fa.fa-plus
-                                        |&nbsp; Agregar Horario de clase
-                                .list-group
-                                    each horario in horarios
-                                        .list-group-item
-                                            .list-group-item-heading
-                                                h4 #{horario.dia}
-                                                    span.text-primary &nbsp; #{horario.hora_inicia} - #{horario.duracion}
-                                            .list-group-item-text
-                                                h4 #{horario.Lugar}
-                                            .list-group-item-text.text-right
-                                                a(href="/horario/edit/#{horario.id}/#{asignatura.id}").btn.btn-default.btn-xs
-                                                    i.fa.fa-edit
-                                                    | &nbsp; Editar
-                                                a(href="/horario/#{horario.id}/delete").btn.btn-danger.btn-xs.margin-left-1
-                                                    i.fa.fa-times
-                                                    | &nbsp; Eliminar
+                                    legend Horario asignado a la materia
+                                        a(href="/horario/new/#{asignatura.id}").btn.btn-primary.btn-xs.pull-right
+                                            i.fa.fa-plus
+                                            |&nbsp; Agregar Horario de clase
+                                    .list-group
+                                        -if (horariosnum == 0){
+                                            p.text-info.text-center Esta asignatura no tiene registrado horarios de clase aun.
+                                        -}else{
+                                            each horario in horarios
+                                                .list-group-item
+                                                    .list-group-item-heading
+                                                        h4 #{horario.dia}
+                                                            span.text-primary &nbsp; #{horario.hora_inicia} - #{horario.duracion}
+                                                    .list-group-item-text
+                                                        h4 #{horario.Lugar}
+                                                    .list-group-item-text.text-right
+                                                        a(href="/horario/edit/#{horario.id}/#{asignatura.id}").btn.btn-default.btn-xs
+                                                            i.fa.fa-edit
+                                                            | &nbsp; Editar
+                                                        a(href="/horario/#{horario.id}/delete").btn.btn-danger.btn-xs.margin-left-1
+                                                            i.fa.fa-times
+                                                            | &nbsp; Eliminar
+                                        -}
+                -if (pensum.status == 0){
+                    .col-lg-12
+                        .panel.panel-default
+                            .panel-body
+                                h3.text-center
+                                    span.text-danger Anulacion de asignatura
+                                p.text-center
+                                    em Modulo que permite la eliminacion de asignaturas registradas en el pensum.
+                                h3.text-center
+                                    a(href="/asignatura/delete/#{asignatura.id}").btn.btn-danger
+                                        i.fa.fa-times
+                                        | &nbsp; Eliminar asignatura
+                -}

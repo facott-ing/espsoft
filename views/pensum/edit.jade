@@ -40,6 +40,7 @@ block content
                     form(method="POST", action="/pensum/edit").form-horizontal
                         input(type="hidden", name="_method", value="PUT")
                         input(type="hidden", name="id", value="#{pensum.id}")
+                        input(type="hidden", name="accion", value="1")
                         faildset
                             legend Datos Principales
                             .form-group
