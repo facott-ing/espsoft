@@ -23,11 +23,12 @@ block content
         ul.breadcrumb
             li: a(href="/administrador/profile") Inicio
             li: a(href="/programa/#{programa.id}") Programa
-            li.active Asignar director
+            li.active Seleccionar director
         .row
             .margin-auto
                 p.lead.text-center
                     strong Asignar un director al programa
+                    br
                     span.text-primary &nbsp; #{programa.nombre}
                 p.lead.text-center
                     span.text-muted &nbsp; Seleccione una de las siguientes opciones
@@ -35,20 +36,24 @@ block content
                     a(href="/programa/#{programa.id}/view").btn.btn-default.btn-xs
                         i.fa.fa-chevron-circle-left
                         | &nbsp; Volver al programa
-                .well.bs-comment
-                    legend Asignacion de directores a programas
-                    .margin-botton
-                    fieldset
-                        .form-group
-                            p.text-center
-                                a(href="/director/#{programa.id}/create").btn.btn-primary.btn-sm
-                                    i.fa.fa-plus
-                                    | &nbsp; Agregar un nuevo director
-                            p.text-muted.text-center Se ingresa un director nuevo al sistema y se asocia al programa
-                        .margin-botton
-                        .form-group
-                            p.text-center
-                                a(href="/director/select/#{programa.id}").btn.btn-default.btn-sm
-                                    i.fa.fa-bars
-                                    | &nbsp; Seleccionar de una lista de directores
-                            p.text-muted.text-center Se escoje de una lista de directores ya registrados con anterioridad
+                .margin-botton
+                .well.bs-component
+                    form(method="POST", action="/director/select").form-horizontal
+                        input(type="hidden", name="programa", value="#{programa.id}")
+                        legend Seleccion del director
+                        p.text-muted Seleccione de la siguente lista el director que desea asignar en el programa
+                        -if (directorscount > 0){
+                            .list-group.scroll-list
+                            each director in directores
+                                .list-group-item
+                                    input(type="radio", name="director", value="#{director.id}")
+                                    span.text-margin-left #{director.nombre}
+                                legend
+                                    .form-group
+                                        h5.text-center
+                                            button(type="submit").btn.btn-primary
+                                                i.fa.fa-plus
+                                                | &nbsp; Asignar director
+                        -}else{
+                            p.text-center.text-info No existen directores disponibles para ser seleccionados
+                        -}

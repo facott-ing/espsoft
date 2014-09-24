@@ -1,28 +1,119 @@
-//
-   Created by fabiancote on 7/31/14.
-h1 programa view
+extends ../layout
+block content
+    .navbar.navbar-inverse
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logoutAdmin")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li.active Informacion del programa academico
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Informacion del programa academico
+                h3.text-center
+                    strong.text-primary #{programa.nombre}
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion general del programa
+                h5.text-center.margin-botton
+                    a(href="/administrador/profile").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver a la administracion
+        .row
+            .container
+                .col-sm-7
+                    .panel.panel-default
+                        .panel-heading
+                            h5
+                                i.fa.fa-paste
+                                |&nbsp; Postgrados del programa
+                                span.badge.margin-left-1 #{postgradocount}
+                        .panel-body
+                            -if (postgradocount > 0){
+                                p.lead Lista de postgrados que se encuentran asociados al programa
+                                .list-group
+                                    -count=1
+                                    each postgrado in postgrados
+                                        .list-group-item
+                                            .list-group-item-heading
+                                                table.table.margin-botton-none
+                                                    tr
+                                                        td(width="15%").text-center
+                                                            h3
+                                                                span.badge #{count}
+                                                        td(width="65%")
+                                                            h4.text-primary #{postgrado.nombre}
+                                                            span.text-info ID:
+                                                                span.text-muted &nbsp; #{postgrado.id}
+                                                        td(width="20%", align="center")
+                                                            blockquote
+                                                                a(href="#").btn.btn-default.btn-sm
+                                                                    i.fa.fa-bar-chart-o
+                                                                    | &nbsp; Estadisticas
+                                        -count++
+                            -}else{
+                                p.text-center.text-info No existen postgrados en el sistema asociados al programa.
+                            -}
 
-h2 Programa: #{programa.nombre}
+                .col-sm-5
+                    .col-lg-12
+                        .panel.panel-default
 
-h2 director del programa
--if (!director){
-    span Este programa no tiene un director asignado
-    br
-    a(href="/director/#{programa.id}/create") Asignar Director
--}else{
-    span Nombre: #{datos.nombres} #{datos.apellidos}
-    br
-    span Email: #{datos.email}
-    br
-    span Telefono: #{datos.telefono}
-    br
-
-    a(href="/director/#{programa.id}/create") Cambiar Director
-
--}
-
-
-br
-br
-a(href="../") Regresar
-br
+                            .panel-body
+                                .form-horizontal
+                                    faildset
+                                        legend Director del Programa
+                                        -if (directorcount > 0){
+                                            .form-group
+                                                label(for="docente", class="col-lg-2 control-label") Director
+                                                .col-lg-10
+                                                    .input-group
+                                                        a(href="/director/edit/#{director.id}/#{director.datos_personales}").btn.btn-warning.btn-sm
+                                                            i.fa.fa-user
+                                                            | &nbsp; #{datos.nombres} #{datos.apellidos}
+                                                    p.text-muted Da click sobre el director para ver su informacion
+                                                    .input-group
+                                                        a(href="/director/#{programa.id}/assign").btn.btn-default.btn-xs
+                                                            i.fa.fa-refresh
+                                                            | &nbsp; Cambiar el Director
+                                        -}else{
+                                            .form-group
+                                                label(for="docente", class="col-lg-2 control-label") Director
+                                                .col-lg-10
+                                                    .input-group
+                                                        p.text-warning No se ha asignado un director para este programa
+                                                    p.text-muted Da click sobre el siguiente boton para agregar un director de programa
+                                                    .input-group
+                                                        a(href="/director/#{programa.id}/assign").btn.btn-default.btn-xs
+                                                            i.fa.fa-plus
+                                                            | &nbsp; Asignar director
+                                        -}
+                    -if (postgradocount == 0){
+                        .col-lg-12
+                            .panel.panel-default
+                                .panel-body
+                                    h3.lead.text-center
+                                        span.text-danger Anulacion de programa
+                                    p.text-center
+                                        em Este modulo le permitira la anulacion de programas registrados en el sistema, siempre y cuando no existan postgrados asociados al programa.
+                                    h3.text-center
+                                        a(href="/programa/delete/#{programa.id}").btn.btn-danger.btn-lg
+                                            i.fa.fa-times
+                                            | &nbsp; Eliminar Programa
+                    -}

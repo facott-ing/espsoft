@@ -1,8 +1,37 @@
-//
-   Created by fabiancote on 7/16/14.
-
-h1 Programas Academicos universitarios
-
-p #{resultado}
-
-a(href="/programa") &#9166;regresar.
+extends ../layout
+block content
+    .navbar.navbar-inverse
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logoutAdmin")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/administrador/profile") Inicio
+            li.active Registro de Programa
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Registro de Programa
+                p.error.text-center # Error
+                p.lead.text-center
+                    | En el Sistema ya existe un programa con el nombre
+                    strong.text-danger  #{nombre}
+                    | , verifique en el sistema o intente de nuevo con un nombre de programa diferente.
+                p.text-center
+                    a(href="/administrador/profile").btn.btn-default Intentar de nuevo
+    br

@@ -33,6 +33,11 @@ block content
                     span.text-primary &nbsp; #{postgrado.nombre}
                 p.lead.text-center
                     span.text-muted &nbsp; Informacion general del Postgrado
+                h5.text-center
+                    a(href="/postgrado/#{postgrado.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver al postgrado
+                .margin-botton
                 .well.bs-component
                     form(method="POST", action="/postgrado/#{postgrado.id}").form-horizontal
                         input(type="hidden", name="_method", value="PUT")

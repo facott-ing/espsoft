@@ -1,6 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse
+    .navbar.navbar-inverse.navbar
         .container
             .navbar-header
                 a(class="navbar-brand", href="#") Sistema EspSoft
@@ -16,7 +16,7 @@ block content
                         a(href="#") UFPS
                 ul.nav.navbar-nav.navbar-right
                     li
-                        a(href="/logoutAdmin")
+                        a(href="/logout")
                             i.fa.fa-power-off
                             | &nbsp; Cerrar Sesion
     .container
@@ -26,11 +26,6 @@ block content
                     strong Cambio de contraseña del director
                     br
                     span.text-primary &nbsp; #{datos.nombres} #{datos.apellidos}
-                    h5.text-center.margin-botton
-                        a(href="/director/edit/#{director.id}/#{datos.id}").btn.btn-default.btn-xs
-                            i.fa.fa-chevron-circle-left
-                            | &nbsp; Volver al director
-                .margin-botton
                 .col-lg-12
                     .panel.panel-default
                         .panel-heading
@@ -39,11 +34,9 @@ block content
                                 | &nbsp; Cambio de contraseña del director
                         .panel-body
                             p.lead.text-muted Por Favor digite la nueva contraseña para el director
-                            form(method="POST", action="/director/changepass").form-horizontal
+                            form(method="POST", action="/director/firstime").form-horizontal
                                 input(type="hidden", name="_method", value="PUT")
-                                input(type="hidden", name="action", value="2")
-                                input(type="hidden", name="director", value="#{director.id}")
-                                input(type="hidden", name="datos", value="#{datos.id}")
+                                input(type="hidden", name="director", value="#{user.id}")
                                 fieldset
                                     .form-group
                                         label(for="inputpass", class="col-lg-2 control-label") Contraseña nueva

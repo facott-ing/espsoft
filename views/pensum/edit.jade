@@ -36,6 +36,7 @@ block content
                         a(href="/pensum/#{pensum.id}").btn.btn-default.btn-xs
                             i.fa.fa-chevron-circle-left
                             | &nbsp; Volver al Pensum
+                .margin-botton
                 .well.bs-component
                     form(method="POST", action="/pensum/edit").form-horizontal
                         input(type="hidden", name="_method", value="PUT")

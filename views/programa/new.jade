@@ -1,10 +1,52 @@
-//
-   Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
+extends ../layout
+block content
+    .navbar.navbar-inverse.navbar
+        .container
+            .navbar-header
+                a(class="navbar-brand", href="#") Sistema EspSoft
+                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active
+                        a(href="#") Postgrados
+                    li
+                        a(href="#") UFPS
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/logoutAdmin")
+                            i.fa.fa-power-off
+                            | &nbsp; Cerrar Sesion
+    .container
+        ul.breadcrumb
+            li: a(href="/administrador/profile") Inicio
+            li.active Registro de Programas
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Registro de Programas
+                p.lead.text-center
+                    span.text-muted &nbsp; Informacion general del Programa a registrar
+                .well.bs-component
+                    form(method="POST", action="/programa").form-horizontal
+                        faildset
+                            legend
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                .col-lg-10
 
-h1 Crear Programa Academico
-
-form(method="POST", action="/programa")
-    p nombre del programa
-        input#nombre(type="text", name="nombre", placeholder="Nombre del Programa Academico")
-    p: button(type="submit") crear programa
-
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="nombre", placeholder="Digite Nombre del postgrado", autocomplete="off", required, autofocus=).form-control
+                                    p.text-muted Nombre del departamento, programa o carrera academica, que ofertara los postgrados
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    a(href="/administrador/profile").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; Cancelar
+                                    button(type="submit", class="btn btn-primary")
+                                        i.fa.fa-plus
+                                        | &nbsp; Registrar Programa

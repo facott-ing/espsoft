@@ -200,22 +200,48 @@ app.get('/login', function(req, res){
     }else{
         res.render('loginAdmin')
     }
-
-
+});
+app.get('/loginAdmin', function(req, res){
+    var x=req.flash('error')
+    if(x[0] == 1 || x[0] == 2){
+        res.render('loginAdministrador', {error:x[0]})
+    }else{
+        res.render('loginAdministrador')
+    }
 });
 
-passport.use(new LocalEstrategy(
+passport.use('Directores', new LocalEstrategy(
     {
         usernameField: 'usuario',
         passwordField: 'contrasena'
     },
     function(usuario, contrasena, done) {
+        console.log('entro por director')
         Director.findOne({ usuario: usuario }, function(err, dir) {
             if (err) { return done(err); }
             if (!dir) {
                 return done(null, false, { message: '1'});
             }
             if (validPass(dir, contrasena)==false) {
+                return done(null, false, { message: '2'});
+            }
+            return done(null, dir);
+        });
+    }
+));
+passport.use('Administrador', new LocalEstrategy(
+    {
+        usernameField: 'usuario',
+        passwordField: 'contrasena'
+    },
+    function(usuario, contrasena, done) {
+        console.log('entro por administrador')
+        Director.findOne({ usuario: usuario }, function(err, dir) {
+            if (err) { return done(err); }
+            if (!dir) {
+                return done(null, false, { message: '1'});
+            }
+            if (validAdministrador(dir, contrasena)==false) {
                 return done(null, false, { message: '2'});
             }
             return done(null, dir);
@@ -234,8 +260,14 @@ passport.deserializeUser(function(id, done) {
 });
 
 app.post('/login',
-    passport.authenticate('local', { successRedirect: '/director/profile',
+    passport.authenticate('Directores', { successRedirect: '/director/profile',
         failureRedirect: '/login',
+        failureFlash: true })
+);
+
+app.post('/loginAd',
+    passport.authenticate('Administrador', { successRedirect: '/administrador/profile',
+        failureRedirect: '/loginAdmin',
         failureFlash: true })
 );
 
@@ -249,12 +281,27 @@ function validPass(d, p){
     return true;
 }
 
+function validAdministrador(d, p){
+    if(d.privilegio==1 && d.contrasena==p){
+        return true
+    }
+    return false;
+
+}
+
 function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated('Director')){
         return next();
     }
     res.redirect('/login');
 }
+function isLoggedInAdmin(req, res, next){
+    if(req.isAuthenticated('Administrador')){
+        return next();
+    }
+    res.redirect('/loginAdmin');
+}
+
 //END LOGIN
 
 // LOGOUT
@@ -262,6 +309,10 @@ function isLoggedIn(req, res, next){
 app.get('/logOut', function(req, res){
     req.logOut();
     res.redirect('/login');
+});
+app.get('/logOutAdmin', function(req, res){
+    req.logOut();
+    res.redirect('/loginAdmin');
 });
 
 // END LOGOUT
@@ -284,51 +335,92 @@ app.get('/director/profile', isLoggedIn, function(req, res){
             });
         });
     }else{
-        res.redirect('/director/changePass');
+        res.redirect('/director/firstime');
     }
 });
 //update pass
-app.put('/director/:id', function(req, res){
+app.put('/director/firstime', isLoggedIn, function(req, res){
     var b=req.body;
     Director.update(
-        {_id:req.params.id},
+        {_id: b.director},
         {
             contrasena: b.pass,
-            primeravez: 0
+            primeravez:0
         },
         function(err){
-            res.redirect('/logOut')
+            if(err) res.json(err)
+            res.redirect('/director/profile')
         }
     );
 });
+app.put('/director/changepass', isLoggedInAdmin, function(req, res){
+    var b=req.body;
+    switch(b.action){
+        case '1':
+            DatosPersonales.update(
+                {_id: b.datopersonal},
+                {
+                    tipo_documento: b.tipodoc,
+                    documento: b.documento,
+                    nombres: b.nombres,
+                    apellidos: b.apellidos,
+                    email: b.email,
+                    telefono: b.telefono
+                },
+                function(err){
+                    if(err) res.json(err)
+                    res.redirect('/director/edit/'+ b.director+'/'+ b.datos)
+                }
+            );
+            break
+        case '2':
+            Director.update(
+                {_id: b.director},
+                {
+                    contrasena: b.pass,
+                    primeravez:1
+                },
+                function(err){
+                    if(err) res.json(err)
+                    res.redirect('/director/edit/'+ b.director+'/'+ b.datos)
+                }
+            );
 
-app.get('/director/changePass', isLoggedIn, function(req, res){
+    }
+});
+
+app.get('/director/firstime', isLoggedIn, function(req, res){
     DatosPersonales.findOne({_id:req.user.datos_personales}, function(err, datos){
-        res.render('director/changePass', {user:req.user, datos:datos});
+        res.render('director/firstime', {user:req.user, datos:datos});
     });
 
 });
+app.get('/director/changepass/:id/:datosper', isLoggedInAdmin, function(req, res){
+    res.render('director/changepass', {director:req.director, datos:req.datospersonales})
+});
 
+
+// director options
+app.get('/director/:id/assign', isLoggedInAdmin, function(req, res){
+    res.render('director/asignDirector', {programa:req.programa})
+});
 
 // create
-app.get('/director/:id/create', function(req, res){
-    Director.count({programa_id:req.programa.id}, function(err, d){
-        if(d!=0){
-            res.render('director/create', {programa:req.programa, director:true});
-        }else{
-            res.render('director/create', {programa:req.programa, director:false});
-        }
-
-    });
+app.get('/director/:id/create', isLoggedInAdmin, function(req, res){
+    res.render('director/create', {programa:req.programa})
 
 });
 
 function ifDirector(p){
     Director.findOne({programa_id:p}, function(err, d){
         if(d!=null){
-            Director.remove({_id: d.id}, function(err){
-               return;
-            });
+            Director.update(
+                {_id: d.id},
+                {
+                    programa_id:null,
+                    privilegio:2
+                }
+            );
             return;
         }
     });
@@ -383,7 +475,68 @@ app.param('id', function(req, res, next, id){
         next();
     });
 });
+app.param('datosper', function(req, res, next, id){
+    DatosPersonales.findOne({_id:id}, function(err, datos){
+        req.datospersonales=datos;
+        next();
+    });
+});
+// edit director
+app.get('/director/edit/:id/:datosper', isLoggedInAdmin, function(req, res){
+    Programa.findOne({_id:req.director.programa_id}, function(err, programa){
+        res.render('director/edit', {director:req.director, datos:req.datospersonales, programa:programa})
+    });
+});
 
+// select
+app.get('/director/select/:id', isLoggedInAdmin, function(req, res){
+    Director.count({privilegio:2}, function(err, directorsCount){
+        if(directorsCount > 0){
+            Director.find({privilegio:2}, function(err, directores){
+                var ids=new Array();
+                var all=new Array();
+
+                for(i=0; directorsCount > i; i++){
+                    ids.push(directores[i].datos_personales)
+                }
+
+                DatosPersonales.find({_id : {$in : ids}}, function(err, results){
+                    if(err) res.json(err)
+                    for(i=0; results.length > i; i++){
+                        for(j=0; directorsCount > j; j++){
+                            if(results[i].id == directores[j].datos_personales){
+                                var a=Array();
+                                a['id']=directores[j].id;
+                                a['nombre']=results[i].nombres +' '+ results[i].apellidos
+                                all.push(a)
+                                break;
+                            }
+                        }
+                    }
+                    res.render('director/select', {programa:req.programa, directorscount:directorsCount, directores:all});
+                });
+
+            });
+        }else{
+            res.render('director/select', {programa:req.programa, directorscount:directorsCount})
+        }
+
+    });
+});
+app.post('/director/select', isLoggedInAdmin, function(req, res){
+    var b=req.body
+    Director.update(
+        {_id: b.director},
+        {
+            programa_id: b.programa,
+            privilegio:0
+        },
+        function(err){
+            if(err) res.json(err)
+            res.redirect('/programa/'+ b.programa +'/view')
+        }
+    );
+});
 
 // END DIRECTOR
 
@@ -406,15 +559,15 @@ app.post('/programa', function(req, res){
     var b=req.body;
 
     //experiment code
-    Programa.findOne({nombre: b.nombre}, function(err, docs){
-       if(docs){
-           res.render('programa/error');
+    Programa.count({nombre: b.nombre}, function(err, programaCount){
+       if(programaCount > 0){
+           res.render('programa/error', {nombre: b.nombre});
        }else{
            new Programa({
                nombre: b.nombre
            }).save(function(err, programa){
                    if(err) res.json(err);
-                   res.redirect('/programa/'+programa._id);
+                   res.redirect('/programa/'+programa._id+'/view');
                })
        }
     });
@@ -441,17 +594,24 @@ app.get('/programa/:id', function(req, res){
     });
 });
 
-app.get('/programa/:id/view', function(req, res){
-    Director.findOne({programa_id:req.programa.id}, function(err, director){
-        if(director!=null) {
-            DatosPersonales.findOne({_id: director.datos_personales}, function (err, datos) {
-                res.render('programa/view', {programa: req.programa, director: director, datos: datos})
+app.get('/programa/:id/view', isLoggedInAdmin, function(req, res){
+    Postgrado.count({programa_id:req.programa.id}, function(err, postgradosCount){
+        Postgrado.find({programa_id:req.programa.id}, function(err, postgrados){
+            Director.count({programa_id:req.programa.id}, function(err, directorCount){
+                if(directorCount > 0){
+                    Director.findOne({programa_id:req.programa.id}, function(err, director){
+                        DatosPersonales.findOne({_id:director.datos_personales}, function(err, datos){
+                            res.render('programa/view', {postgradocount:postgradosCount, postgrados:postgrados, directorcount:directorCount, director:director, datos:datos, programa:req.programa})
+                        });
+                    });
+                }else{
+                    res.render('programa/view', {postgradocount:postgradosCount, postgrados:postgrados, directorcount:directorCount, programa:req.programa})
+
+                }
             });
-        }else{
-            res.render('programa/view', {programa: req.programa})
-        }
+        });
     });
-})
+});
 
 // edit
 app.get('/programa/:id/edit', function(req, res){
@@ -469,6 +629,35 @@ app.put('/programa/:id', function(req, res){
     );
 });
 
+// delete programa
+app.get('/programa/delete/:id', function(req, res){
+    Director.count({programa_id:req.programa.id}, function(err, directorCount){
+        if(directorCount == 1){
+            Director.update(
+                {programa_id:req.programa.id},
+                {
+                    programa_id:null,
+                    privilegio:2
+                },
+                function(err){
+                    if(err) res.json(err)
+                }
+            );
+
+        }
+        Programa.remove(
+            {_id:req.programa.id},
+            function(err){
+                if(err) res.json(err)
+                res.redirect('/administrador/profile');
+            }
+        );
+
+
+    });
+});
+
+// error page
 app.get('/programa/error', function(req, res){
     res.render('programa/error')
 });
@@ -1568,6 +1757,20 @@ app.get('/titulo/delete/:id/:asig', isLoggedIn, function(req, res){
 });
 
 // END TITULOS
+
+
+// ADMIN
+
+app.get('/administrador/profile', isLoggedInAdmin, function(req, res){
+    Programa.find({}, {}, {sort:{nombre:1}}, function(err, programas){
+        Programa.count({}, function(err, countProgramas){
+            res.render('administrador/profile', {user:req.user, programas:programas, numprogramas:countProgramas})
+        });
+    });
+});
+
+// END ADMIN
+
 
 // END APP CALLS
 
