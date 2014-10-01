@@ -79,7 +79,7 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-link
-                                        input(value="#{cohorte.link}", name="link", type="text", required).form-control
+                                        input(value="#{cohorte.link}", name="link", type="text").form-control
                                     p.lead.text-muted Direccion URL, donde se encuentra alojados los documentos academicos del postgrado.
 
                             legend Precios del Postgrado
@@ -149,13 +149,18 @@ block content
                                     p.lead.text-muted Fecha en que se debe realizar por parte de las personas adminitidas al postgrado, el pago por concepto de la matricula.
 
                             .form-group
-                                label(for="inputIntroduccion", class="col-lg-2 control-label") Introduccion
+                                label(for="inputIntroduccion", class="col-lg-2 control-label") Inicia
                                 .col-lg-10
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-calendar
-                                        input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro", type="date", required).form-control
-                                    p.lead.text-muted Fecha donde se realizara la reunion de introduccion a los estudiantes matriculados del postgrado.
+
+                                        -if (datenow > cohorte.fecha_introduccion){
+                                            input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro", type="date", required, disabled).form-control
+                                        -}else{
+                                            input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro", type="date", required).form-control
+                                        -}
+                                    p.lead.text-muted Fecha de inicio de clases
 
                             .form-group
                                 label(for="inputIntroduccion", class="col-lg-2 control-label") Termina

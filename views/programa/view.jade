@@ -21,7 +21,7 @@ block content
                             | &nbsp; Cerrar Sesion
     .container
         ul.breadcrumb
-            li: a(href="/director/profile") Inicio
+            li: a(href="/administrador/profile") Inicio
             li.active Informacion del programa academico
         .row
             .margin-auto
@@ -63,9 +63,9 @@ block content
                                                                 span.text-muted &nbsp; #{postgrado.id}
                                                         td(width="20%", align="center")
                                                             blockquote
-                                                                a(href="#").btn.btn-default.btn-sm
+                                                                a(href="/postgrado/report/#{postgrado.id}/#{programa.id}").btn.btn-default.btn-sm
                                                                     i.fa.fa-bar-chart-o
-                                                                    | &nbsp; Estadisticas
+                                                                    | &nbsp; Ver Informacion
                                         -count++
                             -}else{
                                 p.text-center.text-info No existen postgrados en el sistema asociados al programa.

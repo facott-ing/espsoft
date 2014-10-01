@@ -812,6 +812,78 @@ function deletePensum(e, i, a){
     );
 }
 
+
+// reporte de postgrados
+app.param('programa', function(req, res, next, id){
+    Programa.findOne({_id:id}, function(err, programa){
+        req.programa=programa;
+        next();
+    });
+});
+app.param('postgrado', function(req, res, next, id){
+    Postgrado.findOne({_id:id}, function(err, postgrado){
+        req.postgrado=postgrado;
+        next();
+    });
+});
+
+app.get('/postgrado/report/:postgrado/:programa', isLoggedInAdmin, function(req, res){
+    var date=new Date();
+    console.log(date.toISOString().slice(0, 10));
+    Cohorte.count({postgrado_id:req.postgrado.id}, function(err, cohortesCount){
+        if(cohortesCount > 0){
+            Cohorte.find({postgrado_id:req.postgrado.id}, function(err, cohortes){
+                var cohortesId=new Array();
+                for(i=0; cohortesCount > i; i++){
+                    cohortesId.push(cohortes[i].id)
+                }
+                Estudiante.count({cohorte: {$in : cohortesId}}, function(err, estudiantesCount){
+                    if(estudiantesCount > 0){
+                        Estudiante.find({cohorte: {$in : cohortesId}}, function(err, estudiantes){
+                            var estudiantesId=new Array();
+                            for(j=0; estudiantesCount > j; j++){
+                                estudiantesId.push(estudiantes[j].datos_personales)
+                            }
+                            DatosPersonales.find({_id: {$in : estudiantesId}}, function(err, datos){
+                                var cohortePackage=new Array();
+                                for(a=0; cohortesCount > a; a++){
+                                    var cohorteNow=cohortes[a];
+                                    var cohorte={cohorte:cohorteNow, estudiantes:new Array()}
+                                    for(b=0; estudiantesCount > b; b++){
+                                        var estudianteNow=estudiantes[b];
+                                        var estudiante={estudiante:null, datos:null}
+                                        if(estudianteNow.cohorte == cohorteNow.id){
+                                            for(c=0; datos.length > c; c++){
+                                                var datoNow=datos[c];
+                                                if(estudianteNow.datos_personales == datoNow.id){
+                                                    estudiante.estudiante=estudianteNow
+                                                    estudiante.datos=datoNow
+                                                    cohorte.estudiantes.push(estudiante)
+                                                    //estudiantePackage.push(estudiante)
+                                                    break;
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    //cohorte.estudiantes=estudiantePackage
+                                    cohortePackage.push(cohorte)
+                                }
+                                res.render('postgrado/report', {programa:req.programa, postgrado:req.postgrado, cohortescount:cohortesCount, cohortes:cohortePackage, estudiantescount:estudiantesCount});
+                            });
+                        });
+                    }
+                });
+
+            });
+        }else{
+            res.render('postgrado/report', {programa:req.programa, postgrado:req.postgrado, cohortescount:cohortesCount});
+        }
+    });
+});
+
+
+
 // -- end postgrado --
 
 // -- pensum --
@@ -1200,7 +1272,7 @@ app.get('/cohorte/:id/edit', isLoggedIn, function(req, res){
     Postgrado.findOne({_id:req.cohorte.postgrado_id}, function(err, p){
         Programa.findOne({_id:p.programa_id}, function(err, pr){
             Pensum.findOne({_id:req.cohorte.pensum_id}, function(err, pensum){
-                res.render('cohorte/edit', {cohorte:req.cohorte, postgrado:p, programa:pr, pensum:pensum})
+                res.render('cohorte/edit', {cohorte:req.cohorte, postgrado:p, programa:pr, pensum:pensum, datenow:new Date()})
             });
 
         })
@@ -1479,7 +1551,8 @@ app.get('/preinscripcion/:id', isLoggedIn, function(req, res){
     Postgrado.findOne({_id:req.inscrito.postgrado_id} ,function(err, postgrado){
         Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
             DatosPersonales.findOne({_id:req.inscrito.datos_personales}, function(err, datos){
-                Cohorte.find({postgrado_id:postgrado.id}, function(err, cohortes){
+                var daten=new Date()
+                Cohorte.find({postgrado_id:postgrado.id, fecha_introduccion: {"$gte": daten}}, function(err, cohortes){
                     Cohorte.count({postgrado_id:postgrado.id}, function(err, numcoh){
                         res.render('preinscripcion/show', {programa:programa, postgrado:postgrado, datos:datos, inscrito:req.inscrito, cohortes:cohortes, numcoh:numcoh})
                     });

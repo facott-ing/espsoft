@@ -22,6 +22,9 @@ button{
 .text-size{
     font-size: 30pt;
 }
+.text-size-24{
+    font-size: 24pt;
+}
 .color-success{
     background-color: #28b62c;
 }
@@ -53,6 +56,11 @@ button{
     overflow-y: scroll;
     max-height: 500px;
 }
+.scroll-list-350{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 350px;
+}
 .badge-fix{
     margin-top: 10px;
 }
@@ -69,4 +77,9 @@ button{
 }
 .margin-botton-none{
     margin-bottom: 0;
+}
+
+.list-dates li{
+    display: inline-block;
+    padding: 8px 10px;
 }
