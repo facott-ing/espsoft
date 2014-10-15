@@ -1,24 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar-fixed-top
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
 
     .row.bg-black.fix-top.margin-botton
         .container
@@ -74,9 +56,9 @@ block content
                         br
                         span.text-muted #{postgrado.tipo_postgrado}
                     p
-                        strong Modalidad
+                        strong Modalidad academica
                         br
-                        span.text-muted #{postgrado.modalidad}
+                        span.text-muted #{postgrado.modo}
                     p.text-center
                         a(href="/postgrado/#{postgrado.id}/edit").btn.btn-info.btn-xs
                             i.fa.fa-eye
@@ -105,7 +87,7 @@ block content
                                     th(width="20%").text-center Fecha
                                     th(width="55%") Nombre del solicitante
                                     th(width="20%").text-center Accion
-                            .list-group.scroll-list-x
+                            .list-group.scroll-list-large
                                 -countp = 1
                                 each inscrito in inscritos
                                     .list-group-item
@@ -219,7 +201,7 @@ block content
                                             th(width="5%").text-center #
                                             th(width="80%") Nombre
                                             th(width="15%").text-center Accion
-                                    .list-group.scroll-list
+                                    .list-group.scroll-list-x
                                         - countco=1
                                         each cohorte in cohortes
                                             .list-group-item
@@ -232,10 +214,25 @@ block content
                                                         td(width="85%")
                                                             h4
                                                                 | #{cohorte.nombre}
-                                                            h5
-                                                                span.label.label-info
-                                                                    i.fa.fa-calendar
-                                                                    | &nbsp;  #{cohorte.fecha_inicio_insc.toISOString().slice(0, 10)}
+                                                            -if(datenow < cohorte.fecha_introduccion){
+                                                                h5
+                                                                    span.label.label-success
+                                                                        i.fa.fa-unlock
+                                                                        | &nbsp; abierto
+                                                            -}
+                                                            -if(datenow > cohorte.fecha_introduccion){
+                                                                h5
+                                                                    span.label.label-primary
+                                                                        i.fa.fa-lock
+                                                                        | &nbsp; En Proceso
+                                                            -}
+                                                            -if(datenow > cohorte.fecha_termina_clase){
+                                                                h5
+                                                                    span.label.label-warning
+                                                                        i.fa.fa-lock
+                                                                        | &nbsp; Termino
+                                                            -}
+
                                                         td(width="10%")
                                                             blockquote
                                                                 a(href="/cohorte/#{cohorte.id}").btn.btn-default.btn-xs
@@ -249,7 +246,7 @@ block content
 
                             -}
 
-                -if (validpensum == null){
+                -if (numcoh == 0){
                     .col-lg-12
                         .panel.panel-default
                             .panel-body

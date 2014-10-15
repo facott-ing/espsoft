@@ -1,0 +1,44 @@
+extends ../layout
+block content
+    include ../directorHead
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/estudiante/#{estudiante.id}") Estudiante
+            li.active Asignar materias electivas
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Asignar materias electivas a estudiantes
+
+                h5.text-center.margin-botton
+                    a(href="/estudiante/#{estudiante.id}").btn.btn-default.btn-xs
+                        i.fa.fa-chevron-circle-left
+                        | &nbsp; Volver al estudiante
+
+                .margin-botton
+                .well.bs-component
+                    legend Materias Electivas
+                    form(method="POST", action="/asignatura/asign").form-horizontal
+                        input(type="hidden", name="estudiante", value="#{estudiante.id}")
+                        p.text-muted Seleccione de la siguente lista las materia electiva que desea asicionarle al estudiante
+                        faildset
+                            .list-group
+                                -if(electivascount > 0){
+                                    each electiva in electivas
+                                        .list-group-item
+                                            input(type="radio", name="electiva", value="#{electiva.id}")
+                                            span.text-margin-left #{electiva.nombre}
+                                -}else{
+                                    p.text-center.text-info.lead No hay materias electivas para matricular
+                                -}
+                            legend
+                            .form-group
+                                h5.text-center
+                                    button(type="submit").btn.btn-primary
+                                        i.fa.fa-plus
+                                        | &nbsp; Seleccionar Electiva
+
+
+
+

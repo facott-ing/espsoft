@@ -2,25 +2,7 @@
    Created by fabiancote on 8/1/14.
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
@@ -90,20 +72,37 @@ block content
                                 -if(numcoh > 0){
                                     form(method="POST", action="/cohorte/register").form-group
                                         input(type="hidden", name="inscrito", value="#{inscrito.id}")
-                                        label(for="cohorte", class="col-lg-2 control-label") Cohorte
-                                        .col-lg-10
-                                            .input-group
-                                                span.input-group-addon
-                                                    i.fa.fa-gavel
-                                                select#tipo(name="cohorte").form-control
-                                                    each  cohorte in cohortes
-                                                        option(value="#{cohorte.id}") #{cohorte.nombre}
+                                        input(type="hidden", name="concepto", value="Pago de la matricula para el inicio del primer semestre del postgrado")
+                                        .form-group
+                                            label(for="cohorte", class="col-lg-2 control-label") Cohorte
+                                            .col-lg-10
+                                                .input-group
+                                                    span.input-group-addon
+                                                        i.fa.fa-gavel
+                                                    select#tipo(name="cohorte").form-control
+                                                        each  cohorte in cohortes
+                                                            option(value="#{cohorte.id}") #{cohorte.nombre}
 
-                                            br
+                                        -if (postgrado.tipo_postgrado == 'Máestria' ){
+                                            -if (postgrado.modo == 'Mixta'){
+                                                .form-group
+                                                    label(for="inputCreditos", class="col-lg-2 control-label") Modalidad Academica
+                                                    .col-lg-10
+                                                        .list-group
+                                                            .list-group-item
+                                                                input(type="radio", name="modalidad",value="Profundización", checked)
+                                                                span.text-primary.text-margin-left De Profundización.
 
-                                            button(type="submit").btn.btn-success
-                                                i.fa.fa-pencil-square-o
-                                                | &nbsp; Matricular Inscrito
+                                                            .list-group-item
+                                                                input(type="radio", name="modalidad",value="Investigación")
+                                                                span.text-primary.text-margin-left De Investigación
+                                            -}
+                                        -}
+                                        .form-group
+                                            p.text-center
+                                                button(type="submit").btn.btn-success
+                                                    i.fa.fa-pencil-square-o
+                                                    | &nbsp; Matricular Inscrito
                                 -}else{
                                     h2.text-center
                                         span.label.label-warning

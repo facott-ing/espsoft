@@ -1,0 +1,58 @@
+extends ../layout
+block content
+    include ../directorHead
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/estudiante/#{estudiante.id}") Estudiante
+            li.active Reporte de pago
+
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Reporte comprobante de pago de estudiante
+                .margin-botton
+                .well.bs-component
+                    form(method="POST", action="/estudiante/proof").form-horizontal
+                        input(type="hidden", name="estudiante", value="#{estudiante.id}")
+                        fieldset
+                            legend
+                            .form-group
+                                label(for="inputpass", class="col-lg-2 control-label") Estudiante
+                                .col-lg-10
+                                    .input-group
+                                        span.text-primary.text-size-18 #{datos.nombres} #{datos.apellidos}
+                                        br
+                                        span.label.label-info.text-size-11 #{estudiante.codigo}
+                            .form-group
+                                label(for="inputpass", class="col-lg-2 control-label") Fecha
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-calendar
+                                        input(type="date", name="fecha", required).form-control
+                                    p.text-muted Fecha que el estudiante realizo el importe
+                            .form-group
+                                label(for="inputcon", class="col-lg-2 control-label") Concepto
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-pencil
+                                        input(type="text", name="concepto", autocomplete="off", required).form-control
+                                    p.text-muted Concepto informativo del pago
+                            .form-group
+                                label(for="inputpass", class="col-lg-2 control-label") Valor
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-money
+                                        input(type="number", name="valor", min="0", required).form-control
+                                    p.text-muted Valor del importe realizado
+                            .form-group
+                            h5.text-center
+                                a(href="/estudiante/#{estudiante.id}").btn.btn-default.margin-right-1
+                                    i.fa.fa-times-circle
+                                    | &nbsp; cancelar
+                                button(type="submit").btn.btn-primary.ma
+                                    i.fa.fa-save
+                                    | &nbsp; Guardar Cambios

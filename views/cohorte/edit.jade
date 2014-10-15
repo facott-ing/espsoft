@@ -2,25 +2,7 @@
    Created by fabiancote on 7/18/14.
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
@@ -79,7 +61,7 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-link
-                                        input(value="#{cohorte.link}", name="link", type="text").form-control
+                                        input(value="#{cohorte.link}", name="linkdata", type="text").form-control
                                     p.lead.text-muted Direccion URL, donde se encuentra alojados los documentos academicos del postgrado.
 
                             legend Precios del Postgrado
@@ -156,7 +138,8 @@ block content
                                             i.fa.fa-calendar
 
                                         -if (datenow > cohorte.fecha_introduccion){
-                                            input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro", type="date", required, disabled).form-control
+                                            input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro-x", type="date", required, disabled).form-control
+                                            input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro", type="hidden", required)
                                         -}else{
                                             input(value="#{cohorte.fecha_introduccion.toISOString().slice(0, 10)}", name="fintro", type="date", required).form-control
                                         -}

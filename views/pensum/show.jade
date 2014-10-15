@@ -1,24 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar-fixed-top
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .row.bg-black.fix-top.margin-botton
         .container
             .col-lg-3
@@ -118,6 +100,15 @@ block content
                                                             span.badge #{count}
                                                     td(width="50%").text-center
                                                         h4.text-primary #{materia.nombre}
+                                                        -if (materia.electiva == true){
+                                                            h5
+                                                                span.label.label-default Electiva
+                                                                -if (materia.modo != ''){
+                                                                    span.label.label-info.margin-left-1 #{materia.modo}
+                                                                -}
+                                                        -}
+
+
                                                     td(width="10%").text-center
                                                         h4 #{materia.cradito}
                                                     td(width="10%").text-center
@@ -138,6 +129,14 @@ block content
                                                             span.badge #{count}
                                                     td(width="50%").text-center
                                                         h4.text-primary #{materia.nombre}
+                                                        -if (materia.electiva == true){
+                                                            h5
+                                                                span.label.label-default Electiva
+                                                                -if (materia.modo != ''){
+                                                                    span.label.label-info.margin-left-1 #{materia.modo}
+                                                                -}
+                                                        -}
+
                                                     td(width="10%").text-center
                                                         h4 #{materia.cradito}
                                                     td(width="10%").text-center

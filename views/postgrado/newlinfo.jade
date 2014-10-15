@@ -1,24 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
 
     .container
         ul.breadcrumb
@@ -45,6 +27,8 @@ block content
                         input(type="hidden", name="nombrepro", value="#{programa}")
                         input(type="hidden", name="nombrepost", value="#{nombre}")
                         input(type="hidden", name="tipo", value="#{tipo}")
+                        input(type="hidden", name="modo", value="#{modo}")
+
                         faildset
                             .form-group
                                 label(for="inputDuracion", class="col-lg-2 control-label") Registro
@@ -63,7 +47,7 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-clock-o
-                                        input(type="number", name="duracion", placeholder="Meses que dura el postgrado", required).form-control
+                                        input(type="number", name="duracion", placeholder="Meses que dura el postgrado", required, min="0").form-control
                                     p.lead Tiempo requerido para cumplir con los requisitos de la titulacion del postgrado
 
                             .form-group

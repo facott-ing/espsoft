@@ -1,26 +1,6 @@
-//
-   Created by fabiancote on 7/18/14.
-extends ../layout
+extends ../layoutchart
 block content
-    .navbar.navbar-inverse.navbar-fixed-top
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .row.bg-black.fix-top.margin-botton
         .container
             .col-lg-3
@@ -82,86 +62,185 @@ block content
     .row
         .container
             .col-lg-9
-                .panel.panel-default
-                    .panel-heading
-                        span.badge.pull-right.badge-fix #{numes}
-                        h5
-                            i.fa.fa-users
-                            | &nbsp; Estudiantes Registrados
-                    .panel-body
-                        p.lead Lista de estudiantes que se encuentran registrados en la cohorte
-                        .scroll-list-x
-                            -if (estudiantes[0]){
-                                table.table.table-hover.table-striped
-                                    thead
-                                        tr
-                                            th(width="8"): p.text-center #
-                                            th(width="54%"): p.text-center Nombre
-                                            th(width="20%"): p.text-center Codigo
-                                            th(width="18%"): p.text-center Accion
-                                    -count=1
-                                    each estudiante in estudiantes
-                                        tr
-                                            td(width="8")
-                                                h4.text-center
-                                                    span.badge #{count}
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-heading
+                            span.badge.pull-right.badge-fix #{numes}
+                            h5
+                                i.fa.fa-users
+                                | &nbsp; Estudiantes Registrados
+                        .panel-body
+                            p.lead Lista de estudiantes que se encuentran registrados en la cohorte
+                            .scroll-list-x
+                                -if (numes > 0){
+                                    table.table.table-hover.table-striped
+                                        thead
+                                            tr
+                                                th(width="8"): p.text-center #
+                                                th(width="48%"): p.text-center Nombre
+                                                th(width="20%"): p.text-center Codigo
+                                                th(width="24%"): p.text-center Accion
+                                        -count=1
+                                        each estudiante in estudiantes
+                                            tr
+                                                td(width="8")
+                                                    h4.text-center
+                                                        span.badge #{count}
 
-                                            td(width="54%")
-                                                h4 #{estudiante.nombre}
-                                            td(width="20%")
-                                                h5.text-center
-                                                    span.label.label-danger.font-size-fix-label #{estudiante.codigo}
-                                            td(width="18%")
-                                                h5.text-center
-                                                    a(href="/estudiante/#{estudiante.id}").btn.btn-default.btn-xs
-                                                        i.fa.fa-search
-                                                        | &nbsp; Ver Estudiante
-                                        -count++
-                            -}else{
-                                p.text-center.text-info No hay estudiantes registrados
-                            -}
+                                                td(width="48%")
+                                                    h4
+                                                        | #{estudiante.nombre}
+                                                        -if (postgrado.tipo_postgrado == 'Máestria'){
+                                                            h5.text-muted
+                                                                | Modalidad:
+                                                                span.label.label-default.margin-left-1 #{estudiante.modalidad}
+                                                        -}
+
+                                                td(width="20%", align="center").text-center
+                                                    h5
+                                                        span #{estudiante.codigo}
+
+                                                td(width="24%")
+                                                    h5.text-center
+                                                        a(href="/estudiante/#{estudiante.id}").btn.btn-default.btn-xs
+                                                            i.fa.fa-search
+                                                            | &nbsp; Ver Estudiante
+                                            -count++
+                                -}else{
+                                    p.text-center.text-info No hay estudiantes registrados
+                                -}
+                -if (numes > 0){
+                    .col-lg-12
+                        .panel.panel-default
+                            .panel-heading
+                                h5
+                                    i.fa.fa-bar-chart-o
+                                    | &nbsp; Estadisticas de la cohorte
+                            .panel-body
+                                input(type="hidden", id="total", value="#{estudiantestotal}")
+                                input(type="hidden", id="numes", value="#{numes}")
+                                .col-sm-7
+                                    .margin-botton
+                                    p.lead.text-center.text-muted Grafica Polar - Area
+                                        p.text-center
+                                            em Grafico estadistico de la cohorte, respecto al total de estudiantes del postgrado.
+                                    div(id="canvas-holder", style="width:100%")
+                                        canvas(id="chart-area" width="100%" height="100%").text-center
+                                    script(type='text/javascript').
+                                        var total=document.getElementById('total').value
+                                        var numes=document.getElementById('numes').value
+                                        var xx=(numes/total)*100
+                                        xx=xx.toFixed(2)
+                                        var polarData = [
+                                                {
+                                                    value: 100,
+                                                    color:"#F7464A",
+                                                    highlight: "#FF5A5E",
+                                                    label: "estudiantes del Postgrado: "+total+' = 100%'
+                                                },
+                                                {
+                                                    value: xx,
+                                                    color: "#46BFBD",
+                                                    highlight: "#5AD3D1",
+                                                    label: "estudiantes de la cohorte: "+numes+' = '+xx+'%'
+                                                }
+
+                                            ];
+                                            var ctx = document.getElementById('chart-area').getContext("2d");
+                                                window.myPolarArea = new Chart(ctx).PolarArea(polarData, {
+                                                    tooltipTemplate: "<%if (label){%><%=label%><%}%>",
+                                                    responsive:true
+                                                });
+
+                                .col-sm-5.text-center
+                                    blockquote
+
+                                        h4.text-primary Estudiantes
+                                        table.table.table-bordered
+                                            thead
+                                                tr
+                                                    th(width="50%").text-center: h5.label.label-info En la Cohorte
+                                                    th(width="50%").text-center: h5.label.label-info Porcentaje Global
+                                            tbody()
+                                                tr
+                                                    td(width="50%").text-center
+                                                        span.text-size-18 #{numes}
+                                                    td(width="50%").text-center
+                                                        -calculo=(numes/estudiantestotal)*100
+                                                        -calculo=calculo.toFixed(1)
+                                                        span.text-muted.text-size-18 #{calculo}%
+
+                                        -if (postgrado.tipo_postgrado == 'Máestria'){
+                                            -if(postgrado.modo == 'Mixta'){
+                                                .margin-botton
+                                                h4.text-primary Estudiantes por modalidad
+                                                table.table.table-bordered
+                                                    thead
+                                                        tr
+                                                            th(width="50%").text-center: h5.label.label-info Profundización
+                                                            th(width="50%").text-center: h5.label.label-info Investigación
+                                                    tbody()
+                                                        tr
+                                                            td(width="50%").text-center
+                                                                span.text-size-18 #{profucount}
+                                                                .margin-botton
+                                                                -calculo=(profucount/numes)*100
+                                                                -calculo=calculo.toFixed(1)
+                                                                span.text-muted.text-size-18 #{calculo}%
+                                                            td(width="50%").text-center
+                                                                -calculo=(invescount/numes)*100
+                                                                -calculo=calculo.toFixed(1)
+                                                                span.text-size-18 #{invescount}
+                                                                .margin-botton
+                                                                span.text-muted.text-size-18 #{calculo}%
+                                            -}
+                                        -}
+                                        .margin-botton
+                                        h4.text-primary Recaudo Economico por cohorte
+                                        legend
+                                        span.text-success.text-size-18 $ #{recaudos}
+                -}
             .col-lg-3
-                .panel.panel-default
-                    .panel-heading
+                    .panel.panel-default
+                        .panel-heading
 
-                        h5
-                            i.fa.fa-reorder
-                            | &nbsp; Nivel del postgrado
-                    .panel-body
-                        p.lead Niveles del Postgrado
-                        span.text-muted el nivel en el que se encuentra el postgrado esta distinguido por el color naranja.
-                        table.table
-                            thead
-                                tr
-                                    -for(i=1; nivel.nivel >= i; i++){
+                            h5
+                                i.fa.fa-reorder
+                                | &nbsp; Semestres de la cohorte
+                        .panel-body
 
-                                        th
-                                            h3.text-center
-                                                -if (i < cohorte.nivel){
-                                                    span.btn.btn-default.disabled.btn-xs
-                                                        |Nivel
-                                                        br
-                                                        |#{i}
-                                                -}
-                                                -if (i == cohorte.nivel){
-                                                    span.btn.btn-warning.btn-sm.btn-xs
-                                                        |Nivel
-                                                        br
-                                                        |#{i}
-                                                -}else{
-                                                    span.btn.btn-default.btn-sm.btn-xs
-                                                        |Nivel
-                                                        br
-                                                        |#{i}
-                                                -}
+                            h4.text-center Semestre
+                            table.table
+                                thead
+                                    tr
+                                        -for(i=1; nivel.nivel >= i; i++){
+
+                                            th
+                                                h3.text-center
+                                                    -if (i < cohorte.nivel){
+                                                        span.btn.btn-default.disabled
+                                                            | #{i}
+                                                    -}
+                                                    -if (i == cohorte.nivel){
+                                                        span.btn.btn-warning
+                                                            | #{i}
+                                                    -}else{
+                                                        span.btn.btn-default
+                                                            | #{i}
+                                                    -}
 
 
-                                    -}
-                        -if (nivel.nivel > cohorte.nivel){
-                            p.text-center
-                                a(href="#").btn.btn-default.btn-xs
-                                    i.fa.fa-retweet
-                                    | &nbsp; Promover de nivel
-                        -}
-                        br
+                                        -}
+                            span.text-muted el semestre en el que se encuentra el postgrado esta distinguido por el color naranja.
 
+                            br
+
+
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Pensum de la cohorte
+                            h4.text-center.text-primary #{pensum.nombre}
+                            h5.text-center
+                                span.label.label-warning
+                                    i.fa.fa-book
+                                    | &nbsp; Pensum

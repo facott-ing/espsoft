@@ -25,6 +25,18 @@ button{
 .text-size-24{
     font-size: 24pt;
 }
+.text-size-18{
+    font-size: 18pt;
+}
+.text-size-14{
+    font-size: 14pt;
+}
+.text-size-11{
+    font-size: 11pt;
+}
+.text-size-10{
+    font-size: 10pt;
+}
 .color-success{
     background-color: #28b62c;
 }
@@ -55,6 +67,11 @@ button{
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: 500px;
+}
+.scroll-list-large{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 700px;
 }
 .scroll-list-350{
     overflow-x: hidden;

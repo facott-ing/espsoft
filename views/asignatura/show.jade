@@ -1,24 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
@@ -28,13 +10,8 @@ block content
         .row
             .margin-auto
                 p.lead.text-center
-                    strong Informacion de materia
-                    span.text-primary &nbsp; #{asignatura.nombre} -
-                    span.text-primary &nbsp; #{pensum.nombre} -
-                    span.text-primary &nbsp; #{postgrado.nombre} -
-                    strong.text-primary &nbsp; #{programa.nombre}
-                p.lead.text-center
-                    span.text-muted &nbsp; Informacion general de la materia
+                    strong Informacion de la materia
+
                 h5.text-center.margin-botton
                     a(href="/pensum/#{pensum.id}").btn.btn-default.btn-xs
                         i.fa.fa-chevron-circle-left
@@ -101,6 +78,24 @@ block content
                                             | &nbsp; Guardar Cambios
 
             .col-lg-6
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-body
+                            br
+                            p.lead.text-center.text-muted Materia del Pensum :
+                                strong.text-success.margin-left-1 #{pensum.nombre}
+                            p.lead.text-center.text-primary
+                                | #{asignatura.nombre}
+                                br
+                                -if (asignatura.electiva == true){
+                                    span.label.label-default Electiva
+                                    -if (asignatura.modo != ''){
+                                        span.label.label-info.margin-left-1 #{asignatura.modo}
+                                    -}
+                                -}else{
+                                    span.label.label-primary Obligatoria
+                                -}
+
                 .col-lg-12
                     .panel.panel-default
                         .panel-heading

@@ -1,25 +1,7 @@
 extends ../layout
 block content
 
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
 
     .container
         ul.breadcrumb
@@ -55,11 +37,22 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-tag
-                                        select#tipo(name="tipo").form-control
-                                            option(value="Máestria") Máestria
+                                        select#tipo(name="tipo", onchange="(isMaster(this))").form-control
                                             option(value="Especialización") Especialización
+                                            option(value="Máestria") Máestria
                                             option(value="Doctorado") Doctorado
                                     p.lead Tipo de estudio al que el postgrado pertenece y tipo de titulacion que obtendra el estudiante
+                            div(id="modo", style="display:none;").form-group
+                                label(for="inputTipo", class="col-lg-2 control-label") Modo
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-tag
+                                        select(name="modo").form-control
+                                            option(value="Profundización") Profundización
+                                            option(value="Investigación") Investigación
+                                            option(value="Mixta") Mixta
+                                    p.lead modalidad Academica de la Maestria
                             .form-group
                                 .col-lg-10.col-lg-offset-2
                                     a(href="/director/profile").btn.btn-default.margin-right-1
@@ -69,3 +62,11 @@ block content
                                         | Siguiente, paso #2 &nbsp;
                                         i.fa.fa-arrow-right
                             br
+                            script(type="text/javascript").
+                                function isMaster(x){
+                                    if(x.value=='Máestria'){
+                                        document.getElementById('modo').style.display='block'
+                                    }else{
+                                        document.getElementById('modo').style.display='none'
+                                    }
+                                }

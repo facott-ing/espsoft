@@ -61,6 +61,7 @@ var PostgradoSchema= new mongoose.Schema({
     nombre:String,
     duracion:Number,
     modalidad:String,
+    modo:String,
     dirigido:String,
     registro_cal:String,
     estado:Number
@@ -73,7 +74,9 @@ var InscritoSchema=new mongoose.Schema({
     datos_personales:String,
     comentario:String,
     estado:Number,
-    fecha_pago:Date
+    fecha_pago:Date,
+    concepto:String,
+    valor:Number
 });
 Inscrito=mongoose.model('Inscrito', InscritoSchema);
 
@@ -90,13 +93,16 @@ Director=mongoose.model('Director', DirectorSchema);
 var EstudianteSchema=new mongoose.Schema({
     codigo:String,
     cohorte:String,
-    datos_personales:String
+    datos_personales:String,
+    modalidad:String
 });
 Estudiante=mongoose.model('Estudiante', EstudianteSchema);
 
 var DatosFinancierosSchema=new mongoose.Schema({
     estudiante_id:String,
-    fecha_pago:Date
+    fecha_pago:Date,
+    concepto:String,
+    valor:Number
 });
 DatoFinanciero=mongoose.model('DatoFinanciero', DatosFinancierosSchema);
 
@@ -159,6 +165,8 @@ var AsignaturaSchema=new mongoose.Schema({
     nombre:String,
     nivel:Number,
     cradito:Number,
+    electiva:Boolean,
+    modo:String,
     profesor_id:String,
     material_url:String
 });
@@ -671,7 +679,7 @@ app.get('/postgrado/:id/new', isLoggedIn, function(req, res){
 });
 app.post('/postgrado/newlinfo', isLoggedIn, function(req, res){
     var b=req.body;
-    res.render('postgrado/newlinfo', {programaid: b.id, programa: b.programa, tipo: b.tipo, nombre: b.nombre})
+    res.render('postgrado/newlinfo', {programaid: b.id, programa: b.programa, tipo: b.tipo, nombre: b.nombre, modo: b.modo})
 });
 app.post('/postgrado/create', isLoggedIn, function(req, res){
     var b=req.body
@@ -679,12 +687,20 @@ app.post('/postgrado/create', isLoggedIn, function(req, res){
         if(doc){
             res.render('postgrado/error', {programa: b.id, nombrepost: b.nombrepost})
         }else{
+            var modo;
+            if(b.tipo=='Máestria'){
+                modo= b.modo
+            }else{
+                modo=''
+            }
+            console.log(modo)
             new Postgrado({
                 programa_id: b.id,
                 tipo_postgrado: b.tipo,
                 nombre: b.nombrepost,
                 duracion: b.duracion,
                 modalidad: b.modalidad,
+                modo: modo,
                 dirigido: b.leyenda,
                 registro_cal: b.regiscal,
                 estado:0
@@ -736,7 +752,7 @@ app.get('/postgrado/:id', isLoggedIn, function(req, res){
                                     }
                                 }
                                 Pensum.findOne({postgrado_id:req.postgrado.id, status:1}, function(err, validPensum){
-                                    res.render('postgrado/show', {postgrado:req.postgrado, programa:programa, pensums:pen, cohortes:co, inscritos:all, numcoh:co.length, numpen:pen.length, numpre:inscritos.length, numes:num, validpensum:validPensum});
+                                    res.render('postgrado/show', {postgrado:req.postgrado, programa:programa, pensums:pen, cohortes:co, inscritos:all, numcoh:co.length, numpen:pen.length, numpre:inscritos.length, numes:num, validpensum:validPensum, datenow:new Date()});
                                 });
 
 
@@ -744,7 +760,7 @@ app.get('/postgrado/:id', isLoggedIn, function(req, res){
 
                         }else{
                             Pensum.findOne({postgrado_id:req.postgrado.id, status:1}, function(err, validPensum){
-                                res.render('postgrado/show', {postgrado:req.postgrado, programa:programa, pensums:pen, cohortes:co, inscritos:all, numcoh:co.length, numpen:pen.length, numpre:inscritos.length, numes:num, validpensum:validPensum});
+                                res.render('postgrado/show', {postgrado:req.postgrado, programa:programa, pensums:pen, cohortes:co, inscritos:all, numcoh:co.length, numpen:pen.length, numpre:inscritos.length, numes:num, validpensum:validPensum, datenow:new Date()});
                             });
                         }
                     });
@@ -764,18 +780,24 @@ app.get('/postgrado/:id/edit', isLoggedIn, function(req, res){
 });
 app.put('/postgrado/:id', function(req, res){
     var b=req.body;
-    Postgrado.update(
-        {_id:req.params.id},
-        {tipo_postgrado: b.tipo, nombre: b.nombre, duracion: b.duracion, modalidad: b.modalidad, dirigido: b.leyenda, registro_cal: b.regiscal},
-        function(err){
-            res.redirect('/postgrado/'+ b.id);
+    Postgrado.count({nombre: b.nombre}, function(err, postgradosCount){
+        if(postgradosCount == 0){
+            Postgrado.update(
+                {_id:b.id},
+                {tipo_postgrado: b.tipo, nombre: b.nombre, duracion: b.duracion, modalidad: b.modalidad, modo: b.modo, dirigido: b.leyenda, registro_cal: b.regiscal},
+                function(err){
+                    res.redirect('/postgrado/'+ b.id);
+                }
+            );
+        }else{
+            res.redirect('/postgrado/error')
         }
-    );
+    });
 });
 
 app.get('/postgrado/delete/:id',isLoggedIn, function(req, res){
-    Pensum.count({postgrado_id:req.postgrado.id}, function(err, pensumCount){
-        if(pensumCount > 0){
+    Cohorte.count({postgrado_id:req.postgrado.id}, function(err, cohortesCount){
+        if(cohortesCount == 0){
             Pensum.find({postgrado_id:req.postgrado.id}, function(err, pensums){
                 pensums.forEach(deletePensum);
                 Inscrito.remove(
@@ -921,6 +943,12 @@ app.param('id', function(req, res, next, id){
         next();
     });
 });
+app.param('pensum', function(req, res, next, id){
+    Pensum.findOne({_id:id}, function(err, pensum){
+        req.pensum=pensum;
+        next();
+    });
+});
 //show
 app.get('/pensum/shownext/:id', isLoggedIn, function(req, res){
     var pos;
@@ -1024,11 +1052,11 @@ app.get('/pensum/delete/:id', isLoggedIn, function(req, res){
 // -- asignaturas --
 
 app.get('/asignatura/new/:id', isLoggedIn, function(req, res){
-    var pos;
-    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, doc){
-        pos=doc;
-        Programa.findOne({_id:pos.programa_id}, function(err, pro){
-            res.render('asignatura/new', {pensum:req.pensum, postgrado:pos, programa:pro});
+    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, postgrado){
+        Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
+            var maestria=false
+            if(postgrado.tipo_postgrado == 'Máestria') maestria=true
+            res.render('asignatura/new', {pensum:req.pensum, postgrado:postgrado, programa:programa, maestria:maestria});
         });
     });
 });
@@ -1039,26 +1067,37 @@ app.post('/asignatura/timetable', isLoggedIn, function(req, res){
     var b=req.body;
     res.render('asignatura/timetable', {programa: b.programa, postgrado: b.postgrado, pensumid: b.pensumid, pensumn: b.pensumnom, nombre: b.nombre, nivel: b.nivel, creditos: b.credito});
 });
-app.post('/asignatura/create', function(req, res){
+app.post('/asignatura/create/:pensum', function(req, res){
     var b=req.body;
-    Asignatura.findOne({nombre: b.nombre, pensum_id: b.pensumid}, function(err, doc){
-        if(doc){
-            res.render('asignatura/error', {pensum: b.pensumid})
-        }else{
-            new Asignatura({
-                pensum_id: b.pensumid,
-                nombre: b.nombre,
-                nivel: b.nivel,
-                cradito: b.creditos,
-                profesor_id:'',
-                material_url:''
-            }).save(function(err, asignatura){
-                    if(err) res.json(err)
-                    // addtime(asignatura.id, b)
-                    res.redirect('/asignatura/'+asignatura.id)
-                });
+    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, postgrado){
+        var modalidad=''
+        if(postgrado.tipo_postgrado == 'Máestria'){
+            if(b.electiva == 'true'){
+                modalidad= b.modalidad
+            }
         }
-    })
+        Asignatura.findOne({nombre: b.nombre, pensum_id: b.pensumid}, function(err, doc){
+            if(doc){
+                res.render('asignatura/error', {pensum: b.pensumid})
+            }else{
+                new Asignatura({
+                    pensum_id: b.pensumid,
+                    nombre: b.nombre,
+                    nivel: b.nivel,
+                    cradito: b.creditos,
+                    electiva: b.electiva,
+                    modo: modalidad,
+                    profesor_id:'',
+                    material_url:''
+                }).save(function(err, asignatura){
+                        if(err) res.json(err)
+                        // addtime(asignatura.id, b)
+                        res.redirect('/asignatura/'+asignatura.id)
+                    });
+            }
+        });
+    });
+
 
 });
 app.param('id', function(req, res, next, id){
@@ -1125,6 +1164,49 @@ app.get('/asignatura/delete/:id', isLoggedIn, function(req, res){
             res.redirect('/pensum/'+req.asignatura.pensum_id);
         }
     );
+});
+
+
+// electives
+
+app.get('/asignatura/:estudiante/elective', isLoggedIn, function(req, res){
+    Cohorte.findOne({_id:req.estudiante.cohorte}, function(err, cohorte){
+        Postgrado.findOne({_id:cohorte.postgrado_id}, function(err, postgrado){
+            Pensum.findOne({_id:cohorte.pensum_id}, function(err, pensum){
+                Nota.find({estudiante_id:req.estudiante.id}, function(err, matriculadas){
+                    var ids=new Array()
+                    for(i=0; matriculadas.length > i; i++){
+                        ids.push(matriculadas[i].asignatura_id)
+                    }
+                    Asignatura.findOne({_id: {$in : ids}}, {nivel:1}, {sort:{nivel:-1}}, function(err, max){
+                        console.log(ids)
+                        if(postgrado.modo == 'Mixta'){
+                            Asignatura.find({_id: {$nin: ids},pensum_id:pensum.id, electiva:true, modo:req.estudiante.modalidad, nivel:max.nivel}, function(err, electivas){
+                                console.log(electivas)
+                                res.render('asignatura/electiveAsign', {cohorte:cohorte, postgrado:postgrado, estudiante:req.estudiante, pensum:pensum, electivas:electivas, electivascount:electivas.length})
+                            });
+                        }else{
+                            Asignatura.find({pensum_id:pensum.id, electiva:true, nivel:max.nivel}, function(err, electivas){
+                                res.render('asignatura/electiveAsign', {cohorte:cohorte, postgrado:postgrado, estudiante:req.estudiante, pensum:pensum, electivas:electivas, electivascount:electivas.length})
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    });
+});
+app.post('/asignatura/asign', isLoggedIn, function(req, res){
+    var b=req.body
+    new Nota(
+        {
+            estudiante_id: b.estudiante,
+            asignatura_id: b.electiva,
+            nota:''
+        }
+    ).save(function(err, nota){
+            res.redirect('/estudiante/'+ b.estudiante)
+        });
 });
 
 // -- end asignaturas --
@@ -1234,39 +1316,82 @@ app.get('/cohorte/:id', isLoggedIn, function(req, res){
     Postgrado.findOne({_id:req.cohorte.postgrado_id}, function(err, p){
         Programa.findOne({_id: p.programa_id}, function(err, pr){
             Pensum.findOne({_id:req.cohorte.pensum_id}, function(err, pe){
-                Estudiante.find({cohorte: req.cohorte.id}, function(err, docs){
-                    var ids=new Array();
-                    var all=new Array();
+                Estudiante.count({cohorte: req.cohorte.id}, function(err, estudiantesCount){
+                    if(estudiantesCount > 0){
+                        Estudiante.find({cohorte: req.cohorte.id}, function(err, docs){
+                            var ids=new Array();
+                            var all=new Array();
+                            var ides=new Array();
 
-                    for(i=0; docs.length>i; i++){
-                        ids.push(docs[i].datos_personales)
-                    }
-                    DatosPersonales.find({_id : {$in : ids}}, function(err, results){
-                        if(err) res.json(err)
-                        for(i=0; results.length > i; i++){
-                            for(j=0; docs.length > j; j++){
-                                if(results[i].id == docs[j].datos_personales){
-                                    var a=Array();
-                                    a['id']=docs[j].id;
-                                    a['codigo']=docs[j].codigo
-                                    a['nombre']=results[i].nombres +' '+ results[i].apellidos
-                                    all.push(a)
-                                    break;
-                                }
+                            for(i=0; docs.length>i; i++){
+                                ids.push(docs[i].datos_personales)
+                                ides.push(docs[i].id)
                             }
-                        }
-                        Asignatura.find({pensum_id:pe.id}, {nivel:1}, {sort:{nivel:-1}}, function(err, nivels){
-                            res.render('cohorte/show', {pensum:pe, postgrado:p, programa:pr, cohorte:req.cohorte, estudiantes:all, numes:docs.length, nivel:nivels[0]});
+                            DatosPersonales.find({_id : {$in : ids}}, function(err, results){
+                                if(err) res.json(err)
+                                for(i=0; results.length > i; i++){
+                                    for(j=0; docs.length > j; j++){
+                                        if(results[i].id == docs[j].datos_personales){
+                                            var a=Array();
+                                            a['id']=docs[j].id;
+                                            a['codigo']=docs[j].codigo
+                                            a['nombre']=results[i].nombres +' '+ results[i].apellidos
+                                            a['modalidad']=docs[j].modalidad
+                                            all.push(a)
+                                            break;
+                                        }
+                                    }
+                                }
+                                Asignatura.find({pensum_id:pe.id}, {nivel:1}, {sort:{nivel:-1}}, function(err, nivels){
+                                    Cohorte.find({postgrado_id: p.id}, function(err, cohortes){
+                                        var cohortesIds=new Array()
+                                        for(w=0; cohortes.length > w; w++){
+                                            cohortesIds.push(cohortes[w].id)
+                                        }
+                                        Estudiante.count({cohorte: {$in : cohortesIds}}, function(err, estudiantesTotal){
+                                            if(p.tipo_postgrado == 'Máestria'){
+                                                Estudiante.count({cohorte:req.cohorte.id, modalidad:'Profundización'}, function(err, profunCount){
+                                                    Estudiante.count({cohorte:req.cohorte.id, modalidad:'Investigación'}, function(err, invesCount){
+                                                        DatoFinanciero.find({estudiante_id: {$in : ides}}, function(err, dfinan){
+                                                            var recaudos=0
+                                                            for(t=0; dfinan.length > t; t++){
+                                                                recaudos=recaudos + dfinan[t].valor
+                                                            }
+                                                            res.render('cohorte/show', {pensum:pe, postgrado:p, programa:pr, cohorte:req.cohorte, estudiantes:all, numes:estudiantesCount, nivel:nivels[0], estudiantestotal:estudiantesTotal, profucount:profunCount, invescount:invesCount, recaudos:recaudos});
+                                                        });
+
+                                                    });
+                                                });
+
+                                            }else{
+                                                DatoFinanciero.find({estudiante_id: {$in : ides}}, function(err, dfinan){
+                                                    var recaudos=0
+                                                    for(t=0; dfinan.length > t; t++){
+                                                        recaudos=recaudos + dfinan[t].valor
+                                                    }
+                                                    res.render('cohorte/show', {pensum:pe, postgrado:p, programa:pr, cohorte:req.cohorte, estudiantes:all, numes:estudiantesCount, nivel:nivels[0], estudiantestotal:estudiantesTotal, recaudos:recaudos});
+                                                });
+                                            }
+
+
+                                        });
+                                    });
+                                });
+
+
+                            });
+                        });
+                    }else {
+                        Asignatura.find({pensum_id: pe.id}, {nivel: 1}, {sort: {nivel: -1}}, function (err, nivels) {
+                            res.render('cohorte/show', {pensum:pe, postgrado:p, programa:pr, cohorte:req.cohorte, numes:estudiantesCount, nivel:nivels[0]});
                         });
 
-
-                    });
+                    }
                 });
             });
         });
     });
 });
-
 //edit
 app.get('/cohorte/:id/edit', isLoggedIn, function(req, res){
     Postgrado.findOne({_id:req.cohorte.postgrado_id}, function(err, p){
@@ -1281,7 +1406,6 @@ app.get('/cohorte/:id/edit', isLoggedIn, function(req, res){
 });
 app.put('/cohorte/:id', isLoggedIn, function(req, res){
     var b=req.body
-
     Cohorte.update(
         {_id: b.id},
         {
@@ -1296,7 +1420,7 @@ app.put('/cohorte/:id', isLoggedIn, function(req, res){
             fecha_termina_clase: b.ftermina,
             valor: b.valor,
             otros: b.otro,
-            link: b.link
+            link: b.linkdata
         },
         function(err){
             if(err) res.json(err)
@@ -1321,55 +1445,75 @@ app.get('/cohorte/:id/delete', isLoggedIn, function(req, res){
 // matricular inscrito en cohorte
 app.post('/cohorte/register', isLoggedIn, function(req, res){
     var b=req.body;
+    var modalidad='';
+
     Cohorte.findOne({_id: b.cohorte}, function(err, cohorte){
-        Inscrito.findOne({_id: b.inscrito}, function(err, inscrito){
-            DatosPersonales.findOne({_id:inscrito.datos_personales}, function(err, datos){
-                new Estudiante(
-                    {
-                        codigo:datos.documento,
-                        cohorte: cohorte.id,
-                        datos_personales:datos.id
+        Postgrado.findOne({_id:cohorte.postgrado_id}, function(err, postgrado){
+            Inscrito.findOne({_id: b.inscrito}, function(err, inscrito){
+                DatosPersonales.findOne({_id:inscrito.datos_personales}, function(err, datos){
+                    //pregunto si es el caso especaial, en este caso la maestria
+                    if(postgrado.tipo_postgrado == 'Máestria'){
+
+                        // pregunto si la modalidad del postgrado es mixto, tiene las dos modalidades profundizacion y investigacion
+                        if(postgrado.modo == 'Mixta') modalidad= b.modalidad
+                        else modalidad=postgrado.modo
+                        console.log(modalidad)
                     }
-                ).save(function(err, estudiante){
-                        if(err) res.json(err);
-                        Asignatura.find({pensum_id: cohorte.pensum_id, nivel:1}, function(err, asignaturas){
-                            for(i=0; asignaturas.length > i; i++){
-                                Nota.create(
-                                    {
-                                        estudiante_id:estudiante.id,
-                                        asignatura_id:asignaturas[i].id,
-                                        nota:''
-                                    },
-                                    function(err){
-                                        if(err) res.json(err)
-                                    }
-                                );
-                            }
-                            DatoFinanciero.create(
+                    // se crea el estudiantes y sus datos respectivos
+                    new Estudiante(
+                        {
+                            codigo:datos.documento,
+                            cohorte: cohorte.id,
+                            datos_personales:datos.id,
+                            modalidad: modalidad
+                        }
+                    ).save(function(err, estudiante){
+                            if(err) res.json(err)
+                            new DatoFinanciero(
                                 {
                                     estudiante_id:estudiante.id,
-                                    fecha_pago:inscrito.fecha_pago
-                                },
-                                function(err){
-                                    if(err) res.json(err)
-                                    Inscrito.remove({_id:inscrito.id}, function(err){
-                                        if(err) res.json(err)
-                                        res.redirect('/estudiante/'+estudiante.id)
-                                    });
+                                    fecha_pago: inscrito.fecha_pago,
+                                    concepto: inscrito.concepto,
+                                    valor: inscrito.valor
                                 }
-                            );
-
+                            ).save(function(err, datofinanciero){
+                                    if(err) res.json(err)
+                                    Asignatura.find({pensum_id:cohorte.pensum_id, nivel:1, electiva:false}, function(err, asignaturas){
+                                        for(i=0; asignaturas.length > i; i++){
+                                            new Nota(
+                                                {
+                                                    estudiante_id:estudiante.id,
+                                                    asignatura_id:asignaturas[i].id,
+                                                    nota:''
+                                                }
+                                            ).save(function(err, nota){
+                                                    if(err) res.json(err)
+                                                });
+                                        }
+                                        Inscrito.remove({_id:inscrito.id}, function(err){
+                                            if(err) res.json(err)
+                                            res.redirect('/estudiante/'+estudiante.id)
+                                        });
+                                    });
+                                });
                         });
 
-                    });
-            })
-        })
+
+                });
+            });
+        });
     });
 });
 
 // ESTUDIANTE
 
 app.param('id', function(req, res, next, id){
+    Estudiante.findOne({_id:id}, function(err, estudiante){
+        req.estudiante=estudiante;
+        next();
+    });
+});
+app.param('estudiante', function(req, res, next, id){
     Estudiante.findOne({_id:id}, function(err, estudiante){
         req.estudiante=estudiante;
         next();
@@ -1382,7 +1526,7 @@ app.get('/estudiante/:id', isLoggedIn, function(req, res){
        Postgrado.findOne({_id:cohorte.postgrado_id}, function(err, postgrado){
            Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
                DatosPersonales.findOne({_id:req.estudiante.datos_personales}, function(err, datos){
-                    DatoFinanciero.findOne({estudiante_id:req.estudiante.id}, function(err, datofi){
+                    DatoFinanciero.find({estudiante_id:req.estudiante.id}, function(err, datofi){
                         Nota.find({estudiante_id:req.estudiante.id}, function(err, notas){
                             var ids=new Array();
                             for(i=0; notas.length > i; i++){
@@ -1407,7 +1551,8 @@ app.get('/estudiante/:id', isLoggedIn, function(req, res){
                                     }
 
                                 }
-                                res.render('estudiante/show', {programa:programa, postgrado:postgrado, cohorte:cohorte, estudiante:req.estudiante, datos:datos, nivel:asignaturas[0].nivel, asignaturas:signatures, datofi:datofi});
+                                res.render('estudiante/show', {programa:programa, postgrado:postgrado, cohorte:cohorte, estudiante:req.estudiante, datos:datos, nivel:asignaturas[0].nivel, asignaturas:signatures, datafinancieras:datofi});
+
                             });
 
                         });
@@ -1475,7 +1620,26 @@ app.get('/estudiante/:id/students', isLoggedIn, function(req, res){
     });
 });
 
+// proof payment
+app.get('/estudiante/proofPayment/:estudiante', isLoggedIn, function(req, res){
+    DatosPersonales.findOne({_id:req.estudiante.datos_personales}, function(err, datos){
+        res.render('estudiante/proofPayment', {estudiante:req.estudiante, datos:datos})
+    });
 
+});
+app.post('/estudiante/proof', isLoggedIn, function(req, res){
+    var b=req.body
+    new DatoFinanciero(
+        {
+            estudiante_id: b.estudiante,
+            fecha_pago: b.fecha,
+            concepto: b.concepto,
+            valor: b.valor
+        }
+    ).save(function(err, datof){
+            res.redirect('/estudiante/'+b.estudiante)
+        });
+});
 // END ESTUDIANTE
 
 // PRE-INSCRIPCIONES
@@ -1529,7 +1693,9 @@ app.post('/preinscripcion/create', isLoggedIn, function(req, res){
                             datos_personales:da.id,
                             comentario: b.comentario,
                             estado:0,
-                            fecha_pago:''
+                            fecha_pago:'',
+                            concepto:'',
+                            valor:0
                         }
                     ).save(function(err, i){
                             if(err) res.json(res)
@@ -1575,7 +1741,9 @@ app.post('/preinscripcion/report', isLoggedIn, function(req, res){
         {_id: b.inscrito},
         {
             estado: 1,
-            fecha_pago: b.fecha
+            fecha_pago: b.fecha,
+            concepto:'Pago de matricula para inicio de postgrado',
+            valor: b.valor
         },
         function(err){
             if(err) res.json(err)

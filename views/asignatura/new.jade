@@ -1,24 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
@@ -36,7 +18,7 @@ block content
                     span.text-info Paso #1:
                     span.text-muted &nbsp; Informacion general de la asignatura
                 .well.bs-component
-                    form(method="POST", action="/asignatura/create").form-horizontal
+                    form(method="POST", action="/asignatura/create/#{pensum.id}").form-horizontal
                         input(type="hidden", name="programa", value="#{programa.nombre}")
                         input(type="hidden", name="postgrado", value="#{postgrado.nombre}")
                         input(type="hidden", name="pensumid", value="#{pensum.id}")
@@ -53,13 +35,13 @@ block content
                                         input(type="text", name="nombre", autocomplete="off", required).form-control
                                     p.text-muted Nombre identificador de la asignatura
                             .form-group
-                                label(for="inputNivel", class="col-lg-2 control-label") Nivel
+                                label(for="inputNivel", class="col-lg-2 control-label") Semestre
                                 .col-lg-10
 
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-thumb-tack
-                                        input(type="number", name="nivel", required).form-control
+                                        input(type="number", name="nivel", min="0", required).form-control
                                     p.text-muted Posicion academica semestral a la que pertenece la asignatura
                             .form-group
                                 label(for="inputCreditos", class="col-lg-2 control-label") Creditos
@@ -68,8 +50,56 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-puzzle-piece
-                                        input(type="number", name="creditos", required).form-control
+                                        input(type="number", name="creditos", min="0", max="5", required).form-control
                                     p.text-muted Creditos academicos de la asignatura
+                            -if (maestria == true){
+                                .form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Electiva
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="electiva",value="true", onclick="isElectiva(this)")
+                                                span.text-primary.text-margin-left Sí, es una electiva.
+
+                                            .list-group-item
+                                                input(type="radio", name="electiva",value="false", onclick="isElectiva(this)", checked)
+                                                span.text-primary.text-margin-left No, es una electiva
+
+
+                                div(id="modo", style="display:none").form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Tipo de Electiva
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="modalidad",value="Profundización", checked)
+                                                span.text-primary.text-margin-left De Profundización.
+
+                                            .list-group-item
+                                                input(type="radio", name="modalidad",value="Investigación")
+                                                span.text-primary.text-margin-left De Investigación
+
+                                script(type="text/javascript").
+                                    function isElectiva(e){
+                                        if(e.value == 'true'){
+                                            document.getElementById('modo').style.display='block'
+                                        }
+                                        if(e.value == 'false'){
+                                            document.getElementById('modo').style.display='none'
+                                        }
+                                    }
+                            -}else{
+                                .form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Electiva
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="electiva",value="true")
+                                                span.text-primary.text-margin-left Sí, es una electiva.
+
+                                            .list-group-item
+                                                input(type="radio", name="electiva",value="false", checked)
+                                                span.text-primary.text-margin-left No, es una electiva
+                            -}
                             legend
                             .form-group
                                 .col-lg-10.col-lg-offset-2

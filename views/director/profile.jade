@@ -1,24 +1,6 @@
 extends ../layout
 block content
-    .navbar.navbar-inverse
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .row
         .container
             .col-sm-8
@@ -55,6 +37,11 @@ block content
                                                                     span.label.label-warning #{postgrado.tipo_postgrado}
                                                     td(width="65%")
                                                         h4.text-primary #{postgrado.nombre}
+                                                        -if (postgrado.tipo_postgrado == 'Máestria'){
+                                                            h5.text-muted
+                                                                | Modalidad:
+                                                                span.label.label-default.margin-left-1 #{postgrado.modo}
+                                                        -}
                                                     td(width="20%", align="center")
                                                         blockquote
                                                             a(href="/postgrado/#{postgrado.id}").btn.btn-default.btn-sm

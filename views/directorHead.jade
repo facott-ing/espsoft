@@ -1,0 +1,21 @@
+block append content
+.navbar.navbar-inverse.navbar
+    .container
+        .navbar-header
+            a(class="navbar-brand", href="#") Sistema AdminPost
+            button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+        .navbar-collapse.collapse.navbar-responsive-collapse
+            ul.nav.navbar-nav
+                li.active
+                    a(href="#") Postgrados
+                li
+                    a(href="#") UFPS
+            ul.nav.navbar-nav.navbar-right
+                li
+                    a(href="/logout")
+                        i.fa.fa-power-off
+                        | &nbsp; Cerrar Sesion
+block directorHead

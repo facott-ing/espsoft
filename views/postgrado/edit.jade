@@ -2,25 +2,7 @@
    Created by Cesar Fabian Cote Guerrero - Universidad Francisco de Paula Santander - 2014.
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
@@ -53,7 +35,7 @@ block content
                                         span.input-group-addon
                                             i.fa.fa-bookmark
                                         input(type="text", name="regiscal", value="#{postgrado.registro_cal}", required).form-control
-                                    p.lead.text-muted Numero de registro de guia, del documento de aceptacion de los permisos que otorga para el ofrecimiento del postgrado
+                                    p.text-muted Numero de registro de guia, del documento de aceptacion de los permisos que otorga para el ofrecimiento del postgrado
 
                             .form-group
                                 label(for="inputNombre", class="col-lg-2 control-label") Nombre
@@ -63,7 +45,7 @@ block content
                                         span.input-group-addon
                                             i.fa.fa-mortar-board
                                         input(value="#{postgrado.nombre}", name="nombre", type="text", required).form-control
-                                    p.lead.text-muted Nombre de la titulacion que obtendra el estudiante al termino del postgrado
+                                    p.text-muted Nombre de la titulacion que obtendra el estudiante al termino del postgrado
 
 
                             .form-group
@@ -73,7 +55,8 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-tag
-                                        select#tipo(name="tipo").form-control
+                                        input(name="tipo", type="hidden", value="#{postgrado.tipo_postgrado}")
+                                        select#tipo(name="tipox", disabled).form-control
                                             case postgrado.tipo_postgrado
                                                 when 'Máestria'
                                                     option(value="Máestria", selected="true") Máestria
@@ -92,7 +75,29 @@ block content
                                                     option(value="Especialización") Especialización
                                                     option(value="Doctorado", selected="true") Doctorado
 
-                                    p.lead.text-muted Tipo de estudio al que el postgrado pertenece y tipo de titulacion que obtendra el estudiante
+                                    p.text-muted Tipo de estudio al que el postgrado pertenece y tipo de titulacion que obtendra el estudiante
+                            -if (postgrado.tipo_postgrado == 'Máestria'){
+                                .form-group
+                                    label(for="inputduracion", class="col-lg-2 control-label") Modo
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-tags
+                                            input(value="#{postgrado.modo}", name="modo", type="hidden", required).form-control
+                                            input(value="#{postgrado.modo}", name="modox", type="text", required, disabled).form-control
+                                        p.text-muted Caracteristica de estudio de la Máestria
+                            -}else{
+                                DIV(style="display:none").form-group
+                                    label(for="inputduracion", class="col-lg-2 control-label") Modo
+                                    .col-lg-10
+
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-tags
+                                            input(value="#{postgrado.modo}", name="modo", type="text", required, disabled).form-control
+                                        p.text-muted Caracteristica de estudio de la Máestria
+                            -}
 
                             .form-group
                                 label(for="inputduracion", class="col-lg-2 control-label") Tiempo de duracion
@@ -102,7 +107,7 @@ block content
                                         span.input-group-addon
                                             i.fa.fa-clock-o
                                         input(value="#{postgrado.duracion}", name="duracion", type="Number", required).form-control
-                                    p.lead.text-muted Tiempo requerido para cumplir con los requisitos de la titulacion del postgrado
+                                    p.text-muted Tiempo requerido para cumplir con los requisitos de la titulacion del postgrado
 
 
                             .form-group
@@ -120,7 +125,7 @@ block content
                                                 option(value="Presencial") Presencial
                                                 option(value="Distancia", selected="true") Distancia
                                             -}
-                                    p.lead Manera como se realizaran las clases del postgrado
+                                    p.text-muted Manera como se realizaran las clases del postgrado
 
                             legend
                             textarea(name="leyenda", reqired, id="leyenda", class="leyenda").form-control #{postgrado.dirigido}

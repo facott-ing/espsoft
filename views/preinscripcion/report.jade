@@ -2,25 +2,7 @@
    Created by fabiancote on 8/1/14.
 extends ../layout
 block content
-    .navbar.navbar-inverse.navbar
-        .container
-            .navbar-header
-                a(class="navbar-brand", href="#") Sistema EspSoft
-                button(class="navbar-toggle", type="button", data-toggle="collapse", data-target="#navbar-main")
-                    span.icon-bar
-                    span.icon-bar
-                    span.icon-bar
-            .navbar-collapse.collapse.navbar-responsive-collapse
-                ul.nav.navbar-nav
-                    li.active
-                        a(href="#") Postgrados
-                    li
-                        a(href="#") UFPS
-                ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/logout")
-                            i.fa.fa-power-off
-                            | &nbsp; Cerrar Sesion
+    include ../directorHead
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
@@ -59,11 +41,20 @@ block content
                                         span.input-group-addon
                                             i.fa.fa-calendar-o
                                         input(type="date", name="fecha", required).form-control
-                                    p.lead Seleccione la fecha en la que fue realizado el pago de la matricula del postgrado
+                                    p.text-muted Seleccione la fecha en la que fue realizado el pago de la matricula del postgrado
+
+                            .form-group
+                                label(for="valor", class="col-lg-2 control-label") Valor
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-money
+                                        input(type="Number", name="valor", min="0", required).form-control
+                                    p.text-muted Valor del pago realizado por el estudiante
 
                             .form-group
                                 .col-lg-10.col-lg-offset-2
-                                    a(href="/director/profile").btn.btn-default.margin-right-1
+                                    a(href="/preinscripcion/#{inscrito.id}").btn.btn-default.margin-right-1
                                         i.fa.fa-times-circle
                                         | &nbsp; Cancelar
                                     button(type="submit", class="btn btn-primary")
