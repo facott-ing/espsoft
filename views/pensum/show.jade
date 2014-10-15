@@ -67,6 +67,11 @@ block content
                                 a(href="/asignatura/new/#{pensum.id}").btn.btn-primary.btn-xs
                                     i.fa.fa-plus
                                     | &nbsp; Crear nueva materia
+                        -}else{
+                            h4.pull-right
+                                a(href="/asignatura/newelectiva/#{pensum.id}").btn.btn-default.btn-xs
+                                    i.fa.fa-plus
+                                    | &nbsp; Crear Electiva
                         -}
                         h5
                             i.fa.fa-mortar-board

@@ -1060,6 +1060,15 @@ app.get('/asignatura/new/:id', isLoggedIn, function(req, res){
         });
     });
 });
+app.get('/asignatura/newelectiva/:id', isLoggedIn, function(req, res){
+    Postgrado.findOne({_id:req.pensum.postgrado_id}, function(err, postgrado){
+        Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
+            var maestria=false
+            if(postgrado.tipo_postgrado == 'Máestria') maestria=true
+            res.render('asignatura/newElectiva', {pensum:req.pensum, postgrado:postgrado, programa:programa, maestria:maestria});
+        });
+    });
+});
 
 // create
 
@@ -1101,6 +1110,12 @@ app.post('/asignatura/create/:pensum', function(req, res){
 
 });
 app.param('id', function(req, res, next, id){
+    Asignatura.findOne({_id:id}, function(err, asignatura){
+        req.asignatura=asignatura;
+        next();
+    });
+});
+app.param(':asignatura', function(req, res, next, id){
     Asignatura.findOne({_id:id}, function(err, asignatura){
         req.asignatura=asignatura;
         next();
@@ -1209,6 +1224,20 @@ app.post('/asignatura/asign', isLoggedIn, function(req, res){
         });
 });
 
+//remove matriculada
+app.get('/asignatura/remove/:asignatura/:estudiante', isLoggedIn, function(req, res){
+    Nota.remove(
+        {
+            estudiante_id:req.estudiante.id,
+            asignatura_id:req.asignatura.id
+
+        },
+        function(err){
+            if(err) res.json(err)
+            res.redirect('/estudiante/'+req.estudiante.id)
+        }
+    );
+});
 // -- end asignaturas --
 
 // -- horario --
@@ -1532,27 +1561,31 @@ app.get('/estudiante/:id', isLoggedIn, function(req, res){
                             for(i=0; notas.length > i; i++){
                                 ids.push(notas[i].asignatura_id)
                             }
-                            var query=Asignatura.find({_id: {$in: ids}});
-                            query.sort('nivel')
-                            query.exec(function(err, asignaturas){
-                                var signatures=new Array();
-                                for(i=0; asignaturas.length > i; i++){
-                                    var y=new Array();
-                                    for(j=0; notas.length > j; j++){
-                                        if(asignaturas[i].id == notas[j].asignatura_id){
-                                            y['id']=asignaturas[i].id
-                                            y['nombre']=asignaturas[i].nombre
-                                            y['nivel']=asignaturas[i].nivel
-                                            y['credito']=asignaturas[i].cradito
-                                            y['nota']=notas[j].nota
-                                            signatures.push(y)
-                                            break
+                            Asignatura.count({_id: {$in: ids}}, function(err, asignaturaCount){
+                                if(asignaturaCount > 0){
+                                    Asignatura.find({_id: {$in: ids}}, {}, {nivel:-1}, function(err, asignaturas) {
+                                        var signatures = new Array();
+                                        for (i = 0; asignaturas.length > i; i++) {
+                                            var y = new Array();
+                                            for (j = 0; notas.length > j; j++) {
+                                                if (asignaturas[i].id == notas[j].asignatura_id) {
+                                                    y['id'] = asignaturas[i].id
+                                                    y['nombre'] = asignaturas[i].nombre
+                                                    y['nivel'] = asignaturas[i].nivel
+                                                    y['credito'] = asignaturas[i].cradito
+                                                    y['electiva'] = asignaturas[i].electiva
+                                                    y['nota'] = notas[j].nota
+                                                    signatures.push(y)
+                                                    break
+                                                }
+                                            }
+
                                         }
-                                    }
-
+                                        res.render('estudiante/show', {programa: programa, postgrado: postgrado, cohorte: cohorte, estudiante: req.estudiante, datos: datos, nivel: asignaturas[0].nivel, asignaturas: signatures, datafinancieras: datofi});
+                                    });
+                                }else{
+                                    res.redirect('/cohorte/'+req.estudiante.cohorte)
                                 }
-                                res.render('estudiante/show', {programa:programa, postgrado:postgrado, cohorte:cohorte, estudiante:req.estudiante, datos:datos, nivel:asignaturas[0].nivel, asignaturas:signatures, datafinancieras:datofi});
-
                             });
 
                         });
@@ -1637,7 +1670,59 @@ app.post('/estudiante/proof', isLoggedIn, function(req, res){
             valor: b.valor
         }
     ).save(function(err, datof){
-            res.redirect('/estudiante/'+b.estudiante)
+            if(err) res.json(err)
+            Estudiante.findOne({_id: b.estudiante}, function(err, estudiante){
+                //console.log('estudiante:'+estudiante)
+                Cohorte.findOne({_id:estudiante.cohorte}, function(err, cohorte){
+                    //console.log('cohorte:'+cohorte)
+                    Nota.find({estudiante_id:estudiante.id}, function(err, notas){
+                        //console.log('notas:'+notas)
+                        var ids=new Array()
+                        for(i=0; notas.length > i; i++){
+                            ids.push(notas[i].asignatura_id)
+                        }
+                        Asignatura.find({_id: {$in : ids}}, {nivel:1}, {sort:{nivel:-1}}, function(err, nivelEstudiante){
+                            //console.log('semestre del estudiante:'+nivelEstudiante[0].nivel)
+                            var n=nivelEstudiante[0].nivel+1
+                            //console.log('semestra a promover:'+n)
+                            Asignatura.count({pensum_id:cohorte.pensum_id, nivel:n, electiva:false}, function(err, asignaturasCount){
+
+                                if(asignaturasCount > 0){
+                                    Asignatura.find({pensum_id:cohorte.pensum_id, nivel:n, electiva:false}, function(err, asignaturas){
+                                        for(i=0; asignaturas.length > i; i++){
+                                            new Nota(
+                                                {
+                                                    estudiante_id:estudiante.id,
+                                                    asignatura_id:asignaturas[i].id,
+                                                    nota:''
+                                                }
+                                            ).save(function(err, nota){
+                                                    if(err) res.json(err)
+                                                });
+                                        }
+
+                                        Cohorte.update(
+                                            {_id:cohorte.id},
+                                            {
+                                                nivel:n
+                                            },
+                                            function(err){
+                                                if(err) res.json(err)
+                                                res.redirect('/estudiante/'+estudiante.id)
+                                            }
+                                        );
+
+                                    });
+                                }else{
+                                    //console.log('no hay asignaturas')
+                                }
+
+                            });
+                        });
+                    });
+                });
+            });
+            //res.redirect('/estudiante/'+b.estudiante)
         });
 });
 // END ESTUDIANTE

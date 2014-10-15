@@ -217,14 +217,12 @@ block content
 
                                             th
                                                 h3.text-center
-                                                    -if (i < cohorte.nivel){
-                                                        span.btn.btn-default.disabled
-                                                            | #{i}
-                                                    -}
+
                                                     -if (i == cohorte.nivel){
                                                         span.btn.btn-warning
                                                             | #{i}
                                                     -}else{
+
                                                         span.btn.btn-default
                                                             | #{i}
                                                     -}

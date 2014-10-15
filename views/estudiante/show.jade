@@ -183,6 +183,13 @@ block content
 
                                                     td(width="45%")
                                                         span.text-primary #{asignatura.nombre}
+                                                        br
+                                                        -if (asignatura.electiva == true){
+                                                            span.label.label-default Electiva
+                                                            -if (asignatura.nota == null){
+                                                                a(href="/asignatura/remove/#{asignatura.id}/#{estudiante.id}").btn.btn-danger.btn-xs.margin-left-1 Cancelar
+                                                            -}
+                                                        -}
                                                     td(width="25%"): p.text-center
                                                         span #{asignatura.nivel}
                                                     td(width="15%"): p.text-center

@@ -1,0 +1,88 @@
+extends ../layout
+block content
+    include ../directorHead
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li.active Registro de asignaturas
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Creacion de electiva
+                    br
+                    span.text-primary &nbsp; #{postgrado.nombre}
+                    br
+                    span.text-primary: strong &nbsp; #{programa.nombre}
+                p.lead.text-center
+                    span.text-info Paso #1:
+                    span.text-muted &nbsp; Informacion general de la asignatura
+                .well.bs-component
+                    form(method="POST", action="/asignatura/create/#{pensum.id}").form-horizontal
+                        input(type="hidden", name="programa", value="#{programa.nombre}")
+                        input(type="hidden", name="postgrado", value="#{postgrado.nombre}")
+                        input(type="hidden", name="pensumid", value="#{pensum.id}")
+                        input(type="hidden", name="pensumnom", value="#{pensum.nombre}")
+                        faildset
+                            legend Crear asignatura
+                            .form-group
+                                label(for="inputNombre", class="col-lg-2 control-label") Nombre
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-bookmark
+                                        input(type="text", name="nombre", autocomplete="off", required).form-control
+                                    p.text-muted Nombre identificador de la asignatura
+                            .form-group
+                                label(for="inputNivel", class="col-lg-2 control-label") Semestre
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-thumb-tack
+                                        input(type="number", name="nivel", min="0", required).form-control
+                                    p.text-muted Posicion academica semestral a la que pertenece la asignatura
+                            .form-group
+                                label(for="inputCreditos", class="col-lg-2 control-label") Creditos
+                                .col-lg-10
+                                    .input-group
+                                        span.input-group-addon
+                                            i.fa.fa-puzzle-piece
+                                        input(type="number", name="creditos", min="0", max="5", required).form-control
+                                    p.text-muted Creditos academicos de la asignatura
+                            -if (maestria == true){
+                                .form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Electiva
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="electiva",value="true", checked)
+                                                span.text-primary.text-margin-left Sí, es una electiva.
+                                div(id="modo").form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Tipo de Electiva
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="modalidad",value="Profundización", checked)
+                                                span.text-primary.text-margin-left De Profundización.
+                                            .list-group-item
+                                                input(type="radio", name="modalidad",value="Investigación")
+                                                span.text-primary.text-margin-left De Investigación
+
+                            -}else{
+                                .form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Electiva
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="electiva",value="true", checked)
+                                                span.text-primary.text-margin-left Sí, es una electiva
+                            -}
+                            legend
+                            .form-group
+                                .col-lg-10.col-lg-offset-2
+                                    a(href="/pensum/#{pensum.id}").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; Cancelar
+                                    button(type="submit", class="btn btn-primary")
+                                        i.fa.fa-plus
+                                        | &nbsp; Registrar asignatura
