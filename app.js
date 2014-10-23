@@ -110,7 +110,8 @@ var ProfesorSchema=new mongoose.Schema({
     codigo:String,
     contrasena:String,
     datos_personales:String,
-    programa_id:String
+    programa_id:String,
+    status:Number
 });
 Profesor=mongoose.model('Profesor', ProfesorSchema);
 
@@ -217,6 +218,14 @@ app.get('/loginAdmin', function(req, res){
         res.render('loginAdministrador')
     }
 });
+app.get('/loginTeach', function(req, res){
+    var x=req.flash('error')
+    if(x[0] == 1 || x[0] == 2){
+        res.render('loginTeach', {error:x[0]})
+    }else{
+        res.render('loginTeach')
+    }
+});
 
 passport.use('Directores', new LocalEstrategy(
     {
@@ -224,7 +233,7 @@ passport.use('Directores', new LocalEstrategy(
         passwordField: 'contrasena'
     },
     function(usuario, contrasena, done) {
-        console.log('entro por director')
+        console.log('entro director')
         Director.findOne({ usuario: usuario }, function(err, dir) {
             if (err) { return done(err); }
             if (!dir) {
@@ -243,13 +252,32 @@ passport.use('Administrador', new LocalEstrategy(
         passwordField: 'contrasena'
     },
     function(usuario, contrasena, done) {
-        console.log('entro por administrador')
+        console.log('entro administrador')
         Director.findOne({ usuario: usuario }, function(err, dir) {
             if (err) { return done(err); }
             if (!dir) {
                 return done(null, false, { message: '1'});
             }
             if (validAdministrador(dir, contrasena)==false) {
+                return done(null, false, { message: '2'});
+            }
+            return done(null, dir);
+        });
+    }
+));
+passport.use('Docentes', new LocalEstrategy(
+    {
+        usernameField: 'codigo',
+        passwordField: 'contrasena'
+    },
+    function(codigo, contrasena, done) {
+        console.log('entro docente')
+        Profesor.findOne({ codigo: codigo }, function(err, dir) {
+            if (err) { return done(err); }
+            if (!dir) {
+                return done(null, false, { message: '1'});
+            }
+            if (validDocente(dir, contrasena)==false) {
                 return done(null, false, { message: '2'});
             }
             return done(null, dir);
@@ -263,7 +291,13 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(id, done) {
     Director.findById(id, function(err, user) {
-        done(err, user);
+        if(user == null){
+            Profesor.findById(id, function(err, user){
+                done(err, user);
+            });
+        }else{
+            done(err, user);
+        }
     });
 });
 
@@ -276,6 +310,11 @@ app.post('/login',
 app.post('/loginAd',
     passport.authenticate('Administrador', { successRedirect: '/administrador/profile',
         failureRedirect: '/loginAdmin',
+        failureFlash: true })
+);
+app.post('/loginTeach',
+    passport.authenticate('Docentes', { successRedirect: '/docente/profile',
+        failureRedirect: '/loginTeach',
         failureFlash: true })
 );
 
@@ -296,9 +335,16 @@ function validAdministrador(d, p){
     return false;
 
 }
+function validDocente(d, p){
+    if(d.contrasena==p){
+        return true
+    }
+    return false;
+
+}
 
 function isLoggedIn(req, res, next){
-    if(req.isAuthenticated('Director')){
+    if(req.isAuthenticated('Directores')){
         return next();
     }
     res.redirect('/login');
@@ -308,6 +354,13 @@ function isLoggedInAdmin(req, res, next){
         return next();
     }
     res.redirect('/loginAdmin');
+}
+function isLoggedInTeach(req, res, next){
+    if(req.isAuthenticated('Docentes')){
+
+        return next();
+    }
+    res.redirect('/loginTeach');
 }
 
 //END LOGIN
@@ -321,6 +374,10 @@ app.get('/logOut', function(req, res){
 app.get('/logOutAdmin', function(req, res){
     req.logOut();
     res.redirect('/loginAdmin');
+});
+app.get('/logOutTeach', function(req, res){
+    req.logOut();
+    res.redirect('/loginTeach');
 });
 
 // END LOGOUT
@@ -1339,6 +1396,12 @@ app.param('id', function(req, res, next, id){
         next();
     });
 });
+app.param('cohorte', function(req, res, next, id){
+    Cohorte.findOne({_id:id}, function(err, cohorte){
+        req.cohorte=cohorte;
+        next();
+    });
+});
 
 // show
 app.get('/cohorte/:id', isLoggedIn, function(req, res){
@@ -1854,6 +1917,148 @@ app.get('/preinscripcion/delete/:id', isLoggedIn, function(req, res){
 
 // DOCENTE
 
+// docente profile
+app.get('/docente/profile', isLoggedInTeach, function(req, res){
+
+    if(req.user.codigo == req.user.contrasena){
+        res.redirect('/docente/first/'+req.user.id)
+    }else{
+        Programa.findOne({_id:req.user.programa_id}, function(err, programa){
+            DatosPersonales.findOne({_id:req.user.datos_personales}, function(err, datos){
+                var teaching=new Array()
+                teaching['docente']=req.user
+                teaching['programa']=programa
+                teaching['datos']=datos
+                teaching['asignaturas']=null
+                Asignatura.count({profesor_id:req.user.id}, function(err, asignaturasCount){
+                    if(asignaturasCount > 0){
+                        Asignatura.find({profesor_id:req.user.id}, function(err, asignaturas){
+                            teaching['asignaturas']=asignaturas
+                            res.render('docente/profile', {profesor:teaching, asignaturacount:asignaturasCount})
+                        });
+                    }else{
+                        res.render('docente/profile', {profesor:teaching, asignaturacount:asignaturasCount})
+                    }
+
+                });
+            });
+        });
+    }
+
+});
+
+// docente, materias por cohorte
+app.get('/docente/subject/:asig/:profesor', isLoggedInTeach, function(req, res){
+    DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, datos){
+        Pensum.findOne({_id:req.asig.pensum_id}, function(err, pensum){
+            Postgrado.findOne({_id:pensum.postgrado_id}, function(err, postgrado){
+                Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
+                    var datenow=new Date()
+                    Cohorte.count({pensum_id:pensum.id, fecha_termina_clase:{$gt:datenow}}, function(err, cohortesCount){
+                        if(cohortesCount > 0){
+                            Cohorte.find({pensum_id:pensum.id, fecha_termina_clase:{$gt:datenow}}, function(err, cohortes){
+                                res.render('docente/subjectCohort', {profesor:req.profesor, datos:datos, materia:req.asig, pensum:pensum, postgrado:postgrado, programa:programa, cohortescount:cohortesCount, cohortes:cohortes})
+                            });
+                        }else{
+                            res.render('docente/subjectCohort', {profesor:req.profesor, datos:datos, materia:req.asig, pensum:pensum, postgrado:postgrado, programa:programa, cohortescount:cohortesCount})
+                        }
+                    });
+                });
+            });
+        });
+    });
+});
+
+// change resources link
+app.put('/asignatura/link', function(req, res){
+    var b=req.body
+    Asignatura.update(
+        {_id: b.materia},
+        {
+            material_url: b.link
+        },
+        function(err){
+            if(err) res.json(err)
+            res.redirect('/docente/subject/'+ b.materia+'/'+ b.profesor)
+        }
+    );
+});
+
+// qualify students
+app.get('/docente/qualify/:asig/:profesor/:cohorte', isLoggedInTeach, function(req, res){
+    DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, datosp){
+        Pensum.findOne({_id:req.asig.pensum_id}, function(err, pensum){
+            Postgrado.findOne({_id:pensum.postgrado_id}, function(err, postgrado){
+                Programa.findOne({_id:postgrado.programa_id}, function(err, programa){
+                    Estudiante.count({cohorte:req.cohorte.id}, function(err, estudiantesCount){
+                        if(estudiantesCount > 0){
+                            Estudiante.find({cohorte:req.cohorte.id}, function(err, estudiantes){
+                                var ids=new Array()
+                                for(i=0; estudiantesCount > i; i++){
+                                    ids.push(estudiantes[i].datos_personales)
+                                }
+                                DatosPersonales.find({_id: {$in : ids}}, function(err, datos){
+                                    Nota.find({asignatura_id:req.asig.id}, function(err, notas){
+                                        var students=new Array()
+
+                                        for(i=0; estudiantesCount > i; i++){
+                                            var tem=new Array()
+                                            tem['estudiante']=estudiantes[i]
+
+                                            for(j=0; datos.length > j; j++){
+                                                if(estudiantes[i].datos_personales == datos[j].id){
+                                                    tem['datos']=datos[j]
+                                                    break
+                                                }
+                                            }
+                                            for(k=0; notas.length > k; k++){
+                                                if(estudiantes[i].id == notas[k].estudiante_id){
+                                                    tem['nota']=notas[k].nota
+                                                    break
+                                                }
+                                            }
+                                            students.push(tem)
+                                        }
+                                        res.render('docente/qualifyStudents', {materia:req.asig, profesor:req.profesor, cohorte:req.cohorte, datos:datosp, pensum:pensum, postgrado:postgrado, programa:programa, estudiantescount:estudiantesCount, estudiantes:students})
+                                    });
+                                });
+                            });
+                        }else{
+                            res.render('docente/qualifyStudents', {materia:req.asig, profesor:req.profesor, cohorte:req.cohorte, datos:datosp, pensum:pensum, postgrado:postgrado, programa:programa, estudiantescount:estudiantesCount})
+                        }
+                    });
+                });
+            });
+        });
+    });
+});
+
+// save qualify
+app.put('/docente/qualify', function(req, res){
+    var b=req.body
+    for(i=0; b.estudiante.length > i; i++){
+        Nota.update(
+            {
+                estudiante_id: b.estudiante[i],
+                asignatura_id: b.materia
+            },
+            {
+                nota: b.nota[i]
+            },
+            function(err){
+                if(err) res.json(err)
+            }
+        );
+    }
+    res.redirect('/docente/qualify/'+b.materia+'/'+ b.profesor+'/'+ b.cohorte+'')
+});
+
+app.get('/docente/first/:profesor', isLoggedInTeach, function(req, res){
+    DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, datos){
+        res.render('docente/firstTime', {docente:req.profesor, datos:datos})
+    });
+});
+
 // create
 app.get('/docente/change/:id', isLoggedIn, function(req, res){
     res.render('docente/index', {asignatura:req.asignatura});
@@ -1901,7 +2106,16 @@ app.post('/docente/select', isLoggedIn, function(req, res){
             profesor_id: b.docente
         },
         function(err){
-            res.redirect('/asignatura/'+ b.asignatura);
+            if(err) res.json(err)
+            Profesor.update(
+                {_id:req.profesorbe},
+                {status:0},
+                function(err){
+                    if(err) res.json(err)
+                    res.redirect('/asignatura/'+ b.asignatura);
+                }
+            );
+
         }
     );
 
@@ -1940,7 +2154,8 @@ app.post('/docente/add', isLoggedIn, function(req, res){
                             codigo:dato.documento,
                             contrasena:dato.documento,
                             datos_personales:dato.id,
-                            programa_id: b.programa
+                            programa_id: b.programa,
+                            status:1
 
                         },
                         function(err, profesor){
@@ -1955,7 +2170,16 @@ app.post('/docente/add', isLoggedIn, function(req, res){
                                     profesor_id:profesor.id
                                 },
                                 function(err){
-                                    res.redirect('/asignatura/'+ b.asignatura);
+                                    if(err) res.json(err)
+                                    Profesor.update(
+                                        {_id:req.profesorbe},
+                                        {status:0},
+                                        function(err){
+                                            if(err) res.json(err)
+                                            res.redirect('/asignatura/'+ b.asignatura);
+                                        }
+                                    );
+
                                 }
                             );
 
@@ -1966,6 +2190,12 @@ app.post('/docente/add', isLoggedIn, function(req, res){
     });
 });
 app.param('id', function(req, res, next, id){
+    Profesor.findOne({_id:id}, function(err, profesor){
+        req.profesor=profesor;
+        next();
+    });
+});
+app.param('profesor', function(req, res, next, id){
     Profesor.findOne({_id:id}, function(err, profesor){
         req.profesor=profesor;
         next();
@@ -2024,6 +2254,19 @@ app.put('/docente/edit', isLoggedIn, function(req, res){
                 function(err){
                     if(err) res.json(err)
                     res.redirect('/docente/'+ b.docente+'/'+ b.asignatura)
+                }
+            );
+            break;
+
+        case '3':
+            Profesor.update(
+                {_id: b.docente},
+                {
+                    contrasena: b.pass
+                },
+                function(err){
+                    if(err) res.json(err)
+                    res.redirect('/logOutTeach')
                 }
             );
             break;

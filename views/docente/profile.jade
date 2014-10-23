@@ -1,0 +1,62 @@
+extends ../layout
+block content
+    include ../teachHead
+    .container
+        .row
+            .col-sm-8
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-heading
+                            h5
+                                i.fa.fa-mortar-board
+                                | &nbsp; Materias Relacionadas
+                                span.badge.margin-left-1 #{asignaturacount}
+                        .panel-body
+                            p.lead Lista de materias que se encuentran relacionadas al docente
+                            .list-group
+                                -if (profesor.asignaturas != null){
+                                    each asignatura in profesor.asignaturas
+                                        .list-group-item
+                                            .list-group-item-heading
+                                                table.table.margin-botton-none
+                                                    tr
+                                                        td(width="80%")
+                                                            h4.text-primary #{asignatura.nombre}
+                                                            h4
+                                                                span.label.label-info Nivel: #{asignatura.nivel}
+                                                                span.label.label-info.margin-left-1 Creditos: #{asignatura.cradito}
+                                                                -if (asignatura.electiva == true){
+                                                                    span.label.label-default.margin-left-1 Electiva
+                                                                -}
+                                                        td(width="20%", align="center")
+                                                            blockquote
+                                                                a(href="/docente/subject/#{asignatura.id}/#{profesor.docente.id}").btn.btn-default.btn-sm
+                                                                    i.fa.fa-cog
+                                                                    | &nbsp; Administrar
+                                -}else{
+                                    p.text-center.text-info No existen materias relacionadas al docente
+                                -}
+            .col-sm-4
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Departamento
+                            h4.text-center #{profesor.programa.nombre}
+                            h5.text-center
+                                span.label.label-default
+                                    i.fa.fa-bookmark
+                                    | &nbsp; Departamento
+
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Datos del docente
+                            h4.text-center.text-primary #{profesor.datos.nombres} #{profesor.datos.apellidos}
+                            h5.text-center
+                                span.label.label-warning
+                                    i.fa.fa-user
+                                    | &nbsp; Docente
+                            p.text-center Asignaturas
+                            h2.text-center
+                                span.label.label-primary.text-size #{asignaturacount}
+                            .margin-botton
+

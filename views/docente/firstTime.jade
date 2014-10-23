@@ -1,0 +1,38 @@
+extends ../layout
+block content
+    include ../teachHead
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li.active Cambio de contraseña
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Cambio de contraseña del docente
+                    span.text-primary &nbsp; #{datos.nombres} #{datos.apellidos}
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-heading
+                            h5
+                                i.fa.fa-unlock
+                                | &nbsp; Cambio de contraseña del docente
+                        .panel-body
+                            p.lead.text-muted Por Favor digite la nueva contraseña para el docente
+                            form(method="POST", action="/docente/edit").form-horizontal
+                                input(type="hidden", name="_method", value="PUT")
+                                input(type="hidden", name="docente", value="#{docente.id}")
+                                input(type="hidden", name="case", value="3")
+                                fieldset
+                                    .form-group
+                                        label(for="inputpass", class="col-lg-2 control-label") Contraseña nueva
+                                        .col-lg-10
+                                            .input-group
+                                                span.input-group-addon
+                                                    i.fa.fa-unlock-alt
+                                                input(type="password", name="pass", required).form-control
+                                            p.text-muted Digite la nueva contraseña
+                                    .form-group
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary
+                                            i.fa.fa-save
+                                            | &nbsp; Guardar Cambios

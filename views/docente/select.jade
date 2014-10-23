@@ -21,6 +21,7 @@ block content
                 .well.bs-component
                     form(method="POST", action="/docente/select").form-horizontal
                         input(type="hidden", name="asignatura", value="#{asignatura.id}")
+                        input(type="hidden", name="profesorbe", value="#{asignatura.profesor_id}")
                         legend Seleccion de docente
                         p.text-muted Seleccione de la siguente lista el docente que desea registrar en la asignatura
                         .list-group.scroll-list

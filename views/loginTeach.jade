@@ -1,4 +1,6 @@
-extends layoutad
+//
+   Created by fabiancote on 7/22/14.
+extends layoutth
 block content
     .navbar.navbar-default
         .container
@@ -10,25 +12,24 @@ block content
                     span.icon-bar
             .navbar-collapse.collapse.navbar-responsive-collapse
                 ul.nav.navbar-nav
-                    li.active
-                        a(href="/loginAdmin") Administrador
                     li
+                        a(href="/loginAdmin") Administrador
+                    li.active
                         a(href="/login") Director
                     li
                         a(href="#") Docente
-
     .container
         .row
             .col-lg-4
-                h1.text-bg Bienvenido Admnistrador de sistema!!
-                p.lead.text-bg Para ingresar a su cuenta de administracion, por favor ingrese los datos requeridos a continuacion.
+                h1.text-bg Bienvenido Docente!!
+                p.lead.text-bg Para ingresar a su cuenta, por favor ingrese los datos requeridos a continuacion.
                 .well.bs-component
-                    form(class="form-horizontal", method="POST", action="/loginAd")
+                    form(class="form-horizontal", method="POST", action="/loginTeach")
                         fieldset
                             legend Formulario de ingreso
                             -if (error == 1){
                                 .alert.alert-dismissable.alert-danger
-                                    strong Cuenta de usuario no valida
+                                    strong Codigo de docente
                                     br
                                     | La cuenta de usuario que ingresaste no pertenece a ninguna cuenta
                             -}
@@ -39,12 +40,12 @@ block content
                                     | La contraseña asociada a esta cuenta es incorrecta
                             -}
                             .form-group
-                                label(for="inputUsuario", class="col-lg-2 control-label") Usuario
+                                label(for="inputUsuario", class="col-lg-2 control-label") Codigo
                                 .col-lg-10
                                     .input-group
                                         span.input-group-addon
                                             i.glyphicon.glyphicon-user
-                                        input(type="text", name="usuario", placeholder="Digite Nombre de Usuario", required, autofocus=).form-control
+                                        input(type="text", name="codigo", placeholder="Digite Nombre de Usuario", required, autofocus=).form-control
                             .form-group
                                 label(for="inputContrasena", class="col-lg-2 control-label") Clave
                                 .col-lg-10

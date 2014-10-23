@@ -22,6 +22,7 @@ block content
                 .well.bs-component
                     form(method="POST", action="/docente/add").form-horizontal
                         input(type="hidden", name="asignatura", value="#{asignatura.id}")
+                        input(type="hidden", name="profesorbe", value="#{asignatura.profesor_id}")
                         input(type="hidden", name="programa", value="#{programa.id}")
                         faildset
                             legend Formulario de registro de Docentes

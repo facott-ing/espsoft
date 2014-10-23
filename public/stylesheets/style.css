@@ -100,3 +100,6 @@ button{
     display: inline-block;
     padding: 8px 10px;
 }
+.input-size-small{
+    width: 30px;
+}

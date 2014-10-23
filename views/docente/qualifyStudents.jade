@@ -1,0 +1,100 @@
+extends ../layout
+block content
+    include ../teachHead
+    .container
+        .row
+            .col-sm-8
+                .col-lg-12
+                    ul.breadcrumb
+                        li: a(href="/docente/profile") Inicio
+                        li: a(href="/docente/subject/#{materia.id}/#{profesor.id}") Asignatura
+                        li.active Cohorte
+                    .margin-botton
+                    p.text-center
+                        a(href="/docente/subject/#{materia.id}/#{profesor.id}").btn.btn-default.btn-xs
+                            i.fa.fa-chevron-circle-left
+                            | &nbsp; Volver a asignatura por cohortes
+                    .margin-botton
+                    -if (estudiantescount > 0){
+                        h3.text-center
+                            stron.lead Nombre de la cohorte
+                            span.label.label-primary.margin-left-1 #{cohorte.nombre}
+
+
+                        .margin-botton
+                        .panel.panel-default
+                            .panel-body
+
+                                table.table.margin-botton-none
+                                    thead
+                                        tr
+                                            th(width="30%", align="center")
+                                                p.text-center Codigo
+                                            th(width="60%", align="center")
+                                                p Nombre del estudiante
+                                            th(width="10%", align="center")
+                                                p.text-center Nota
+                                form(method="POST", action="/docente/qualify").form-horizontal
+                                    input(type="hidden", name="_method", value="PUT")
+                                    input(type="hidden", name="materia", value="#{materia.id}")
+                                    input(type="hidden", name="profesor", value="#{profesor.id}")
+                                    input(type="hidden", name="cohorte", value="#{cohorte.id}")
+
+                                    each estudiante in estudiantes
+                                        input(type="hidden", name="estudiante", value="#{estudiante.estudiante.id}")
+                                        table.table.margin-botton-none
+                                            tr
+                                                td(width="30%", align="center")
+                                                    h5 #{estudiante.estudiante.codigo}
+                                                td(width="60%")
+                                                    h4.text-primary #{estudiante.datos.nombres} #{estudiante.datos.apellidos}
+                                                td(width="10%", align="center")
+
+                                                        .input-group
+                                                            -if (estudiante.nota != null){
+                                                                input(type="text", name="nota", value="#{estudiante.nota}", max="5", min="0").form-control.input-sm
+                                                            -}else{
+                                                                input(type="text", name="nota", max="5", min="0").form-control.input-sm
+                                                        -}
+
+                                    legend
+                                    .form-group
+                                        h5.text-center
+                                            button(type="submit").btn.btn-primary.btn-sm
+                                                i.fa.fa-save
+                                                | &nbsp; Guardar Cambios
+
+                    -}else{
+                    -}
+            .col-sm-4
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Departamento
+                            h4.text-center #{programa.nombre}
+                            h5.text-center
+                                span.label.label-default
+                                    i.fa.fa-bookmark
+                                    | &nbsp; Departamento
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Datos del docente
+                            h4.text-center.text-primary #{datos.nombres} #{datos.apellidos}
+                            h5.text-center
+                                span.label.label-warning
+                                    i.fa.fa-user
+                                    | &nbsp; Docente
+                            p.text-center
+                                a(href="/docente/profile").btn.btn-default.btn-sm
+                                    i.fa.fa-home
+                                    | &nbsp; Inicio
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Materia
+                            h4.text-center #{materia.nombre}
+                            h5.text-center.text-primary #{postgrado.nombre}
+                            h4.text-center
+                                span.label.label-success
+                                    i.fa.fa-book
+                                    | &nbsp; #{pensum.nombre}
+                            .margin-botton

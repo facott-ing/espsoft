@@ -1,0 +1,100 @@
+extends ../layout
+block content
+    include ../teachHead
+    .container
+        .row
+            .col-sm-8
+                .col-lg-12
+                    ul.breadcrumb
+                        li: a(href="/docente/profile") Inicio
+                        li.active Asignatura
+                    .margin-botton
+                    -if (cohortescount > 0){
+                        each cohorte in cohortes
+                            .panel.panel-default
+                                .panel-body
+                                    h3.text-center
+                                        stron.lead Nombre de la cohorte
+                                        span.label.label-primary.margin-left-1 #{cohorte.nombre}
+                                    legend
+                                    p.text-muted.text-center Fechas informactivas de la cohorte
+                                    h5.text-center
+                                        ol.list-dates
+
+                                            li: strong Inicio de Clases: &nbsp;
+                                                em.label.label-warning
+                                                    i.fa.fa-calendar
+                                                    | &nbsp; #{cohorte.fecha_introduccion.toISOString().slice(0, 10)}
+                                            li: strong Termina Clases: &nbsp;
+                                                em.label.label-warning
+                                                    i.fa.fa-calendar
+                                                    | &nbsp; #{cohorte.fecha_termina_clase.toISOString().slice(0, 10)}
+                                    .margin-botton
+                                    p.text-center
+                                        a(href="/docente/qualify/#{materia.id}/#{profesor.id}/#{cohorte.id}").btn.btn-default.btn-lg
+                                            i.fa.fa-search
+                                            | &nbsp; Ver estudiantes
+                    -}else{
+                        p.text-center.text-muted No se encuentran cohortes en donde se este dictando esta materia
+                    -}
+
+
+            .col-sm-4
+                .col-lg-12
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Departamento
+                            h4.text-center #{programa.nombre}
+                            h5.text-center
+                                span.label.label-default
+                                    i.fa.fa-bookmark
+                                    | &nbsp; Departamento
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Datos del docente
+                            h4.text-center.text-primary #{datos.nombres} #{datos.apellidos}
+                            h5.text-center
+                                span.label.label-warning
+                                    i.fa.fa-user
+                                    | &nbsp; Docente
+                            p.text-center
+                                a(href="/docente/profile").btn.btn-default.btn-sm
+                                    i.fa.fa-home
+                                    | &nbsp; Inicio
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-muted Materia
+                            h4.text-center #{materia.nombre}
+                            h5.text-center.text-primary #{postgrado.nombre}
+                            h4.text-center
+                                span.label.label-success
+                                    i.fa.fa-book
+                                    | &nbsp; #{pensum.nombre}
+                            p.text-center Cohortes
+                            h2.text-center
+                                span.label.label-primary.text-size #{cohortescount}
+                            .margin-botton
+                    .panel.panel-primary
+                        .panel-body
+                            p.lead.text-center.text-muted Recursos Academicos
+                            p.text-center Localizador de recursos URL de la materia, donde se encuentran alojados los documentos de ayuda academica para los estudiantes.
+                            form(method="POST", action="/asignatura/link").form-horizontal
+                                input(type="hidden", name="_method", value="PUT")
+                                input(type="hidden", name="materia", value="#{materia.id}")
+                                input(type="hidden", name="profesor", value="#{profesor.id}")
+                                .input-group
+                                    span.input-group-addon
+                                        i.fa.fa-external-link-square
+                                    -if(materia.material_url == ''){
+                                        input(type="text", name="link", placeholder="La materia no tiene recursos academicos").form-control
+                                    -}else{
+                                        input(type="text", name="link", value="#{materia.material_url}").form-control
+                                    -}
+                                legend
+                                .form-group
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary.btn-sm
+                                            i.fa.fa-save
+                                            | &nbsp; Guardar Cambios
+
+
