@@ -20,7 +20,7 @@ block content
                             | &nbsp; Volver a la asignatura
                 .margin-botton
                 .well.bs-component
-                    form(method="POST", action="/docente/add").form-horizontal
+                    form(method="POST", action="/docente/add", id="form-create-tea").form-horizontal
                         input(type="hidden", name="asignatura", value="#{asignatura.id}")
                         input(type="hidden", name="profesorbe", value="#{asignatura.profesor_id}")
                         input(type="hidden", name="programa", value="#{programa.id}")
@@ -83,3 +83,79 @@ block content
                                     button(type="submit").btn.btn-primary
                                         i.fa.fa-plus
                                         | &nbsp; Agregar Docente
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-create-tea')
+                .find('[name="tipodoc"]')
+                    .change(function(e) {
+                        // revalidate the language when it is changed
+                        $('#form-add-preins').bootstrapValidator('revalidateField', 'tipodoc');
+                    })
+
+                    .end()
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        nombres: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        apellidos: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        tipodoc: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione un tipo de documento.'
+                                }
+                            }
+                        },
+                        numdoc: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        email: {
+                            validators: {
+                                notEmpty: {},
+                                emailAddress :{
+
+                                }
+                            }
+                        },
+                        telefono: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 20
+                                }
+                            }
+                        }
+                    }
+            });
+        });

@@ -4,7 +4,7 @@ block content
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
-            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/postgrado/#{postgrado.id}") Posgrado
             li.active Registro de pensum
         .row
             .margin-auto
@@ -16,7 +16,7 @@ block content
                     span.text-info Paso #1:
                     span.text-muted &nbsp; Informacion general del pensum
                 .well.bs-component
-                    form(method="POST", action="/pensum/create").form-horizontal
+                    form(method="POST", action="/pensum/create", id="form-new-pensum").form-horizontal
                         input(type="hidden", name="programanom", value="#{programa.nombre}")
                         input(type="hidden", name="postgradoid", value="#{postgrado.id}")
                         input(type="hidden", name="postgradonom", value="#{postgrado.nombre}")
@@ -47,7 +47,7 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-calendar
-                                        input(type="date", name="fecha", required).form-control
+                                        input(type="date", name="fecha", required, placeholder="DD/MM/YYYY").form-control
                                     p.text-muted Fecha de la creacion del pensum
                             legend
                             .form-group
@@ -58,5 +58,49 @@ block content
                                     button(type="submit", class="btn btn-primary")
                                         i.fa.fa-save
                                         | &nbsp; Guardar pensum
-                            br
+    script(type="text/javascript").
+
+        $(document).ready(function() {
+            $('#form-new-pensum')
+
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        resolucion: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 4,
+                                    max: 30
+                                }
+                            }
+                        },
+                        nombre: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        fecha: {
+                            validators: {
+                                date: {
+                                        format: 'DD/MM/YYYY'
+                                    }
+                            }
+                        }
+                    }
+                });
+        });
+
+
 

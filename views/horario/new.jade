@@ -18,7 +18,7 @@ block content
                         i.fa.fa-chevron-circle-left
                         | &nbsp; Volver a la asignatura
                 .well.bs-component
-                    form(method="POST", action="/horario/create").form-horizontal
+                    form(method="POST", action="/horario/create", id="form-new-hora").form-horizontal
                         input(type="hidden", name="asignatura", value="#{asignatura.id}")
                         legend Crear horario de clases
                         fieldset
@@ -71,3 +71,26 @@ block content
                                     button(type="submit").btn.btn-primary
                                         i.fa.fa-plus
                                         | &nbsp; Agregar Horario de clase
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-new-hora')
+                .bootstrapValidator({
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        lugar: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        }
+                    }
+            });
+        });

@@ -103,3 +103,7 @@ button{
 .input-size-small{
     width: 30px;
 }
+#form-add-preins .selectContainer .form-control-feedback {
+    /* Adjust feedback icon position */
+    right: -15px;
+}

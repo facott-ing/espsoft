@@ -15,7 +15,7 @@ block content
                     span.text-info Paso #2:
                     span.text-muted &nbsp; Seleccione la fecha en la que fue realizado el pago
                 .well.bs-component
-                    form(method="POST", action="/preinscripcion/report").form-horizontal
+                    form(method="POST", action="/preinscripcion/report", id="form-report-insc").form-horizontal
                         input(type="hidden", name="inscrito", value="#{inscrito.id}")
                         faildset
                             legend
@@ -41,7 +41,7 @@ block content
                                         span.input-group-addon
                                             i.fa.fa-calendar-o
                                         input(type="date", name="fecha", required).form-control
-                                    p.text-muted Seleccione la fecha en la que fue realizado el pago de la matricula del postgrado
+                                    p.text-muted Seleccione la fecha en la que fue realizado el pago de la matricula del posgrado
 
                             .form-group
                                 label(for="valor", class="col-lg-2 control-label") Valor
@@ -60,3 +60,30 @@ block content
                                     button(type="submit", class="btn btn-primary")
                                         i.fa.fa-hand-o-right
                                         | &nbsp; Reportar el pago
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-report-insc')
+                    .bootstrapValidator({
+                        excluded: ':disabled',
+                        feedbackIcons: {
+                            valid: 'glyphicon glyphicon-ok',
+                            invalid: 'glyphicon glyphicon-remove',
+                            validating: 'glyphicon glyphicon-refresh'
+                        },
+                        fields: {
+                            fecha: {
+                                validators: {
+                                    date: {
+                                        format: 'DD/MM/YYYY'
+                                    }
+                                }
+                            },
+                            valor: {
+                                validators: {
+                                    integer: {}
+
+                                }
+                            }
+                        }
+                    });
+        });

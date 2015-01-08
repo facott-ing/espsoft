@@ -21,7 +21,7 @@ block content
                         | &nbsp; Volver al docente
 
                 .well.bs-component
-                    form(method="POST", action="/titulo/create").form-horizontal
+                    form(method="POST", action="/titulo/create", id="form-new-titulo").form-horizontal
                         input(type="hidden", name="docente", value="#{docente.id}")
                         input(type="hidden", name="asignatura", value="#{asignatura.id}")
                         legend Titulacion academica del docente
@@ -50,3 +50,37 @@ block content
                                     button(type="submit").btn.btn-primary
                                         i.fa.fa-plus
                                         | &nbsp; Agregar Titulo
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-new-titulo')
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        titulo: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        universidad: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        }
+                    }
+            });
+        });

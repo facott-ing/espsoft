@@ -4,7 +4,7 @@ block content
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
-            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/postgrado/#{postgrado.id}") Posgrado
             li.active Registro de asignaturas
         .row
             .margin-auto
@@ -18,7 +18,7 @@ block content
                     span.text-info Paso #1:
                     span.text-muted &nbsp; Informacion general de la asignatura
                 .well.bs-component
-                    form(method="POST", action="/asignatura/create/#{pensum.id}").form-horizontal
+                    form(method="POST", action="/asignatura/create/#{pensum.id}", id="form-new-asig").form-horizontal
                         input(type="hidden", name="programa", value="#{programa.nombre}")
                         input(type="hidden", name="postgrado", value="#{postgrado.nombre}")
                         input(type="hidden", name="pensumid", value="#{pensum.id}")
@@ -109,3 +109,43 @@ block content
                                     button(type="submit", class="btn btn-primary")
                                         i.fa.fa-plus
                                         | &nbsp; Registrar asignatura
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-new-asig')
+                    .bootstrapValidator({
+                        feedbackIcons: {
+                            valid: 'glyphicon glyphicon-ok',
+                            invalid: 'glyphicon glyphicon-remove',
+                            validating: 'glyphicon glyphicon-refresh'
+                        },
+                        fields: {
+                            nombre: {
+                                validators: {
+                                    notEmpty: {
+                                    },
+                                    stringLength: {
+                                        min: 3,
+                                        max: 30
+                                    }
+                                }
+                            },
+                            nivel: {
+                                validators: {
+                                    notEmpty: {
+                                    },
+                                    integer: {}
+
+                                }
+                            },
+                            creditos: {
+                                validators: {
+                                    notEmpty: {
+                                    },
+                                    integer: {}
+
+                                }
+                            }
+
+                        }
+                    });
+        });

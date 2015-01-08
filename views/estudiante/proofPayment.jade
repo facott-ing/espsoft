@@ -13,7 +13,7 @@ block content
                     strong Reporte comprobante de pago de estudiante
                 .margin-botton
                 .well.bs-component
-                    form(method="POST", action="/estudiante/proof").form-horizontal
+                    form(method="POST", action="/estudiante/proof", id="form-proof-pay").form-horizontal
                         input(type="hidden", name="estudiante", value="#{estudiante.id}")
                         fieldset
                             legend
@@ -30,7 +30,7 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-calendar
-                                        input(type="date", name="fecha", required).form-control
+                                        input(type="date", name="fecha", required, placeholder="DD/MM/YYYY").form-control
                                     p.text-muted Fecha que el estudiante realizo el importe
                             .form-group
                                 label(for="inputcon", class="col-lg-2 control-label") Concepto
@@ -56,3 +56,45 @@ block content
                                 button(type="submit").btn.btn-primary.ma
                                     i.fa.fa-save
                                     | &nbsp; Guardar y Promover el estudiante
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-proof-pay')
+                .bootstrapValidator({
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        fecha: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        valor: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                integer: {}
+
+                            }
+                        },
+                        concepto: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        }
+                    }
+            });
+        });

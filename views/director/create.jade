@@ -18,7 +18,7 @@ block content
                             | &nbsp; Volver al programa
                 .margin-botton
                 .well.bs-component
-                    form(method="POST", action="/director/create").form-horizontal
+                    form(method="POST", action="/director/create", id="form-create-dir").form-horizontal
                         input(type="hidden", name="programa", value="#{programa.id}")
                         faildset
                             legend Formulario de registro de Directores
@@ -79,3 +79,79 @@ block content
                                     button(type="submit").btn.btn-primary
                                         i.fa.fa-plus
                                         | &nbsp; Agregar y asignar director
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-create-dir')
+                .find('[name="tipodoc"]')
+                    .change(function(e) {
+                        // revalidate the language when it is changed
+                        $('#form-add-preins').bootstrapValidator('revalidateField', 'tipodoc');
+                    })
+
+                    .end()
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        nombres: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        apellidos: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        tipodoc: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione un tipo de documento.'
+                                }
+                            }
+                        },
+                        numdoc: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        email: {
+                            validators: {
+                                notEmpty: {},
+                                emailAddress :{
+
+                                }
+                            }
+                        },
+                        telefono: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 20
+                                }
+                            }
+                        }
+                    }
+            });
+        });

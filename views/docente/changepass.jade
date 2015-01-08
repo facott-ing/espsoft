@@ -25,7 +25,7 @@ block content
                                 |&nbsp; Cambio de contraseña del docente
                         .panel-body
                             p.lead.text-muted Por Favor digite la nueva contraseña para el docente
-                            form(method="POST", action="/docente/edit").form-horizontal
+                            form(method="POST", action="/docente/edit", id="form-change-pass").form-horizontal
                                 input(type="hidden", name="_method", value="PUT")
                                 input(type="hidden", name="asignatura", value="#{asignatura.id}")
                                 input(type="hidden", name="docente", value="#{docente.id}")
@@ -47,3 +47,28 @@ block content
                                         button(type="submit").btn.btn-primary
                                             i.fa.fa-save
                                             | &nbsp; Guardar Cambios
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-change-pass')
+
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        pass: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        }
+                    }
+            });
+        });

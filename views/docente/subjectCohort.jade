@@ -78,23 +78,46 @@ block content
                         .panel-body
                             p.lead.text-center.text-muted Recursos Academicos
                             p.text-center Localizador de recursos URL de la materia, donde se encuentran alojados los documentos de ayuda academica para los estudiantes.
-                            form(method="POST", action="/asignatura/link").form-horizontal
+                            form(method="POST", action="/asignatura/link", id="form-set-uri").form-horizontal
                                 input(type="hidden", name="_method", value="PUT")
                                 input(type="hidden", name="materia", value="#{materia.id}")
                                 input(type="hidden", name="profesor", value="#{profesor.id}")
-                                .input-group
-                                    span.input-group-addon
-                                        i.fa.fa-external-link-square
-                                    -if(materia.material_url == ''){
-                                        input(type="text", name="link", placeholder="La materia no tiene recursos academicos").form-control
-                                    -}else{
-                                        input(type="text", name="link", value="#{materia.material_url}").form-control
-                                    -}
-                                legend
-                                .form-group
-                                    h5.text-center
-                                        button(type="submit").btn.btn-primary.btn-sm
-                                            i.fa.fa-save
-                                            | &nbsp; Guardar Cambios
+                                faildset
 
-
+                                    .form-group
+                                        label(for="inputNombre", class="col-lg-2 control-label") Link
+                                        .col-lg-10
+                                            .input-group
+                                                -if(materia.material_url == ''){
+                                                    span.input-group-addon
+                                                        i.fa.fa-link
+                                                    input(type="text", name="link", placeholder="La materia no tiene recursos academicos").form-control
+                                                -}else{
+                                                    span.input-group-addon
+                                                        i.fa.fa-link
+                                                    input(type="text", name="link", value="#{materia.material_url}").form-control
+                                                -}
+                                    legend
+                                    .form-group
+                                        h5.text-center
+                                            button(type="submit").btn.btn-primary.btn-sm
+                                                i.fa.fa-save
+                                                | &nbsp; Guardar Cambios
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-set-uri')
+                .bootstrapValidator({
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        link: {
+                            validators: {
+                                uri: {}
+                            }
+                        }
+                    }
+            });
+        });

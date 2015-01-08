@@ -4,7 +4,7 @@ block content
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
-            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/postgrado/#{postgrado.id}") Posgrado
             li: a(href="/cohorte/#{cohorte.id}") Cohorte
             li.active Informacion del estudiante
 
@@ -30,7 +30,7 @@ block content
                             i.fa.fa-user
                             |&nbsp; Datos personales del estudiante
                     .panel-body
-                        form(method="POST", action="/estudiante/#{estudiante.id}").form-horizontal
+                        form(method="POST", action="/estudiante/#{estudiante.id}", id="form-edit-estu").form-horizontal
                             input(type="hidden", name="_method", value="PUT")
                             input(type="hidden", name="eid", value="#{estudiante.id}")
                             fieldset
@@ -200,4 +200,79 @@ block content
                                                         -}else{
                                                             p.text-center: strong #{asignatura.nota}
                                                         -}
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-edit-estu')
+                .find('[name="tipodoc"]')
+                    .change(function(e) {
+                        // revalidate the language when it is changed
+                        $('#form-add-preins').bootstrapValidator('revalidateField', 'tipodoc');
+                    })
 
+                    .end()
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        nombres: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        apellidos: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        tipodoc: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione un tipo de documento.'
+                                }
+                            }
+                        },
+                        numdoc: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        email: {
+                            validators: {
+                                notEmpty: {},
+                                emailAddress :{
+
+                                }
+                            }
+                        },
+                        telefono: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 20
+                                }
+                            }
+                        }
+                    }
+            });
+        });

@@ -6,17 +6,17 @@ block content
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
-            li.active Registro de Postgrado
+            li.active Registro de Posgrado
         .row
             .margin-auto
                 p.lead.text-center
-                    strong Registro de Postgrado
+                    strong Registro de Posgrado
                     span.text-primary &nbsp; #{programa.nombre}
                 p.lead.text-center
                     span.text-info Paso #1:
-                    span.text-muted &nbsp; Informacion general del Postgrado a registrar
+                    span.text-muted &nbsp; Informacion general del Posgrado a registrar
                 .well.bs-component
-                    form(method="POST", action="/postgrado/newlinfo").form-horizontal
+                    form(method="POST", action="/postgrado/newlinfo", id="form-new-postgrado").form-horizontal
                         input(type="hidden", name="id", value="#{programa.id}")
                         input(type="hidden", name="programa", value="#{programa.nombre}")
                         faildset
@@ -28,8 +28,8 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-mortar-board
-                                        input(type="text", name="nombre", placeholder="Digite Nombre del postgrado", autocomplete="off", required, autofocus=).form-control
-                                    p.lead Nombre de la titulacion que obtendra el estudiante al termino del postgrado
+                                        input(type="text", name="nombre", placeholder="Digite Nombre del posgrado", autocomplete="off", required, autofocus=).form-control
+                                    p.text-muted Nombre de la titulacion que obtendra el estudiante al termino del posgrado
 
                             .form-group
                                 label(for="inputTipo", class="col-lg-2 control-label") Tipo
@@ -37,11 +37,11 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-tag
-                                        select#tipo(name="tipo", onchange="(isMaster(this))").form-control
+                                        select#tipo(name="tipo", title="Tipo de postgrado", onchange="(isMaster(this))").form-control
                                             option(value="Especialización") Especialización
                                             option(value="Máestria") Máestria
                                             option(value="Doctorado") Doctorado
-                                    p.lead Tipo de estudio al que el postgrado pertenece y tipo de titulacion que obtendra el estudiante
+                                    p.text-muted Tipo de estudio al que el posgrado pertenece y tipo de titulacion que obtendra el estudiante
                             div(id="modo", style="display:none;").form-group
                                 label(for="inputTipo", class="col-lg-2 control-label") Modo
                                 .col-lg-10
@@ -52,7 +52,7 @@ block content
                                             option(value="Profundización") Profundización
                                             option(value="Investigación") Investigación
                                             option(value="Mixta") Mixta
-                                    p.lead modalidad Academica de la Maestria
+                                    p.text-muted modalidad Academica de la Maestria
                             .form-group
                                 .col-lg-10.col-lg-offset-2
                                     a(href="/director/profile").btn.btn-default.margin-right-1
@@ -70,3 +70,29 @@ block content
                                         document.getElementById('modo').style.display='none'
                                     }
                                 }
+
+
+                                $(document).ready(function() {
+
+                                    $('#form-new-postgrado').bootstrapValidator({
+                                        feedbackIcons: {
+                                            valid: 'glyphicon glyphicon-ok',
+                                            invalid: 'glyphicon glyphicon-remove',
+                                            validating: 'glyphicon glyphicon-refresh'
+                                        },
+                                        fields: {
+                                            nombre: {
+                                                validators: {
+                                                    notEmpty: {
+                                                    },
+                                                    stringLength: {
+                                                        min: 6,
+                                                        max: 30
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                });
+
+

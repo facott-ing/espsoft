@@ -6,7 +6,7 @@ block content
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
-            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/postgrado/#{postgrado.id}") Posgrado
             li: a(href="/cohorte/#{cohorte.id}") Cohorte
             li.active Informacion de la cohorte
         .row
@@ -23,7 +23,7 @@ block content
                             | &nbsp; Volver a la cohorte
 
                 .well.bs-component
-                    form(method="POST", action="/cohorte/#{cohorte.id}").form-horizontal
+                    form(method="POST", action="/cohorte/#{cohorte.id}", id="form-edit-coho").form-horizontal
                         input(type="hidden", name="_method", value="PUT")
                         input(type="hidden", name="id", value="#{cohorte.id}")
 
@@ -84,7 +84,7 @@ block content
                                     p.lead.text-muted Valor de otros gastos del postgrado siferentes al de la matricula.
 
 
-                            legend Fechas pertinentes del Postgrado
+                            legend Fechas pertinentes del Posgrado
                             .form-group
                                 label(for="inputInscrip", class="col-lg-2 control-label") Inscripciones
                                 .col-lg-10
@@ -160,5 +160,141 @@ block content
                                     button(type="submit").btn.btn-primary
                                         i.fa.fa-save
                                         | &nbsp; Guardar Cambios
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-edit-coho')
 
-                br
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        finscripciones: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        flinscripciones: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        fentrevista: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        fresultados: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        fmatricula: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        fintroduccion: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        fcclases: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione una fecha.'
+                                },
+                                date: {
+                                    format: 'DD/MM/YYYY',
+                                    message: 'Formato de fecha invalido'
+                                }
+                            }
+                        },
+                        valor: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                integer: {}
+
+                            }
+                        },
+                        otro: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                integer: {}
+
+                            }
+                        },
+                        resolucion: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        nombre: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        linkdata: {
+                            validators: {
+                                uri: {
+                                    message: 'URL invalida'
+                                }
+                            }
+                        }
+
+
+
+                    }
+            });
+        });

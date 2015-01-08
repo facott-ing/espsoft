@@ -24,11 +24,11 @@ block content
                         .panel-heading
                             h5
                                 i.fa.fa-paste
-                                |&nbsp; Postgrados del programa
+                                |&nbsp; Posgrados del programa
                                 span.badge.margin-left-1 #{postgradocount}
                         .panel-body
                             -if (postgradocount > 0){
-                                p.lead Lista de postgrados que se encuentran asociados al programa
+                                p.lead Lista de posgrados que se encuentran asociados al programa
                                 .list-group
                                     -count=1
                                     each postgrado in postgrados
@@ -50,7 +50,7 @@ block content
                                                                     | &nbsp; Ver Informacion
                                         -count++
                             -}else{
-                                p.text-center.text-info No existen postgrados en el sistema asociados al programa.
+                                p.text-center.text-info No existen posgrados en el sistema asociados al programa.
                             -}
 
                 .col-sm-5
@@ -93,7 +93,7 @@ block content
                                     h3.lead.text-center
                                         span.text-danger Anulacion de programa
                                     p.text-center
-                                        em Este modulo le permitira la anulacion de programas registrados en el sistema, siempre y cuando no existan postgrados asociados al programa.
+                                        em Este modulo le permitira la anulacion de programas registrados en el sistema, siempre y cuando no existan posgrados asociados al programa.
                                     h3.text-center
                                         a(href="/programa/delete/#{programa.id}").btn.btn-danger.btn-lg
                                             i.fa.fa-times

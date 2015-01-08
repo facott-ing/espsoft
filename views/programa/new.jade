@@ -12,7 +12,7 @@ block content
                 p.lead.text-center
                     span.text-muted &nbsp; Informacion general del Programa a registrar
                 .well.bs-component
-                    form(method="POST", action="/programa").form-horizontal
+                    form(method="POST", action="/programa", id="form-new-pro").form-horizontal
                         faildset
                             legend
                             .form-group
@@ -22,8 +22,8 @@ block content
                                     .input-group
                                         span.input-group-addon
                                             i.fa.fa-bookmark
-                                        input(type="text", name="nombre", placeholder="Digite Nombre del postgrado", autocomplete="off", required, autofocus=).form-control
-                                    p.text-muted Nombre del departamento, programa o carrera academica, que ofertara los postgrados
+                                        input(type="text", name="nombre", placeholder="Digite Nombre del posgrado", autocomplete="off", required, autofocus=).form-control
+                                    p.text-muted Nombre del departamento, programa o carrera academica, que ofertara los posgrados
                             .form-group
                                 .col-lg-10.col-lg-offset-2
                                     a(href="/administrador/profile").btn.btn-default.margin-right-1
@@ -32,3 +32,26 @@ block content
                                     button(type="submit", class="btn btn-primary")
                                         i.fa.fa-plus
                                         | &nbsp; Registrar Programa
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-new-pro')
+                .bootstrapValidator({
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        nombre: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        }
+                    }
+            });
+        });

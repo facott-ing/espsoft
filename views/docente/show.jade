@@ -26,7 +26,7 @@ block content
                             i.fa.fa-user
                             |&nbsp; Datos personales del docente
                     .panel-body
-                        form(method="POST", action="/docente/edit").form-horizontal
+                        form(method="POST", action="/docente/edit", id="form-edit-tea").form-horizontal
                             input(type="hidden", name="_method", value="PUT")
                             input(type="hidden", name="asignatura", value="#{asignatura.id}")
                             input(type="hidden", name="docente", value="#{docente.id}")
@@ -42,7 +42,7 @@ block content
                                             span.input-group-addon
                                                 i.fa.fa-user
                                             input(type="text", name="nombres", value="#{datos.nombres}", required).form-control
-                                        p.lead.text-muted Nombre del estudiante
+                                        p.lead.text-muted Nombre del docente
                                 .form-group
                                     label(for="inputApellido", class="col-lg-2 control-label") Apellidos
                                     .col-lg-10
@@ -51,7 +51,7 @@ block content
                                             span.input-group-addon
                                                 i.fa.fa-user
                                             input(type="text", name="apellidos", value="#{datos.apellidos}", required).form-control
-                                        p.lead.text-muted Apellidos del estudiante
+                                        p.lead.text-muted Apellidos del docente
                                 .form-group
                                     label(for="inputidentidad", class="col-lg-2 control-label") Documento
                                     .col-lg-10
@@ -60,7 +60,7 @@ block content
                                             span.input-group-addon
                                                 i.fa.fa-bookmark
                                             input(type="text", name="documento", value="#{datos.documento}", required).form-control
-                                        p.lead.text-muted Numero de identificacion del estudiante
+                                        p.lead.text-muted Numero de identificacion del docente
                                 .form-group
                                     label(for="inputidentidad", class="col-lg-2 control-label") Tipo documento
                                     .col-lg-10
@@ -92,7 +92,7 @@ block content
                                             span.input-group-addon
                                                 i.fa.fa-send-o
                                             input(type="email", name="email", value="#{datos.email}", required).form-control
-                                        p.lead.text-muted Correo electronico de contacto del estudiante
+                                        p.lead.text-muted Correo electronico de contacto del docente
                                 .form-group
                                     label(for="inputidentidad", class="col-lg-2 control-label") Telefono
                                     .col-lg-10
@@ -157,3 +157,79 @@ block content
                                                         i.fa.fa-times
                                                         |&nbsp; Eliminar
                                     -}
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#form-edit-tea')
+                .find('[name="tipodoc"]')
+                    .change(function(e) {
+                        // revalidate the language when it is changed
+                        $('#form-add-preins').bootstrapValidator('revalidateField', 'tipodoc');
+                    })
+
+                    .end()
+                .bootstrapValidator({
+                    excluded: ':disabled',
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        nombres: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        apellidos: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 3,
+                                    max: 30
+                                }
+                            }
+                        },
+                        tipodoc: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Seleccione un tipo de documento.'
+                                }
+                            }
+                        },
+                        numdoc: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 30
+                                }
+                            }
+                        },
+                        email: {
+                            validators: {
+                                notEmpty: {},
+                                emailAddress :{
+
+                                }
+                            }
+                        },
+                        telefono: {
+                            validators: {
+                                notEmpty: {
+                                },
+                                stringLength: {
+                                    min: 6,
+                                    max: 20
+                                }
+                            }
+                        }
+                    }
+            });
+        });

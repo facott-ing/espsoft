@@ -4,7 +4,7 @@ block content
     .container
         ul.breadcrumb
             li: a(href="/director/profile") Inicio
-            li: a(href="/postgrado/#{postgrado.id}") Postgrado
+            li: a(href="/postgrado/#{postgrado.id}") Posgrado
             li: a(href="/Pensum/#{pensum.id}") Pensum
             li.active Informacion de la materia
         .row
@@ -26,7 +26,7 @@ block content
                             i.fa.fa-paste
                             |&nbsp; Datos principales de la materia
                     .panel-body
-                        form(method="POST", action="/asignatura/edit").form-horizontal
+                        form(method="POST", action="/asignatura/edit", id="form-edit-asig").form-horizontal
                             input(type="hidden", name="_method", value="PUT")
                             input(type="hidden", name="id", value="#{asignatura.id}")
                             fieldset
@@ -48,7 +48,7 @@ block content
                                             span.input-group-addon
                                                 i.fa.fa-user
                                             input(type="number", name="nivel", value="#{asignatura.nivel}", required).form-control
-                                        p.lead.text-muted Nivel del postgrado donde se encuentra la materia
+                                        p.lead.text-muted Nivel del posgrado donde se encuentra la materia
 
                                 .form-group
                                     label(for="inputNivel", class="col-lg-2 control-label") Creditos
@@ -58,7 +58,7 @@ block content
                                             span.input-group-addon
                                                 i.fa.fa-user
                                             input(type="number", name="credito", value="#{asignatura.cradito}", required).form-control
-                                        p.text-muted Nivel del postgrado donde se encuentra la materia
+                                        p.text-muted Nivel del posgrado donde se encuentra la materia
 
                                 .form-group
                                     label(for="inputMaterial", class="col-lg-2 control-label") Material URL
@@ -171,3 +171,49 @@ block content
                                         i.fa.fa-times
                                         | &nbsp; Eliminar asignatura
                 -}
+    script(type="text/javascript").
+
+        $(document).ready(function() {
+            $('#form-edit-asig')
+                    .bootstrapValidator({
+                        feedbackIcons: {
+                            valid: 'glyphicon glyphicon-ok',
+                            invalid: 'glyphicon glyphicon-remove',
+                            validating: 'glyphicon glyphicon-refresh'
+                        },
+                        fields: {
+                            nombre: {
+                                validators: {
+                                    notEmpty: {
+                                    },
+                                    stringLength: {
+                                        min: 3,
+                                        max: 30
+                                    }
+                                }
+                            },
+                            nivel: {
+                                validators: {
+                                    notEmpty: {
+                                    },
+                                    integer: {}
+
+                                }
+                            },
+                            creditos: {
+                                validators: {
+                                    notEmpty: {
+                                    },
+                                    integer: {}
+
+                                }
+                            },
+                            material: {
+                                validators: {
+                                    uri: {}
+                                }
+                            }
+
+                        }
+                    });
+        });

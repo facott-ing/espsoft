@@ -26,7 +26,7 @@ block content
                     p.lead.text-bg Para ingresar a su cuenta de administracion, por favor ingrese los datos requeridos a continuacion.
                     .well.bs-component
 
-                        form(class="form-horizontal", method="POST", action="/login")
+                        form(class="form-horizontal", method="POST", action="/login", id="form-login-director")
                             fieldset
                                 legend Formulario de ingreso
                                 -if (error == 1){
@@ -59,4 +59,6 @@ block content
                                 .form-group
                                     .col-lg-10.col-lg-offset-2
                                         button(type="submit", class="btn btn-primary") Ingresar
+
+
 
