@@ -76,7 +76,7 @@ block content
                                     table.table.table-hover.table-striped
                                         thead
                                             tr
-                                                th(width="8"): p.text-center #
+                                                th(width="8%"): p.text-center #
                                                 th(width="48%"): p.text-center Nombre
                                                 th(width="20%"): p.text-center Codigo
                                                 th(width="24%"): p.text-center Accion
@@ -201,6 +201,27 @@ block content
                                         span.text-success.text-size-18 $ #{recaudos}
                 -}
             .col-lg-3
+
+                    .panel.panel-default
+                        .panel-body
+                            p.lead.text-center.text-primary Reporte de cohorte
+                            p.text-center.text-muted Modulo que genera un reporte impreso de la cohorte seleccionada.
+                            -if (numes > 0){
+                                p.text-center
+                                    a(href="/cohorte/report/#{cohorte.id}", target="_blank").btn.btn-sm.btn-success
+                                        i.fa.fa-print
+                                        | &nbsp; Crear reporte Impreso
+                            -}else{
+                                p.text-center
+
+                                    a(href="#", target="_blank").btn.btn-sm.btn-success.disabled
+                                        i.fa.fa-print
+                                        | &nbsp; Crear reporte Impreso
+                                    p.text-center.text-muted Nota. 'El boton de crear reporte se activara en el momento que exsitan alumnos inscritos.'
+
+                            -}
+
+
                     .panel.panel-default
                         .panel-heading
 

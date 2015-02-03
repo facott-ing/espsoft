@@ -17,7 +17,6 @@ moment().localeData('es')
 moment().format('dddd, MMMM Do YYYY, h:mm:ss a')
 
 
-
 var app = express();
 
 // all environments
@@ -835,21 +834,15 @@ app.get('/postgrado/:id', isLoggedIn, function(req, res){
 app.get('/postgrado/:id/edit', isLoggedIn, function(req, res){
     res.render('postgrado/edit', {postgrado:req.postgrado});
 });
-app.put('/postgrado/:id', function(req, res){
+app.put('/postgrado/:postgrado', function(req, res){
     var b=req.body;
-    Postgrado.count({nombre: b.nombre}, function(err, postgradosCount){
-        if(postgradosCount == 0){
-            Postgrado.update(
-                {_id:b.id},
-                {tipo_postgrado: b.tipo, nombre: b.nombre, duracion: b.duracion, modalidad: b.modalidad, modo: b.modo, dirigido: b.leyenda, registro_cal: b.regiscal},
-                function(err){
-                    res.redirect('/postgrado/'+ b.id);
-                }
-            );
-        }else{
-            res.redirect('/postgrado/error')
+    Postgrado.update(
+        {_id:req.postgrado.id},
+        {tipo_postgrado: b.tipo, nombre: b.nombre, duracion: b.duracion, modalidad: b.modalidad, modo: b.modo, dirigido: b.leyenda, registro_cal: b.regiscal},
+        function(err){
+            res.redirect('/postgrado/'+ req.postgrado.id +'/edit');
         }
-    });
+    );
 });
 
 app.get('/postgrado/delete/:id',isLoggedIn, function(req, res){
@@ -1441,7 +1434,7 @@ app.get('/cohorte/:id', isLoggedIn, function(req, res){
                                             cohortesIds.push(cohortes[w].id)
                                         }
                                         Estudiante.count({cohorte: {$in : cohortesIds}}, function(err, estudiantesTotal){
-                                            if(p.tipo_postgrado == 'Máestria'){
+                                            if(p.tipo_postgrado == 'Máestria' && p.modo == 'Mixta'){
                                                 Estudiante.count({cohorte:req.cohorte.id, modalidad:'Profundización'}, function(err, profunCount){
                                                     Estudiante.count({cohorte:req.cohorte.id, modalidad:'Investigación'}, function(err, invesCount){
                                                         DatoFinanciero.find({estudiante_id: {$in : ides}}, function(err, dfinan){
@@ -1596,6 +1589,58 @@ app.post('/cohorte/register', isLoggedIn, function(req, res){
         });
     });
 });
+
+
+// cohorte report
+
+app.get('/cohorte/report/:cohorte', function(req, res){
+
+    Estudiante.find({cohorte:req.cohorte.id}, {}, {sort:{codigo:1}}, function(err, estudiantes){
+        var p=estudiantes.map(function(c){ return c.datos_personales; });
+        DatosPersonales.find({_id:{$in:p}}, {}, {sort:{nombres:1}}, function(err, datos){
+            var studentsJson=[]
+            var studentData=[]
+            for(var i in estudiantes){
+                studentData['datoUniversitario'] = estudiantes[i]
+                var s = findInJson(datos, "_id", estudiantes[i].datos_personales)
+                studentData['datoPersonal'] = s
+                studentsJson.push(studentData)
+                studentData=[]
+            }
+            console.log(studentsJson)
+            Postgrado.findOne({ _id:req.cohorte.postgrado_id }, function(err, posgrado){
+                Cohorte.find({ postgrado_id:posgrado.id }, function(err, cohortes){
+                    var cohorteMap = cohortes.map(function(c){ return c._id})
+                    Estudiante.count({ cohorte:{ $in:cohorteMap } }, function(err, deTotalPosgrado){
+                        if(posgrado.tipo_postgrado == 'Máestria' && posgrado.modo == 'Mixta'){
+                            Estudiante.count({ cohorte:req.cohorte.id, modalidad:'Investigación' }, function(err, deInvestigacion){
+                                Estudiante.count({ cohorte:req.cohorte.id, modalidad:'Profundización' }, function(err, deProfundizacion){
+                                    Estudiante.count({ cohorte:req.cohorte.id }, function(err, deTotalCohorte){
+                                        var date = new Date()
+                                        res.render('cohorte/printReport', {posgrado:posgrado, cohorte:req.cohorte, deTotalPosgrado:deTotalPosgrado, deTotalCohorte:deTotalCohorte, deInvestigacion:deInvestigacion, deProfundizacion:deProfundizacion, estudiantes:studentsJson, printDateTime:date})
+                                    });
+                                });
+                            });
+                        }else{
+                            var date = new Date()
+                            res.render('cohorte/printReport', {posgrado:posgrado, cohorte:req.cohorte, deTotalPosgrado:deTotalPosgrado, deTotalCohorte:deTotalCohorte, estudiantes:studentsJson, printDateTime:date})
+                        }
+                    });
+                });
+            });
+        });
+
+    });
+})
+
+function findInJson(jsonOBJ, key, value){
+    for(var i in jsonOBJ){
+        if(jsonOBJ[i][key] == value){
+            return jsonOBJ[i]
+            break
+        }
+    }
+}
 
 // ESTUDIANTE
 

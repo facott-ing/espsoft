@@ -107,3 +107,6 @@ button{
     /* Adjust feedback icon position */
     right: -15px;
 }
+.tableinspace td{
+    margin:5px 20px;
+}

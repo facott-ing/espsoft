@@ -1,0 +1,98 @@
+doctype html
+html
+    head
+
+        link(href="/circliful/css/jquery.circliful.css" rel="stylesheet" type="text/css")
+        link(href="/circliful/css/font-awesome.min.css" rel="stylesheet" type="text/css")
+        link(href='/awesome/css/font-awesome.min.css', rel='stylesheet')
+        link(href='/awesome/css/font-awesome.css', rel='stylesheet')
+        link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
+        script(src="http://code.jquery.com/jquery-1.10.2.min.js")
+        script(src="/circliful/js/jquery.circliful.min.js")
+        style(type="text/css").
+            td div{ margin: 12px 24px }
+            .center-div { margin: 0 auto;}
+            .div-info {width: 50%; padding: 30px 0px;}
+            .students-list{ width: 78%;}
+            .div-graphics{ width: 1024px}
+            .div-fixed{ position: fixed; z-index: 100000; right: -3px; top: 160px;}
+
+
+    body
+        .row.bg-black.fix-top.margin-botton
+            .col-lg-12.well
+                h1.text-center
+                    span.text-primary Reporte de estudiantes
+                h5.text-center #{printDateTime}
+            .div-info.center-div
+                table(align="center")
+                    thead
+                        tr
+                            th(width="30%")
+                                h3.text-center Posgrado
+                            th(width="30%")
+                                h3.text-center Cohorte
+                    tbody
+                        tr
+                            td(width="30%")
+                                p.text-center.text-warning #{posgrado.nombre}
+                            td(width="30%")
+                                p.text-center.text-warning #{cohorte.nombre}
+
+            .div-graphics.center-div
+
+                table(align="center")
+                    thead
+                        tr
+                            td(width="25%")
+                                h4.text-center Total en el posgrado
+                            td(width="25%")
+                                h4.text-center Total en la cohorte
+                            -if(posgrado.tipo_postgrado == 'Máestria' && posgrado.modo == 'Mixta'){
+                                td(width="25%")
+                                    h4.text-center En Profundización
+                                td(width="25%")
+                                    h4.text-center En Investigación
+                            -}
+                    tbody
+                        tr
+                            td(width="25%")
+                                div(id="myStat" data-dimension="160" data-text="#{deTotalPosgrado}" data-info="Estudiantes 100%" data-width="30" data-fontsize="32" data-percent="100" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd")
+                            td(width="25%")
+                                div(id="myStat2" data-dimension="160" data-text="#{deTotalCohorte}" data-info="Estudiantes #{(deTotalCohorte/deTotalPosgrado)*100}%" data-width="30" data-fontsize="32" data-percent="#{(deTotalCohorte/deTotalPosgrado)*100}" data-fgcolor="#75caeb" data-bgcolor="#eee" data-fill="#ddd")
+                            -if(posgrado.tipo_postgrado == 'Máestria' && posgrado.modo == 'Mixta'){
+                                td(width="25%")
+                                    div(id="myStat3" data-dimension="160" data-text="#{deProfundizacion}" data-info="Estudiantes #{(deProfundizacion/deTotalCohorte)*100}%" data-width="30" data-fontsize="32" data-percent="#{(deProfundizacion/deTotalCohorte)*100}" data-fgcolor="#28b62c" data-bgcolor="#eee" data-fill="#ddd")
+                                td(width="25%")
+                                    div(id="myStat4" data-dimension="160" data-text="#{deInvestigacion}" data-info="Estudiantes #{(deInvestigacion/deTotalCohorte)*100}%" data-width="30" data-fontsize="32" data-percent="#{(deInvestigacion/deTotalCohorte)*100}" data-fgcolor="#ff4136" data-bgcolor="#eee" data-fill="#ddd")
+                            -}
+            .students-list.center-div
+                table.table.table-bordered.table-striped
+                    thead
+                        tr
+                            th(width="11%") Código
+                            th(width="37%")  Nombres y Apellidos
+                            th(width="12%") Modalidad
+                            th(width="20%") Email
+                            th(width="20%") Numero Telefonico
+                    tbody
+                        each e in estudiantes
+                            tr
+                                td: abbr #{e.datoUniversitario.codigo}
+                                td #{e.datoPersonal.nombres} #{e.datoPersonal.apellidos}
+                                td #{e.datoUniversitario.modalidad}
+                                td #{e.datoPersonal.email}
+                                td #{e.datoPersonal.telefono}
+
+        a(href="#", onclick="document.getElementById('btn-print').style.display='none', window.print(); window.close()", id="btn-print").div-fixed.btn.btn-primary
+            i.fa.fa-print
+            | &nbsp; Imprimir Reporte
+
+        script(type="text/javascript").
+            $( document ).ready(function() {
+                $('#myStat').circliful();
+                $('#myStat2').circliful();
+                $('#myStat3').circliful();
+                $('#myStat4').circliful();
+            });
+
