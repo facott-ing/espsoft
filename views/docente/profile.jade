@@ -50,6 +50,15 @@ block content
                     .panel.panel-default
                         .panel-body
                             p.lead.text-center.text-muted Datos del docente
+
+                            .profileAvatar-alt
+                                .avatar
+                                    -if (avatar != false){
+                                        img(src="/images/uploads/people/#{profesor.docente.id}.jpg", title="#{profesor.datos.nombres} #{profesor.datos.apellidos}", class="portrait")
+                                    -}else{
+                                        img(src="/images/uploads/people/empty.jpg", title="#{profesor.datos.nombres} #{profesor.datos.apellidos}", class="portrait")
+                                    -}
+
                             h4.text-center.text-primary #{profesor.datos.nombres} #{profesor.datos.apellidos}
                             h5.text-center
                                 span.label.label-warning

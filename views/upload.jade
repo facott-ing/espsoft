@@ -1,0 +1,14 @@
+//
+   Created by fabiancote on 3/02/15.
+
+doctype html
+html
+    head
+    body
+        h1 ejemplo para montar algo
+
+
+        form(enctype =  "multipart/form-data", action =  "/uploaderVaucher", method =  "post" )
+            input(type="hidden", name="vaucherId", value="12345")
+            input(type="file", name="vaucher", accept="image/x-png, image/gif, image/jpeg")
+            input(type="submit", value="Upload Image", name="submit")

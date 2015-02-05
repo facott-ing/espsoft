@@ -16,6 +16,9 @@ var moment = require('moment')
 moment().localeData('es')
 moment().format('dddd, MMMM Do YYYY, h:mm:ss a')
 
+// images upload
+var fs = require('fs-extra');
+var lwip = require('lwip');
 
 var app = express();
 
@@ -23,7 +26,7 @@ var app = express();
 app.set('port', process.env.PORT || 2811);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(express.bodyParser());
+app.use(express.bodyParser({uploadDir:'./uploads'}));
 app.use(express.methodOverride());
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -393,7 +396,8 @@ app.get('/director/profile', isLoggedIn, function(req, res){
             Programa.findOne({_id:req.user.programa_id}, function(err, programa){
                 Postgrado.find({programa_id:programa.id}, function(err, postgrados){
                     Postgrado.count({programa_id:programa.id}, function(err, num){
-                        res.render('director/profile', {user:req.user, datos:datos, programa:programa, postgrados:postgrados, numpostgrados:num})
+                        var avatar = fs.existsSync('./public/images/uploads/people/'+req.user.id+'.jpg')
+                        res.render('director/profile', {user:req.user, datos:datos, programa:programa, postgrados:postgrados, numpostgrados:num, avatar:avatar})
                     });
                 });
             });
@@ -664,12 +668,13 @@ app.get('/programa/:id/view', isLoggedInAdmin, function(req, res){
             Director.count({programa_id:req.programa.id}, function(err, directorCount){
                 if(directorCount > 0){
                     Director.findOne({programa_id:req.programa.id}, function(err, director){
+                        var avatar = fs.existsSync('./public/images/uploads/people/'+director.id+'.jpg')
                         DatosPersonales.findOne({_id:director.datos_personales}, function(err, datos){
-                            res.render('programa/view', {postgradocount:postgradosCount, postgrados:postgrados, directorcount:directorCount, director:director, datos:datos, programa:req.programa})
+                            res.render('programa/view', {postgradocount:postgradosCount, postgrados:postgrados, directorcount:directorCount, director:director, datos:datos, programa:req.programa, avatar:avatar})
                         });
                     });
                 }else{
-                    res.render('programa/view', {postgradocount:postgradosCount, postgrados:postgrados, directorcount:directorCount, programa:req.programa})
+                    res.render('programa/view', {postgradocount:postgradosCount, postgrados:postgrados, directorcount:directorCount, programa:req.programa, avatar:false})
 
                 }
             });
@@ -1181,14 +1186,14 @@ app.get('/asignatura/:id', isLoggedIn, function(req, res){
                     Horario.count({asignatura_id:req.asignatura.id}, function(err, horariosNum){
                         if(req.asignatura.profesor_id.length > 0){
                             Profesor.findOne({_id:req.asignatura.profesor_id}, function(err, docente){
-
                                 DatosPersonales.findOne({_id:docente.datos_personales}, function(err, dp){
-                                    console.log(req.asignatura)
-                                    res.render('asignatura/show', {asignatura:req.asignatura, horarios:docs, pensum:pensum, postgrado:post, programa:pro, docente:docente, datos:dp, horariosnum:horariosNum})
+
+                                    var avatar = fs.existsSync('./public/images/uploads/people/'+docente.id+'.jpg')
+                                    res.render('asignatura/show', {asignatura:req.asignatura, horarios:docs, pensum:pensum, postgrado:post, programa:pro, docente:docente, datos:dp, horariosnum:horariosNum, avatar:avatar})
                                 });
                             });
                         }else{
-                            res.render('asignatura/show', {asignatura:req.asignatura, horarios:docs, pensum:pensum, postgrado:post, programa:pro, horariosnum:horariosNum})
+                            res.render('asignatura/show', {asignatura:req.asignatura, horarios:docs, pensum:pensum, postgrado:post, programa:pro, horariosnum:horariosNum, avatar:false})
                         }
                     });
 
@@ -1689,7 +1694,8 @@ app.get('/estudiante/:id', isLoggedIn, function(req, res){
                                             }
 
                                         }
-                                        res.render('estudiante/show', {programa: programa, postgrado: postgrado, cohorte: cohorte, estudiante: req.estudiante, datos: datos, nivel: asignaturas[0].nivel, asignaturas: signatures, datafinancieras: datofi});
+                                        var avatar = fs.existsSync('./public/images/uploads/people/'+req.estudiante.id+'.jpg')
+                                        res.render('estudiante/show', {programa: programa, postgrado: postgrado, cohorte: cohorte, estudiante: req.estudiante, datos: datos, nivel: asignaturas[0].nivel, asignaturas: signatures, datafinancieras: datofi, avatar:avatar});
                                     });
                                 }else{
                                     res.redirect('/cohorte/'+req.estudiante.cohorte)
@@ -1964,7 +1970,7 @@ app.get('/preinscripcion/delete/:id', isLoggedIn, function(req, res){
 
 // docente profile
 app.get('/docente/profile', isLoggedInTeach, function(req, res){
-
+    var avatar = fs.existsSync('./public/images/uploads/people/'+req.user.id+'.jpg')
     if(req.user.codigo == req.user.contrasena){
         res.redirect('/docente/first/'+req.user.id)
     }else{
@@ -1979,10 +1985,10 @@ app.get('/docente/profile', isLoggedInTeach, function(req, res){
                     if(asignaturasCount > 0){
                         Asignatura.find({profesor_id:req.user.id}, function(err, asignaturas){
                             teaching['asignaturas']=asignaturas
-                            res.render('docente/profile', {profesor:teaching, asignaturacount:asignaturasCount})
+                            res.render('docente/profile', {profesor:teaching, asignaturacount:asignaturasCount, avatar:avatar})
                         });
                     }else{
-                        res.render('docente/profile', {profesor:teaching, asignaturacount:asignaturasCount})
+                        res.render('docente/profile', {profesor:teaching, asignaturacount:asignaturasCount, avatar:avatar})
                     }
 
                 });
@@ -2259,7 +2265,8 @@ app.get('/docente/:id/:asig', isLoggedIn, function(req, res){
     DatosPersonales.findOne({_id:req.profesor.datos_personales}, function(err, dt){
         DatoAcademico.find({Profesor_id:req.profesor.id}, function(err, docs){
             Programa.findOne({_id:req.profesor.programa_id}, function(err, programa){
-                res.render('docente/show', {docente:req.profesor, datos:dt, titulos:docs, programa:programa, asignatura:req.asig});
+                var avatar = fs.existsSync('./public/images/uploads/people/'+req.profesor.id+'.jpg')
+                res.render('docente/show', {docente:req.profesor, datos:dt, titulos:docs, programa:programa, asignatura:req.asig, avatar:avatar});
             })
 
 
@@ -2446,6 +2453,83 @@ function formatDate(obj){
     return(obj);
 }
 // -- END FUNCTION TOOLS
+
+
+// upload images page
+
+app.get('/upload', function(req, res){
+    res.render('upload')
+});
+
+app.post('/uploader', isLoggedIn, function(req, res){
+    var b=req.body;
+    var tmp_p = req.files.userPhoto.path
+    var des_p = './public/images/uploads/people/' +b.estudiante+'.jpg'
+    var destemp_p = './public/images/uploads/temp/' +b.estudiante+'.jpg'
+
+    fs.rename(tmp_p, destemp_p, function(err){
+        if (err) return console.log(err);
+        fs.unlink(tmp_p, function() {
+            if (err) throw err;
+            lwip.open(destemp_p, function(err, image){
+                if (err) return console.log(err);
+                image.batch()
+                    .resize(220, 280, 'lanczos')
+                    .scale(0.6)
+                    //.crop(400, 400)
+                    .writeFile(des_p, function(err){
+                        if (err) return console.log(err);
+                        fs.unlink(destemp_p, function(){
+                            if (err) throw err;
+                            res.redirect(b.url)
+                        })
+
+                    })
+            });
+
+
+
+
+        });
+    });
+});
+
+app.post('/uploaderVaucher', function(req, res){
+    var b=req.body;
+    var tmp_p = req.files.vaucher.path
+    var des_p = './public/images/uploads/supports/' +b.vaucherId+'.jpg'
+    var destemp_p = './public/images/uploads/temp/' +b.vaucherId+'.jpg'
+
+    fs.rename(tmp_p, destemp_p, function(err){
+        if (err) return console.log(err);
+        fs.unlink(tmp_p, function() {
+            if (err) throw err;
+            lwip.open(destemp_p, function(err, image){
+                if (err) return console.log(err);
+                image.batch()
+                    .resize(640, 288, 'lanczos')
+                    .scale(0.9)
+                    //.crop(400, 400)
+                    .writeFile(des_p, function(err){
+                        if (err) return console.log(err);
+                        fs.unlink(destemp_p, function(){
+                            if (err) throw err;
+                            res.redirect(b.url)
+                        })
+
+                    })
+            });
+
+
+
+
+        });
+    });
+});
+
+
+// end upload
+
 
 
 http.createServer(app).listen(app.get('port'), function(){

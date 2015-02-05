@@ -62,6 +62,15 @@ block content
                                     faildset
                                         legend Director del Programa
                                         -if (directorcount > 0){
+
+                                            .profileAvatar-alt
+                                                .avatar
+                                                    -if (avatar != false){
+                                                        img(src="/images/uploads/people/#{director.id}.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                                    -}else{
+                                                        img(src="/images/uploads/people/empty.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                                    -}
+
                                             .form-group
                                                 label(for="docente", class="col-lg-2 control-label") Director
                                                 .col-lg-10

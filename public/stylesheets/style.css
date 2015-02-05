@@ -110,3 +110,51 @@ button{
 .tableinspace td{
     margin:5px 20px;
 }
+
+.personAvatar{
+    float: right;
+    margin-top: -160px;
+    width: 160px;
+    height: 240px;
+}
+
+.profileAvatar{
+    width: 140px;
+    height: 240px;
+    margin: 0 auto;
+}
+.profileAvatar-alt{
+    width: 140px;
+    height: 160px;
+    margin: 0 auto;
+}
+
+.personAvatar > .avatar, .profileAvatar > .avatar, .profileAvatar-alt > .avatar{
+    width: 140px;
+    height: 140px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius:50%;
+}
+.personAvatar > .avatar img, .profileAvatar > .avatar img, .profileAvatar-alt > .avatar img{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+.personAvatar img.portrait, .profileAvatar img.portrait, .profileAvatar-alt img.portrait{
+    width: 100%;
+    height: auto;
+}
+.btnupload{
+    margin-top: 8px;
+}
+.margin-btn-upload-student{
+    margin-left: 34px;
+}

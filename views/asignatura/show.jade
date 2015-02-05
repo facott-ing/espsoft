@@ -108,6 +108,13 @@ block content
                                     legend Docente de la materia
 
                                     -if (docente){
+                                        .profileAvatar-alt
+                                            .avatar
+                                                -if (avatar != false){
+                                                    img(src="/images/uploads/people/#{docente.id}.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                                -}else{
+                                                    img(src="/images/uploads/people/empty.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                                -}
                                         .form-group
                                             label(for="docente", class="col-lg-2 control-label") Docente
                                             .col-lg-10

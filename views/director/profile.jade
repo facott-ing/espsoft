@@ -66,6 +66,32 @@ block content
                     .panel.panel-default
                         .panel-body
                             p.lead.text-center.text-muted Director Administrativo
+                            .profileAvatar
+                                .avatar
+                                    -if (avatar != false){
+                                        img(src="/images/uploads/people/#{user.id}.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                    -}else{
+                                        img(src="/images/uploads/people/empty.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                    -}
+                                .btnupload
+                                    script(type="text/javascript", src="/bootstrap/js/bootstrap-filestyle.min.js")
+                                    form(enctype =  "multipart/form-data", role="form", method="POST", action="/uploader")
+                                        input(type="hidden", name="estudiante", value="#{user.id}")
+                                        input(type="hidden", name="url", value="/director/profile")
+
+                                        .form-group
+                                            .row
+                                                .col-md-4
+                                                    input(type="file", class="filestyle", data-input="false", name="userPhoto", accept="image/jpeg")
+                                            .row
+                                                .col-md-4
+                                                    h5.text-center
+                                                        button(type="submit").btn.btn-primary.btn-sm.margin-btn-upload-student
+                                                            i.fa.fa-cloud-upload
+                                                            | &nbsp; Subir Foto
+                                    script(type="text/javascript").
+                                        $(":file").filestyle({input: false});
+
                             h4.text-center.text-primary #{datos.nombres} #{datos.apellidos}
                             h5.text-center
                                 span.label.label-warning

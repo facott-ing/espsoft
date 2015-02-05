@@ -59,12 +59,12 @@ html
                             td(width="25%")
                                 div(id="myStat" data-dimension="160" data-text="#{deTotalPosgrado}" data-info="Estudiantes 100%" data-width="30" data-fontsize="32" data-percent="100" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd")
                             td(width="25%")
-                                div(id="myStat2" data-dimension="160" data-text="#{deTotalCohorte}" data-info="Estudiantes #{(deTotalCohorte/deTotalPosgrado)*100}%" data-width="30" data-fontsize="32" data-percent="#{(deTotalCohorte/deTotalPosgrado)*100}" data-fgcolor="#75caeb" data-bgcolor="#eee" data-fill="#ddd")
+                                div(id="myStat2" data-dimension="160" data-text="#{deTotalCohorte}" data-info="Estudiantes #{((deTotalCohorte/deTotalPosgrado)*100).toFixed(1)}%" data-width="30" data-fontsize="32" data-percent="#{(deTotalCohorte/deTotalPosgrado)*100}" data-fgcolor="#75caeb" data-bgcolor="#eee" data-fill="#ddd")
                             -if(posgrado.tipo_postgrado == 'Máestria' && posgrado.modo == 'Mixta'){
                                 td(width="25%")
-                                    div(id="myStat3" data-dimension="160" data-text="#{deProfundizacion}" data-info="Estudiantes #{(deProfundizacion/deTotalCohorte)*100}%" data-width="30" data-fontsize="32" data-percent="#{(deProfundizacion/deTotalCohorte)*100}" data-fgcolor="#28b62c" data-bgcolor="#eee" data-fill="#ddd")
+                                    div(id="myStat3" data-dimension="160" data-text="#{deProfundizacion}" data-info="Estudiantes #{((deProfundizacion/deTotalCohorte)*100).toFixed(1)}%" data-width="30" data-fontsize="32" data-percent="#{(deProfundizacion/deTotalCohorte)*100}" data-fgcolor="#28b62c" data-bgcolor="#eee" data-fill="#ddd")
                                 td(width="25%")
-                                    div(id="myStat4" data-dimension="160" data-text="#{deInvestigacion}" data-info="Estudiantes #{(deInvestigacion/deTotalCohorte)*100}%" data-width="30" data-fontsize="32" data-percent="#{(deInvestigacion/deTotalCohorte)*100}" data-fgcolor="#ff4136" data-bgcolor="#eee" data-fill="#ddd")
+                                    div(id="myStat4" data-dimension="160" data-text="#{deInvestigacion}" data-info="Estudiantes #{((deInvestigacion/deTotalCohorte)*100).toFixed(1)}%" data-width="30" data-fontsize="32" data-percent="#{(deInvestigacion/deTotalCohorte)*100}" data-fgcolor="#ff4136" data-bgcolor="#eee" data-fill="#ddd")
                             -}
             .students-list.center-div
                 table.table.table-bordered.table-striped
