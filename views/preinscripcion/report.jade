@@ -12,78 +12,129 @@ block content
                 p.lead.text-center
                     strong Reporte de pago
                 p.lead.text-center
-                    span.text-info Paso #2:
-                    span.text-muted &nbsp; Seleccione la fecha en la que fue realizado el pago
-                .well.bs-component
-                    form(method="POST", action="/preinscripcion/report", id="form-report-insc").form-horizontal
-                        input(type="hidden", name="inscrito", value="#{inscrito.id}")
-                        faildset
-                            legend
-
-                            .form-group
-                                label(for="documento", class="col-lg-2 control-label") Identidad
-                                .col-lg-10
-                                    p.lead
-                                        span #{datos.documento}
-                                        br
-                                        span.text-muted #{datos.tipo_documento}
+                    -if (vaucher == false){
+                        span.text-info Paso #2:
+                        span.text-muted &nbsp; adjuntar comprobante de pago
+                    -}else{
+                        span.text-info Paso #3:
+                        span.text-muted &nbsp; Seleccione la fecha en la que fue realizado el pago
+                    -}
 
 
-                            .form-group
-                                label(for="nombre", class="col-lg-2 control-label") Nombre
-                                .col-lg-10
-                                    p.lead #{datos.nombres} #{datos.apellidos}
+                -if(vaucher == false){
+                    .well.bs-component
+                        script(type="text/javascript", src="/bootstrap/js/bootstrap-filestyle.min.js")
+                        form(method="POST", action="/uploaderVaucher", enctype =  "multipart/form-data", role="form").form-horizontal
+                            faildset
+                                legend
 
-                            .form-group
-                                label(for="pago", class="col-lg-2 control-label") Fecha de pago
-                                .col-lg-10
-                                    .input-group
-                                        span.input-group-addon
-                                            i.fa.fa-calendar-o
-                                        input(type="date", name="fecha", required).form-control
-                                    p.text-muted Seleccione la fecha en la que fue realizado el pago de la matricula del posgrado
+                                .form-group
+                                    label(for="documento", class="col-lg-2 control-label") Identidad
+                                    .col-lg-10
+                                        p.lead
+                                            span #{datos.documento}
+                                            br
+                                            span.text-muted #{datos.tipo_documento}
 
-                            .form-group
-                                label(for="valor", class="col-lg-2 control-label") Valor
-                                .col-lg-10
-                                    .input-group
-                                        span.input-group-addon
-                                            i.fa.fa-money
-                                        input(type="Number", name="valor", min="0", required).form-control
-                                    p.text-muted Valor del pago realizado por el estudiante
 
-                            .form-group
-                                .col-lg-10.col-lg-offset-2
-                                    a(href="/preinscripcion/#{inscrito.id}").btn.btn-default.margin-right-1
-                                        i.fa.fa-times-circle
-                                        | &nbsp; Cancelar
-                                    button(type="submit", class="btn btn-primary")
-                                        i.fa.fa-hand-o-right
-                                        | &nbsp; Reportar el pago
-    script(type="text/javascript").
-        $(document).ready(function() {
-            $('#form-report-insc')
-                    .bootstrapValidator({
-                        excluded: ':disabled',
-                        feedbackIcons: {
-                            valid: 'glyphicon glyphicon-ok',
-                            invalid: 'glyphicon glyphicon-remove',
-                            validating: 'glyphicon glyphicon-refresh'
-                        },
-                        fields: {
-                            fecha: {
-                                validators: {
-                                    date: {
-                                        format: 'DD/MM/YYYY'
-                                    }
-                                }
-                            },
-                            valor: {
-                                validators: {
-                                    integer: {}
+                                .form-group
+                                    label(for="nombre", class="col-lg-2 control-label") Nombre
+                                    .col-lg-10
+                                        p.lead #{datos.nombres} #{datos.apellidos}
+                                .form-group
+                                    label(for="valor", class="col-lg-2 control-label") Recibo
+                                    .col-lg-10
+                                        .input-group
+                                            input(type="hidden", name="vaucherId", value="#{inscrito.id}")
+                                            input(type="hidden", name="url", value="/preinscripcion/#{inscrito.id}/report")
+                                            input(type="file", class="filestyle", data-input="false", name="vaucher", accept="image/jpeg", required)
+                                            br
+                                            p.text-warning
+                                                i.fa.fa-warning &nbsp; Importante: se debe Adjutar la imagen de recibo de consignacion del pago, comprobante otrogado por la entidad financiera.
+                                .row
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary.btn-sm.margin-btn-upload-student
+                                            i.fa.fa-cloud-upload
+                                            | &nbsp; Subir Foto
 
-                                }
-                            }
-                        }
-                    });
-        });
+                                    script(type="text/javascript").
+                                        $(":file").filestyle({input: false});
+
+                -}else{
+                    .well.bs-component
+                        form(method="POST", action="/preinscripcion/report", id="form-report-insc").form-horizontal
+                            input(type="hidden", name="inscrito", value="#{inscrito.id}")
+                            faildset
+                                legend
+
+                                .form-group
+                                    label(for="documento", class="col-lg-2 control-label") Identidad
+                                    .col-lg-10
+                                        p.lead
+                                            span #{datos.documento}
+                                            br
+                                            span.text-muted #{datos.tipo_documento}
+
+
+                                .form-group
+                                    label(for="nombre", class="col-lg-2 control-label") Nombre
+                                    .col-lg-10
+                                        p.lead #{datos.nombres} #{datos.apellidos}
+
+                                .form-group
+                                    img(src="/images/uploads/supports/#{inscrito.id}.jpg", title="reporte de pago de #{datos.nombres} #{datos apellidos}")
+
+                                .form-group
+                                    label(for="pago", class="col-lg-2 control-label") Fecha de pago
+                                    .col-lg-10
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-calendar-o
+                                            input(type="date", name="fecha", required).form-control
+                                        p.text-muted Seleccione la fecha en la que fue realizado el pago de la matricula del posgrado
+
+                                .form-group
+                                    label(for="valor", class="col-lg-2 control-label") Valor
+                                    .col-lg-10
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-money
+                                            input(type="Number", name="valor", min="0", required).form-control
+                                        p.text-muted Valor del pago realizado por el estudiante
+
+                                .form-group
+                                    .col-lg-10.col-lg-offset-2
+                                        a(href="/preinscripcion/#{inscrito.id}").btn.btn-default.margin-right-1
+                                            i.fa.fa-times-circle
+                                            | &nbsp; Cancelar
+                                        button(type="submit", class="btn btn-primary")
+                                            i.fa.fa-hand-o-right
+                                            | &nbsp; Reportar el pago
+                        script(type="text/javascript").
+                            $(document).ready(function() {
+                                $('#form-report-insc')
+                                        .bootstrapValidator({
+                                            excluded: ':disabled',
+                                            feedbackIcons: {
+                                                valid: 'glyphicon glyphicon-ok',
+                                                invalid: 'glyphicon glyphicon-remove',
+                                                validating: 'glyphicon glyphicon-refresh'
+                                            },
+                                            fields: {
+                                                fecha: {
+                                                    validators: {
+                                                        date: {
+                                                            format: 'DD/MM/YYYY'
+                                                        }
+                                                    }
+                                                },
+                                                valor: {
+                                                    validators: {
+                                                        integer: {}
+
+                                                    }
+                                                }
+                                            }
+                                        });
+                            });
+                -}

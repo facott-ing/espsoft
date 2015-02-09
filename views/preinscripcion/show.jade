@@ -47,13 +47,18 @@ block content
                                     p.lead #{datos.nombres} #{datos.apellidos}
 
 
+
+
                             -if (inscrito.estado == 0){
+
                                 .form-group
                                     label(for="nombre", class="col-lg-2 control-label") Estado
                                     .col-lg-10
                                         p.label.label-warning Preinscrito
                             -}
                             -if (inscrito.estado == 1){
+                                .form-group
+                                    img(src="/images/uploads/supports/#{inscrito.id}.jpg", title="reporte de pago de #{datos.nombres} #{datos apellidos}")
                                 .form-group
                                     label(for="nombre", class="col-lg-2 control-label") Estado
                                     .col-lg-10

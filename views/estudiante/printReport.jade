@@ -1,0 +1,132 @@
+doctype html
+html
+    head
+        link(href="/circliful/css/jquery.circliful.css" rel="stylesheet" type="text/css")
+        link(href="/circliful/css/font-awesome.min.css" rel="stylesheet" type="text/css")
+        link(href='/awesome/css/font-awesome.min.css', rel='stylesheet')
+        link(href='/awesome/css/font-awesome.css', rel='stylesheet')
+        link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src="http://code.jquery.com/jquery-1.10.2.min.js")
+        script(src="/circliful/js/jquery.circliful.min.js")
+        style(type="text/css").
+            .container-r{ width: 900px; overflow: hidden; margin: 0 auto;}
+
+            .center-div { margin: 0 auto;}
+            .div-info {width: 50%; padding: 30px 0px;}
+            .students-list{ width: 78%;}
+            .div-graphics{ width: 1024px}
+            .div-fixed{ position: fixed; z-index: 100000; right: -3px; top: 160px;}
+
+    body
+        .row.bg-black.margin-botton
+            .col-lg-12.well
+                h1.text-center
+                    span.text-primary Reporte de estudiante
+                h5.text-center #{printDateTime}
+            .container-r
+                table(align="center").table
+                    tbody
+                        tr
+                            td(width="600px")
+                                table(align="center")
+                                    thead
+                                        tr
+                                            th(width="450px")
+                                                h3.text-center Posgrado
+                                            th(width="450px")
+                                                h3.text-center Cohorte
+                                    tbody
+                                        tr
+                                            td(width="450px")
+                                                p.text-center.text-warning #{posgrado.nombre}
+                                            td(width="450px")
+                                                p.text-center.text-warning #{cohorte.nombre}
+
+                                table(align="center")
+                                    thead
+                                        tr
+                                            th(width="300px")
+                                                h3.text-center Promedio
+                                            th(width="300px")
+                                                h3.text-center Credi. Aprobados
+                                            th(width="300px")
+                                                h3.text-center Rendimiento
+                                    tbody
+
+                                        tr
+                                            td(width="300px").text-center
+                                                div(id="myStat" data-dimension="160" data-text="#{(rendimiento.promedio).toFixed(1)}" data-info="Acumulado" data-width="30" data-fontsize="32" data-percent="#{(rendimiento.promedio/5)*100}" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd").center-div
+                                            td(width="300px").text-center
+                                                div(id="myStat2" data-dimension="160" data-text="#{rendimiento.aprobados}" data-info="Total #{((rendimiento.aprobados/totalCreditos)*100).toFixed(1)} %" data-width="30" data-fontsize="32" data-percent="#{(rendimiento.aprobados/totalCreditos)*100}" data-fgcolor="#28b62c" data-bgcolor="#eee" data-fill="#ddd").center-div
+                                            td(width="300px").text-center
+                                                div(id="myStat3" data-dimension="160" data-text="#{((rendimiento.promedio/5)*100).toFixed(1)}%" data-info="Academico" data-width="30" data-fontsize="32" data-percent="#{(rendimiento.promedio/5)*100}" data-fgcolor="#ff4136" data-bgcolor="#eee" data-fill="#ddd").center-div
+                                            script(type="text/javascript").
+                                                $( document ).ready(function() {
+                                                    $('#myStat').circliful();
+                                                    $('#myStat2').circliful();
+                                                    $('#myStat3').circliful();
+                                                });
+
+
+                            td(width="300px")
+                                .profileAvatar-alt
+                                    .avatar
+                                        -if (avatar != false){
+                                            img(src="/images/uploads/people/#{estudiante.id}.jpg", title="", class="portrait")
+                                        -}else{
+                                            img(src="/images/uploads/people/empty.jpg", title="", class="portrait")
+                                        -}
+                                p.text-center
+                                    span.text-size-12.label.label-info #{datos.nombres} #{datos.apellidos}
+                                p.text-center
+                                    span.lead Codigo:
+                                    span.lead.text-primary #{estudiante.codigo}
+
+
+            .container-r
+                h2.text-center
+                    span Asignaturas Vistas por el estudiante
+                table.table.table-bordered.table-striped
+                    thead
+                        tr
+                            th(width="60%") Asignatura
+                            th(width="20%") Creditos
+                            th(width="20%") Nota
+                    tbody
+                        each a in asignaturas
+                            tr
+                                td(width="60%") #{a.asignatura.nombre}
+                                td(width="20%") #{a.asignatura.cradito}
+                                td(width="20%")
+                                    -if (a.nota.nota === null){
+                                        span -
+                                    -}else{
+                                        span #{a.nota.nota}
+                                    -}
+            .container-r
+                h2.text-center
+                    span Comprobantes de pago del estudiante
+
+                each p in pagos
+                    table.table.table-bordered
+                        thead
+                            tr
+                                th(width="15%") Fecha
+                                th(width="65%") Concepto
+                                th(width="20%") Valor
+                        tbody
+                            tr
+                                td(width="15%") #{p.fecha_pago.toISOString().slice(0, 10)}
+                                td(width="65%")
+                                    p.lead #{p.concepto}
+                                td(width="20%") $ #{p.valor}
+                            tr
+                                td
+                                td
+                                    img(src="/images/uploads/supports/#{p.id}.jpg")
+                                td
+        a(href="#", onclick="document.getElementById('btn-print').style.display='none', window.print(); window.close()", id="btn-print").div-fixed.btn.btn-primary
+            i.fa.fa-print
+            | &nbsp; Imprimir Reporte
+

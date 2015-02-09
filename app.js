@@ -1582,7 +1582,14 @@ app.post('/cohorte/register', isLoggedIn, function(req, res){
                                         }
                                         Inscrito.remove({_id:inscrito.id}, function(err){
                                             if(err) res.json(err)
-                                            res.redirect('/estudiante/'+estudiante.id)
+                                            // se cambia el nombre inicial del primer vaucher
+                                            var nameBefore= './public/images/uploads/supports/'+inscrito.id+'.jpg';
+                                            var nameNew = './public/images/uploads/supports/'+datofinanciero.id+'.jpg'
+                                            fs.rename(nameBefore, nameNew, function(err){
+                                                if(err) throw err
+                                                res.redirect('/estudiante/'+estudiante.id)
+                                            });
+
                                         });
                                     });
                                 });
@@ -1598,7 +1605,7 @@ app.post('/cohorte/register', isLoggedIn, function(req, res){
 
 // cohorte report
 
-app.get('/cohorte/report/:cohorte', function(req, res){
+app.get('/cohorte/report/:cohorte', isLoggedIn, function(req, res){
 
     Estudiante.find({cohorte:req.cohorte.id}, {}, {sort:{codigo:1}}, function(err, estudiantes){
         var p=estudiantes.map(function(c){ return c.datos_personales; });
@@ -1710,6 +1717,8 @@ app.get('/estudiante/:id', isLoggedIn, function(req, res){
        })
    });
 });
+
+
 
 // edit estudiante
 
@@ -1839,6 +1848,88 @@ app.post('/estudiante/proof', isLoggedIn, function(req, res){
             //res.redirect('/estudiante/'+b.estudiante)
         });
 });
+
+
+// estudiante report
+
+app.get('/estudiante/report/:estudiante', isLoggedIn, function(req, res){
+    var date = new Date();
+    var avatar = fs.existsSync('./public/images/uploads/people/'+req.estudiante.id+'.jpg')
+    DatosPersonales.findOne({_id:req.estudiante.datos_personales}, function(err, datos){
+        Cohorte.findOne({_id:req.estudiante.cohorte}, function(err, cohorte){
+            Postgrado.findOne({_id:cohorte.postgrado_id}, function(err, posgrado){
+                Nota.find({ estudiante_id:req.estudiante.id }, function(err, notas){
+                    var n=notas.map(function(c){ return c.asignatura_id; });
+                    Asignatura.find({ _id:{$in:n} }, {}, {$sort:{nivel:1}}, function(err, asignaturas){
+                        Asignatura.find({ pensum_id:cohorte.pensum_id }, function(err, creditos){
+                            var totalCreditos = 0
+                            creditos.map(function(doc){totalCreditos += doc.cradito})
+                            DatoFinanciero.find({estudiante_id:req.estudiante.id}, {}, {$sort:{fecha_pago:1}}, function(err, pagos){
+                                var rendimiento = getRendimientoEstudiante(asignaturas, notas)
+                                var asignaturasJoin = joinNotas(asignaturas, notas)
+                                res.render('estudiante/printReport', {estudiante:req.estudiante, printDateTime:date, avatar:avatar, datos:datos, cohorte:cohorte, posgrado:posgrado, asignaturas:asignaturasJoin, totalCreditos:totalCreditos, pagos:pagos, rendimiento:rendimiento});
+                            });
+                        });
+
+                    });
+                });
+
+            });
+
+        })
+
+    });
+
+});
+
+function getRendimientoEstudiante(asignaturas, notas){
+    var rendimientoData = [];
+    var promedio = 0;
+    var creditos = 0;
+    var creditoscur = 0;
+    for(var i in asignaturas){
+        for(var j in notas){
+            if(notas[j].asignatura_id === asignaturas[i].id){
+                if(notas[j].nota != null){
+                    promedio += notas[j].nota * asignaturas[i].cradito
+                    creditoscur += asignaturas[i].cradito
+                    if(notas[j].nota >= 3){
+                        creditos += asignaturas[i].cradito
+                    }
+                }
+                break
+            }
+
+        }
+
+    }
+    rendimientoData['promedio'] = promedio / creditoscur
+    rendimientoData['aprobados'] = creditos
+    rendimientoData['cursados'] = creditoscur
+    return rendimientoData
+}
+
+function joinNotas(asignaturas, notas){
+    var asignaturasJson = [];
+    var asignaturasData = [];
+    for(var i in asignaturas){
+        for(var j in notas){
+            if(notas[j].asignatura_id === asignaturas[i].id){
+                asignaturasData['asignatura'] = asignaturas[i]
+                asignaturasData['nota'] = notas[j]
+                break
+            }
+
+        }
+
+        asignaturasJson.push(asignaturasData)
+        asignaturasData = []
+
+
+    }
+    return(asignaturasJson);
+}
+
 // END ESTUDIANTE
 
 // PRE-INSCRIPCIONES
@@ -1930,7 +2021,8 @@ app.get('/preinscripcion/:id', isLoggedIn, function(req, res){
 // reporte de pago
 app.get('/preinscripcion/:id/report', isLoggedIn, function(req, res){
     DatosPersonales.findOne({_id:req.inscrito.datos_personales}, function(err, datos){
-        res.render('preinscripcion/report', {inscrito:req.inscrito, datos:datos});
+        var vaucher = fs.existsSync('./public/images/uploads/supports/'+req.inscrito.id+'.jpg')
+        res.render('preinscripcion/report', {inscrito:req.inscrito, datos:datos, vaucher:vaucher});
     });
 });
 

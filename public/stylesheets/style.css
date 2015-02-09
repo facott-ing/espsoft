@@ -1,6 +1,6 @@
 
 html,body{
-    padding: 0px;
+    padding: 0;
     margin: 0;
 }
 .text-bg{
@@ -30,6 +30,9 @@ button{
 }
 .text-size-14{
     font-size: 14pt;
+}
+.text-size-12{
+    font-size: 12pt;
 }
 .text-size-11{
     font-size: 11pt;
@@ -113,7 +116,7 @@ button{
 
 .personAvatar{
     float: right;
-    margin-top: -160px;
+    margin-top: -170px;
     width: 160px;
     height: 240px;
 }
@@ -157,4 +160,13 @@ button{
 }
 .margin-btn-upload-student{
     margin-left: 34px;
+}
+.btn-printReport-Student{
+    margin-left: 40px;
+    position: absolute;
+}
+
+.table-model{
+    background-color: #E5E1EA;
+    border: 1px solid #C8BFD3;
 }

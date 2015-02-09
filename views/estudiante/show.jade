@@ -131,7 +131,14 @@ block content
                                 .form-group
                                     label(for="nombre", class="col-lg-2 control-label") Modalidad
                                     .col-lg-10
-                                        h4.label.label-warning.text-size-14 #{estudiante.modalidad}
+                                        h4.label.label-default.text-size-12 #{estudiante.modalidad}
+                                .form-group
+
+                                    a(href="/estudiante/report/#{estudiante.id}", target="_blank").btn.btn.btn-success.btn-printReport-Student
+                                        i.fa.fa-print
+                                        | &nbsp; Crear reporte Impreso detallado
+                                        br
+                                        | &nbsp; del estudiante
                                 .personAvatar
                                     .avatar
                                         -if (avatar != false){
