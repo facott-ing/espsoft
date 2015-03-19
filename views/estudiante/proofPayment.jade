@@ -10,52 +10,121 @@ block content
         .row
             .margin-auto
                 p.lead.text-center
-                    strong Reporte comprobante de pago de estudiante
+                    -if (vaucher == false){
+                        span.text-info Paso #1:
+                        strong &nbsp; adjuntar comprobante de pago
+                    -}else{
+                        span.text-info Paso #2:
+                        strong &nbsp; Seleccione la fecha en la que fue realizado el pago
+                    -}
                 .margin-botton
-                .well.bs-component
-                    form(method="POST", action="/estudiante/proof", id="form-proof-pay").form-horizontal
-                        input(type="hidden", name="estudiante", value="#{estudiante.id}")
-                        fieldset
-                            legend
-                            .form-group
-                                label(for="inputpass", class="col-lg-2 control-label") Estudiante
-                                .col-lg-10
-                                    .input-group
-                                        span.text-primary.text-size-18 #{datos.nombres} #{datos.apellidos}
-                                        br
-                                        span.label.label-info.text-size-11 #{estudiante.codigo}
-                            .form-group
-                                label(for="inputpass", class="col-lg-2 control-label") Fecha
-                                .col-lg-10
-                                    .input-group
-                                        span.input-group-addon
-                                            i.fa.fa-calendar
-                                        input(type="date", name="fecha", required, placeholder="DD/MM/YYYY").form-control
-                                    p.text-muted Fecha que el estudiante realizo el importe
-                            .form-group
-                                label(for="inputcon", class="col-lg-2 control-label") Concepto
-                                .col-lg-10
-                                    .input-group
-                                        span.input-group-addon
-                                            i.fa.fa-pencil
-                                        input(type="text", name="concepto", autocomplete="off", required).form-control
-                                    p.text-muted Concepto informativo del pago
-                            .form-group
-                                label(for="inputpass", class="col-lg-2 control-label") Valor
-                                .col-lg-10
-                                    .input-group
-                                        span.input-group-addon
-                                            i.fa.fa-money
-                                        input(type="number", name="valor", min="0", required).form-control
-                                    p.text-muted Valor del importe realizado
-                            .form-group
-                            h5.text-center
-                                a(href="/estudiante/#{estudiante.id}").btn.btn-default.margin-right-1
-                                    i.fa.fa-times-circle
-                                    | &nbsp; cancelar
-                                button(type="submit").btn.btn-primary.ma
-                                    i.fa.fa-save
-                                    | &nbsp; Guardar y Promover el estudiante
+                -if(vaucher == false){
+                    .well.bs-component
+                        .profileAvatar-alt
+                            .avatar
+                                -if (avatar != false){
+                                    img(src="/images/uploads/people/#{estudiante.id}.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                -}else{
+                                    img(src="/images/uploads/people/empty.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                -}
+                        script(type="text/javascript", src="/bootstrap/js/bootstrap-filestyle.min.js")
+                        form(method="POST", action="/uploaderVaucher", enctype =  "multipart/form-data", role="form").form-horizontal
+                            faildset
+                                legend
+
+                                .form-group
+                                    label(for="documento", class="col-lg-2 control-label") Identidad
+                                    .col-lg-10
+                                        .input-group
+                                            span.text-primary.text-size-18 #{datos.nombres} #{datos.apellidos}
+                                            br
+                                            span.label.label-info.text-size-11 #{estudiante.codigo}
+
+                                .form-group
+                                    label(for="valor", class="col-lg-2 control-label") Recibo
+                                    .col-lg-10
+                                        .input-group
+                                            input(type="hidden", name="vaucherId", value="#{estudiante.id}")
+                                            input(type="hidden", name="url", value="/estudiante/proofPayment/#{estudiante.id}")
+                                            input(type="file", class="filestyle", data-input="false", name="vaucher", accept="image/jpeg", required)
+                                            br
+                                            p.text-warning
+                                                i.fa.fa-warning &nbsp; Importante: se debe Adjutar la imagen de recibo de consignacion del pago, comprobante otrogado por la entidad financiera.
+                                .row
+                                    h5.text-center
+                                        button(type="submit").btn.btn-primary.btn-sm.margin-btn-upload-student
+                                            i.fa.fa-cloud-upload
+                                            | &nbsp; Subir Foto
+
+                                    script(type="text/javascript").
+                                        $(":file").filestyle({input: false});
+
+                -}else{
+                    .well.bs-component
+                        .profileAvatar-alt
+                            .avatar
+                                -if (avatar != false){
+                                    img(src="/images/uploads/people/#{estudiante.id}.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                -}else{
+                                    img(src="/images/uploads/people/empty.jpg", title="#{datos.nombres} #{datos.apellidos}", class="portrait")
+                                -}
+                        form(method="POST", action="/estudiante/proof", id="form-proof-pay").form-horizontal
+                            input(type="hidden", name="estudiante", value="#{estudiante.id}")
+                            fieldset
+                                legend
+                                .form-group
+                                    label(for="inputpass", class="col-lg-2 control-label") Estudiante
+                                    .col-lg-10
+                                        .input-group
+                                            span.text-primary.text-size-18 #{datos.nombres} #{datos.apellidos}
+                                            br
+                                            span.label.label-info.text-size-11 #{estudiante.codigo}
+                                .form-group
+                                    img(src="/images/uploads/supports/#{estudiante.id}.jpg", alt="#{datos.nombres} #{datos.apellidos}")
+
+                                .form-group
+                                    label(for="inputCreditos", class="col-lg-2 control-label") Promover
+                                    .col-lg-10
+                                        .list-group
+                                            .list-group-item
+                                                input(type="radio", name="promover",value="true")
+                                                span.text-primary.text-margin-left Importe que promueve al estudiante, al siguiente semestre.
+                                                input(type="radio", name="promover",value="false", checked).hidden
+                                        p.text-muted Si el importe que realizo el estudiante, es por concepto de avance de semestre. por favor seleccione la opcion anterior, de lo contrario no lo haga.
+
+                                .form-group
+                                    label(for="inputpass", class="col-lg-2 control-label") Fecha
+                                    .col-lg-10
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-calendar
+                                            input(type="date", name="fecha", required, placeholder="DD/MM/YYYY").form-control
+                                        p.text-muted Fecha que el estudiante realizo el importe
+                                .form-group
+                                    label(for="inputcon", class="col-lg-2 control-label") Concepto
+                                    .col-lg-10
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-pencil
+                                            input(type="text", name="concepto", autocomplete="off", required).form-control
+                                        p.text-muted Concepto informativo del pago
+                                .form-group
+                                    label(for="inputpass", class="col-lg-2 control-label") Valor
+                                    .col-lg-10
+                                        .input-group
+                                            span.input-group-addon
+                                                i.fa.fa-money
+                                            input(type="number", name="valor", min="0", required).form-control
+                                        p.text-muted Valor del importe realizado
+                                .form-group
+                                h5.text-center
+                                    a(href="/estudiante/#{estudiante.id}").btn.btn-default.margin-right-1
+                                        i.fa.fa-times-circle
+                                        | &nbsp; cancelar
+                                    button(type="submit").btn.btn-primary.ma
+                                        i.fa.fa-save
+                                        | &nbsp; Guardar
+                -}
     script(type="text/javascript").
         $(document).ready(function() {
             $('#form-proof-pay')
@@ -90,8 +159,7 @@ block content
                                 notEmpty: {
                                 },
                                 stringLength: {
-                                    min: 6,
-                                    max: 30
+                                    min: 6
                                 }
                             }
                         }

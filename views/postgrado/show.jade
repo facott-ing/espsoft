@@ -67,6 +67,26 @@ block content
     .row
         .container
             .col-sm-7
+                .margin-auto-8
+                    .panel.panel-default
+                        .panel-heading
+                            h5
+                                i.fa.fa-search
+                                | &nbsp; Busqueda de Estudiante
+                        .panel-body
+                            p.text-center: em Modulo de busqueda rapida de estudiantes del posgrado.
+                            .margin-auto-7
+                                form(action="/estudiante/find", method="POST").form-horizontal
+                                    input(type="hidden", value="#{postgrado.id}", name="estruct")
+                                    faildset
+                                        .form-group
+                                            input(type="text", name="criterio", placeholder="Documento de identidad del estudiante", autocomplete="off").form-control
+                                            button(type="submit").btn.btn-primary.btn-xs.float-right
+                                                i.fa.fa-search
+                                                | &nbsp; Buscar
+
+
+
                 .panel.panel-default
                     .panel-heading
                         h4.pull-right
@@ -81,6 +101,17 @@ block content
                         -if (numpre > 0){
                             p(align="justify")
                                 em Lista de las solicitudes de inscripcion que han realizado personas interesadas en realizar los estudios del postgrado
+                            .margin-auto
+                                form(method="POST", action="/preinscrito/find").form-horizontal
+                                    input(type="hidden", value="#{postgrado.id}", name="estruct")
+                                    faildset
+                                        .form-group
+                                            input(type="text", name="preinscrito", placeholder="Identificacion del Preinscrito", autocomplete="off").form-control
+                                            button(type="submit").btn.btn-xs.btn-primary.float-right
+                                                i.fa.fa-search
+                                                | &nbsp; Buscar
+
+
                             table.table.margin-botton-none
                                 tr
                                     th(width="5%").text-center #

@@ -22,6 +22,17 @@ block content
             .margin-botton
 
 
+            -if (cohorte.nivel > estudiante.semester){
+                .margin-auto-7
+                    .panel.panel-warning
+                        .panel-heading
+                            h3.panel-title
+                                i.fa.fa-exclamation-triangle
+                                | &nbsp; Advertencia
+                        .panel-body
+                            p.text-center.text-warning El estudiante se encuentra atrasado, No a realizado el pago del semestre en que se encuentra la cohorte donde esta matriculado.
+
+            -}
 
             .col-lg-6
                 .panel.panel-default

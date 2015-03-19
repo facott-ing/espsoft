@@ -70,24 +70,25 @@ block content
                                 i.fa.fa-users
                                 | &nbsp; Estudiantes Registrados
                         .panel-body
-                            p.lead Lista de estudiantes que se encuentran registrados en la cohorte
+
                             .scroll-list-x
                                 -if (numes > 0){
                                     table.table.table-hover.table-striped
                                         thead
                                             tr
                                                 th(width="8%"): p.text-center #
-                                                th(width="48%"): p.text-center Nombre
-                                                th(width="20%"): p.text-center Codigo
+                                                th(width="42%"): p Nombre
+                                                th(width="10%"): p.text-center Adeuda
+                                                th(width="16%"): p.text-center Codigo
                                                 th(width="24%"): p.text-center Accion
                                         -count=1
                                         each estudiante in estudiantes
                                             tr
-                                                td(width="8")
+                                                td(width="8%")
                                                     h4.text-center
                                                         span.badge #{count}
 
-                                                td(width="48%")
+                                                td(width="42%")
                                                     h4
                                                         | #{estudiante.nombre}
                                                         -if (postgrado.tipo_postgrado == 'Máestria'){
@@ -95,8 +96,12 @@ block content
                                                                 | Modalidad:
                                                                 span.label.label-default.margin-left-1 #{estudiante.modalidad}
                                                         -}
+                                                td(width="10%", align="center").text-center
+                                                    -if (cohorte.nivel > estudiante.semester){
+                                                        i.fa.fa-circle.deuda
+                                                    -}
 
-                                                td(width="20%", align="center").text-center
+                                                td(width="16%", align="center").text-center
                                                     h5
                                                         span #{estudiante.codigo}
 

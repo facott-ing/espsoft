@@ -1,0 +1,18 @@
+extends ../layout
+block content
+    include ../directorHead
+    .container
+        ul.breadcrumb
+            li: a(href="/director/profile") Inicio
+            li.active Posgrado
+        .row
+            .margin-auto
+                p.lead.text-center
+                    strong Busqueda de Preinscrito
+                p.warning-msg.text-center Advertencia
+                p.lead.text-center
+                    | #{msg}
+                p.text-center
+                    a(href="#{url}").btn.btn-default Intentar de nuevo
+    br
+

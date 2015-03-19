@@ -90,15 +90,17 @@ html
                 table.table.table-bordered.table-striped
                     thead
                         tr
-                            th(width="60%") Asignatura
-                            th(width="20%") Creditos
-                            th(width="20%") Nota
+                            th(width="55%") Asignatura
+                            th(width="15%").text-center Semestre
+                            th(width="15%").text-center Creditos
+                            th(width="15%").text-center Nota
                     tbody
                         each a in asignaturas
                             tr
-                                td(width="60%") #{a.asignatura.nombre}
-                                td(width="20%") #{a.asignatura.cradito}
-                                td(width="20%")
+                                td(width="55%") #{a.asignatura.nombre}
+                                td(width="15%").text-center #{a.asignatura.nivel}
+                                td(width="15%").text-center #{a.asignatura.cradito}
+                                td(width="15%").text-center
                                     -if (a.nota.nota === null){
                                         span -
                                     -}else{
